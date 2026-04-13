@@ -7,8 +7,9 @@ import cz.wux.colonycraft.screen.ColonyBannerScreenHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,7 +35,7 @@ public class ColonyBannerBlockEntity extends BlockEntity implements NamedScreenH
     // ── Colony ────────────────────────────────────────────────────────────────
 
     public void initColony(ServerPlayerEntity player) {
-        ColonyManager mgr = ColonyManager.get((ServerWorld) world);
+        ColonyManager mgr = ColonyManager.get((ServerWorld) getWorld());
         // Only create if not already present at this position
         if (mgr.getColonyAtBanner(pos).isEmpty()) {
             ColonyData data = mgr.createColony(player.getUuid(), player.getName().getString(), pos);
@@ -45,7 +46,7 @@ public class ColonyBannerBlockEntity extends BlockEntity implements NamedScreenH
     }
 
     public Optional<ColonyData> getColony() {
-        if (colonyId == null || !(world instanceof ServerWorld sw)) return Optional.empty();
+        if (colonyId == null || !(getWorld() instanceof ServerWorld sw)) return Optional.empty();
         return ColonyManager.get(sw).getColony(colonyId);
     }
 
@@ -66,14 +67,12 @@ public class ColonyBannerBlockEntity extends BlockEntity implements NamedScreenH
     // ── NBT ───────────────────────────────────────────────────────────────────
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.writeNbt(nbt, wrapperLookup);
-        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+    protected void writeData(WriteView view) {
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.readNbt(nbt, wrapperLookup);
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+    protected void readData(ReadView view) {
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }

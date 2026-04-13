@@ -5,12 +5,13 @@ import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.util.Identifier;
 
 /**
  * Guard colonist renderer — uses guard texture (64×64 skin PNG).
  */
-public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, BipedEntityModel<GuardEntity>> {
+public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, BipedEntityRenderState, BipedEntityModel<BipedEntityRenderState>> {
 
     private static final Identifier TEXTURE =
             Identifier.of("colonycraft", "textures/entity/guard.png");
@@ -20,5 +21,10 @@ public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, BipedE
     }
 
     @Override
-    public Identifier getTexture(GuardEntity entity) { return TEXTURE; }
+    public BipedEntityRenderState createRenderState() {
+        return new BipedEntityRenderState();
+    }
+
+    @Override
+    public Identifier getTexture(BipedEntityRenderState state) { return TEXTURE; }
 }

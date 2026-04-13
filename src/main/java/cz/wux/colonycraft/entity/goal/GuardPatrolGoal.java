@@ -36,19 +36,14 @@ public class GuardPatrolGoal extends Goal {
 
     @Override
     public void tick() {
+        if (waitTicks > 0) { waitTicks--; return; }
         if (patrolTarget == null) { pickNewTarget(); return; }
-        double distSq = guard.getPos().squaredDistanceTo(
+        double distSq = guard.squaredDistanceTo(
                 patrolTarget.getX() + 0.5, patrolTarget.getY() + 0.5, patrolTarget.getZ() + 0.5);
         if (distSq <= 4.0) {
             waitTicks = 60 + guard.getRandom().nextInt(60); // wait 3–6 s at patrol point
             patrolTarget = null;
         }
-    }
-
-    @Override
-    public void tick(long l) {
-        super.tick(l);
-        if (waitTicks > 0) waitTicks--;
     }
 
     @Override

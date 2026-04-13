@@ -15,8 +15,9 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,8 +44,8 @@ public class ColonistEntity extends PathAwareEntity {
     private int hungerTicks = 0;      // ticks since last meal
     private int workCooldown = 0;     // ticks until next work action
 
-    static final int HUNGER_INTERVAL  = 6000; // ticks between meals (~5 min)
-    static final int STARVATION_DEATH = 24000; // ticks without food before death
+    public static final int HUNGER_INTERVAL  = 6000; // ticks between meals (~5 min)
+    public static final int STARVATION_DEATH = 24000; // ticks without food before death
 
     public ColonistEntity(EntityType<? extends ColonistEntity> type, World world) {
         super(type, world);
@@ -54,10 +55,10 @@ public class ColonistEntity extends PathAwareEntity {
 
     public static DefaultAttributeContainer.Builder createColonistAttributes() {
         return PathAwareEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
+                .add(EntityAttributes.MAX_HEALTH, 20.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.3)
+                .add(EntityAttributes.FOLLOW_RANGE, 32.0)
+                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.0);
     }
 
     // ── Goal registration ─────────────────────────────────────────────────────
@@ -83,12 +84,12 @@ public class ColonistEntity extends PathAwareEntity {
     @Override
     public void tick() {
         super.tick();
-        if (getWorld().isClient) return;
+        if (getEntityWorld().isClient()) return;
 
         // Hunger tracking
         hungerTicks++;
         if (hungerTicks >= STARVATION_DEATH) {
-            this.kill();
+            if (getEntityWorld() instanceof ServerWorld sw) { this.kill(sw); }
             return;
         }
 
@@ -124,14 +125,14 @@ public class ColonistEntity extends PathAwareEntity {
     /** Returns the StockpileBlockEntity for this colonist's colony, if loaded. */
     public Optional<StockpileBlockEntity> getStockpile() {
         if (stockpilePos == null) return Optional.empty();
-        var be = getWorld().getBlockEntity(stockpilePos);
+        var be = getEntityWorld().getBlockEntity(stockpilePos);
         return (be instanceof StockpileBlockEntity s) ? Optional.of(s) : Optional.empty();
     }
 
     /** Returns the JobBlockEntity for this colonist's workstation, if loaded. */
     public Optional<JobBlockEntity> getJobBlock() {
         if (jobBlockPos == null) return Optional.empty();
-        var be = getWorld().getBlockEntity(jobBlockPos);
+        var be = getEntityWorld().getBlockEntity(jobBlockPos);
         return (be instanceof JobBlockEntity j) ? Optional.of(j) : Optional.empty();
     }
 
@@ -185,37 +186,40 @@ public class ColonistEntity extends PathAwareEntity {
     // ── NBT ───────────────────────────────────────────────────────────────────
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        if (colonyId != null)   nbt.putUuid("ColonyId", colonyId);
-        nbt.putString("Job", job.name());
-        nbt.putInt("HungerTicks", hungerTicks);
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        if (colonyId != null)   view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
+        view.putString("Job", job.name());
+        view.putInt("HungerTicks", hungerTicks);
         if (jobBlockPos != null) {
-            nbt.putInt("JobX", jobBlockPos.getX());
-            nbt.putInt("JobY", jobBlockPos.getY());
-            nbt.putInt("JobZ", jobBlockPos.getZ());
+            view.putInt("JobX", jobBlockPos.getX());
+            view.putInt("JobY", jobBlockPos.getY());
+            view.putInt("JobZ", jobBlockPos.getZ());
         }
         if (stockpilePos != null) {
-            nbt.putInt("StockX", stockpilePos.getX());
-            nbt.putInt("StockY", stockpilePos.getY());
-            nbt.putInt("StockZ", stockpilePos.getZ());
+            view.putInt("StockX", stockpilePos.getX());
+            view.putInt("StockY", stockpilePos.getY());
+            view.putInt("StockZ", stockpilePos.getZ());
         }
         if (homePos != null) {
-            nbt.putInt("HomeX", homePos.getX());
-            nbt.putInt("HomeY", homePos.getY());
-            nbt.putInt("HomeZ", homePos.getZ());
+            view.putInt("HomeX", homePos.getX());
+            view.putInt("HomeY", homePos.getY());
+            view.putInt("HomeZ", homePos.getZ());
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
-        try { job = ColonistJob.valueOf(nbt.getString("Job")); }
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
+        try { job = ColonistJob.valueOf(view.getString("Job", "UNEMPLOYED")); }
         catch (Exception e) { job = ColonistJob.UNEMPLOYED; }
-        hungerTicks = nbt.getInt("HungerTicks");
-        if (nbt.contains("JobX")) jobBlockPos = new BlockPos(nbt.getInt("JobX"), nbt.getInt("JobY"), nbt.getInt("JobZ"));
-        if (nbt.contains("StockX")) stockpilePos = new BlockPos(nbt.getInt("StockX"), nbt.getInt("StockY"), nbt.getInt("StockZ"));
-        if (nbt.contains("HomeX")) homePos = new BlockPos(nbt.getInt("HomeX"), nbt.getInt("HomeY"), nbt.getInt("HomeZ"));
+        hungerTicks = view.getInt("HungerTicks", 0);
+        int jobX = view.getInt("JobX", Integer.MIN_VALUE);
+        if (jobX != Integer.MIN_VALUE) jobBlockPos = new BlockPos(jobX, view.getInt("JobY", 0), view.getInt("JobZ", 0));
+        int stockX = view.getInt("StockX", Integer.MIN_VALUE);
+        if (stockX != Integer.MIN_VALUE) stockpilePos = new BlockPos(stockX, view.getInt("StockY", 0), view.getInt("StockZ", 0));
+        int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
+        if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
     }
 }

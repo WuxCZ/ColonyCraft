@@ -7,10 +7,12 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,7 +26,7 @@ import java.util.UUID;
  * {@link ColonistJob#GUARD_BOW}, {@link ColonistJob#GUARD_CROSSBOW}, or
  * {@link ColonistJob#GUARD_MUSKET}.</p>
  */
-public class GuardEntity extends PathAwareEntity {
+public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     private UUID colonyId;
     private BlockPos homePos;
@@ -41,11 +43,11 @@ public class GuardEntity extends PathAwareEntity {
 
     public static DefaultAttributeContainer.Builder createGuardAttributes() {
         return PathAwareEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0)
-                .add(EntityAttributes.GENERIC_ARMOR, 4.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
+                .add(EntityAttributes.MAX_HEALTH, 30.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.35)
+                .add(EntityAttributes.FOLLOW_RANGE, 40.0)
+                .add(EntityAttributes.ARMOR, 4.0)
+                .add(EntityAttributes.ATTACK_DAMAGE, 4.0);
     }
 
     @Override
@@ -63,15 +65,15 @@ public class GuardEntity extends PathAwareEntity {
     public void shootAt(net.minecraft.entity.LivingEntity target, float pullProgress) {
         // Fire an arrow toward the target
         net.minecraft.entity.projectile.ArrowEntity arrow =
-                new net.minecraft.entity.projectile.ArrowEntity(getWorld(), this,
+                new net.minecraft.entity.projectile.ArrowEntity(getEntityWorld(), this,
                         new net.minecraft.item.ItemStack(net.minecraft.item.Items.ARROW),
                         null);
         double dx = target.getX() - getX();
         double dy = target.getBodyY(0.3333) - arrow.getY();
         double dz = target.getZ() - getZ();
         double dist = Math.sqrt(dx*dx + dz*dz) * 0.2;
-        arrow.setVelocity(dx, dy + dist, dz, 1.6f, 14 - getWorld().getDifficulty().getId() * 4);
-        getWorld().spawnEntity(arrow);
+        arrow.setVelocity(dx, dy + dist, dz, 1.6f, 14 - getEntityWorld().getDifficulty().getId() * 4);
+        getEntityWorld().spawnEntity(arrow);
     }
 
     // ── NBT ───────────────────────────────────────────────────────────────────
@@ -84,23 +86,24 @@ public class GuardEntity extends PathAwareEntity {
     public void    setGuardJob(ColonistJob j)        { this.guardJob = j; }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
-        nbt.putString("GuardJob", guardJob.name());
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
+        view.putString("GuardJob", guardJob.name());
         if (homePos != null) {
-            nbt.putInt("HomeX", homePos.getX());
-            nbt.putInt("HomeY", homePos.getY());
-            nbt.putInt("HomeZ", homePos.getZ());
+            view.putInt("HomeX", homePos.getX());
+            view.putInt("HomeY", homePos.getY());
+            view.putInt("HomeZ", homePos.getZ());
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
-        try { guardJob = ColonistJob.valueOf(nbt.getString("GuardJob")); }
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
+        try { guardJob = ColonistJob.valueOf(view.getString("GuardJob", "GUARD_BOW")); }
         catch (Exception e) { guardJob = ColonistJob.GUARD_BOW; }
-        if (nbt.contains("HomeX")) homePos = new BlockPos(nbt.getInt("HomeX"), nbt.getInt("HomeY"), nbt.getInt("HomeZ"));
+        int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
+        if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
     }
 }

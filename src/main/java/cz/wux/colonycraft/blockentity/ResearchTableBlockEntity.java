@@ -3,8 +3,9 @@ package cz.wux.colonycraft.blockentity;
 import cz.wux.colonycraft.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import java.util.UUID;
 
@@ -35,16 +36,14 @@ public class ResearchTableBlockEntity extends BlockEntity {
     public void setColonyId(UUID id)         { this.colonyId = id; markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.writeNbt(nbt, wrapperLookup);
-        nbt.putInt("PendingScience", pendingScience);
-        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+    protected void writeData(WriteView view) {
+        view.putInt("PendingScience", pendingScience);
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.readNbt(nbt, wrapperLookup);
-        pendingScience = nbt.getInt("PendingScience");
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+    protected void readData(ReadView view) {
+        pendingScience = view.getInt("PendingScience", 0);
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }

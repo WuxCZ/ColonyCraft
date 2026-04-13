@@ -115,7 +115,7 @@ public class WorkAtJobGoal extends Goal {
         // Alchemist: ingredients → potion base (sugar = default)
         RECIPES.put(ColonistJob.ALCHEMIST, new Recipe(
                 new Item[]{Items.SUGAR, Items.GLASS_BOTTLE}, new int[]{1, 1},
-                new Item[]{Items.AWKWARD_POTION}, new int[]{1}));
+                new Item[]{Items.GLASS_BOTTLE}, new int[]{1}));
 
         // Glassblower: sand + coal → glass panes
         RECIPES.put(ColonistJob.GLASSBLOWER, new Recipe(
@@ -172,8 +172,7 @@ public class WorkAtJobGoal extends Goal {
         if (jobPos == null) return;
 
         // Check if close enough to work
-        double distSq = colonist.getPos()
-                .squaredDistanceTo(jobPos.getX() + 0.5, jobPos.getY() + 0.5, jobPos.getZ() + 0.5);
+        double distSq = colonist.squaredDistanceTo(jobPos.getX() + 0.5, jobPos.getY() + 0.5, jobPos.getZ() + 0.5);
 
         if (distSq <= 6.0) {
             // At workstation — perform one production cycle
@@ -217,7 +216,7 @@ public class WorkAtJobGoal extends Goal {
         if (job == ColonistJob.RESEARCHER) {
             BlockPos jobPos = colonist.getJobBlockPos();
             if (jobPos != null) {
-                var be = colonist.getWorld().getBlockEntity(jobPos);
+                var be = colonist.getEntityWorld().getBlockEntity(jobPos);
                 if (be instanceof cz.wux.colonycraft.blockentity.ResearchTableBlockEntity rt) {
                     rt.addScience(5);
                 }

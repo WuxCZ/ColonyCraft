@@ -3,9 +3,9 @@ package cz.wux.colonycraft.data;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Uuids;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
@@ -68,10 +68,10 @@ public class ColonyData {
 
     // ── Serialization ─────────────────────────────────────────────────────────
 
-    public NbtCompound toNbt(RegistryWrapper.WrapperLookup wrapperLookup) {
+    public NbtCompound toNbt() {
         NbtCompound nbt = new NbtCompound();
-        nbt.putUuid("ColonyId",   colonyId);
-        nbt.putUuid("OwnerUuid",  ownerUuid);
+        nbt.putIntArray("ColonyId",  Uuids.toIntArray(colonyId));
+        nbt.putIntArray("OwnerUuid", Uuids.toIntArray(ownerUuid));
         nbt.putString("OwnerName", ownerName);
         nbt.putInt("BannerX", bannerPos.getX());
         nbt.putInt("BannerY", bannerPos.getY());
@@ -91,7 +91,7 @@ public class ColonyData {
         NbtList colList = new NbtList();
         for (UUID u : colonistUuids) {
             NbtCompound c = new NbtCompound();
-            c.putUuid("UUID", u);
+            c.putIntArray("UUID", Uuids.toIntArray(u));
             colList.add(c);
         }
         nbt.put("Colonists", colList);
@@ -103,34 +103,35 @@ public class ColonyData {
         return nbt;
     }
 
-    public static ColonyData fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        UUID colonyId  = nbt.getUuid("ColonyId");
-        UUID ownerUuid = nbt.getUuid("OwnerUuid");
-        String name    = nbt.getString("OwnerName");
+    public static ColonyData fromNbt(NbtCompound nbt) {
+        UUID colonyId  = nbt.getIntArray("ColonyId").map(Uuids::toUuid).orElseThrow();
+        UUID ownerUuid = nbt.getIntArray("OwnerUuid").map(Uuids::toUuid).orElseThrow();
+        String name    = nbt.getString("OwnerName", "");
         BlockPos banner = new BlockPos(
-                nbt.getInt("BannerX"), nbt.getInt("BannerY"), nbt.getInt("BannerZ"));
+                nbt.getInt("BannerX", 0), nbt.getInt("BannerY", 0), nbt.getInt("BannerZ", 0));
 
         ColonyData d = new ColonyData(colonyId, ownerUuid, name, banner);
-        d.populationCap  = nbt.getInt("PopCap");
-        d.foodUnits      = nbt.getInt("FoodUnits");
-        d.sciencePoints  = nbt.getInt("Science");
-        d.daysSurvived   = nbt.getInt("Days");
-        d.nextWaveDayTime = nbt.getLong("NextWave");
+        d.populationCap  = nbt.getInt("PopCap", 0);
+        d.foodUnits      = nbt.getInt("FoodUnits", 0);
+        d.sciencePoints  = nbt.getInt("Science", 0);
+        d.daysSurvived   = nbt.getInt("Days", 0);
+        d.nextWaveDayTime = nbt.getLong("NextWave", 0L);
 
         if (nbt.contains("StockX")) {
             d.stockpilePos = new BlockPos(
-                    nbt.getInt("StockX"), nbt.getInt("StockY"), nbt.getInt("StockZ"));
+                    nbt.getInt("StockX", 0), nbt.getInt("StockY", 0), nbt.getInt("StockZ", 0));
         }
 
-        NbtList colList = nbt.getList("Colonists", 10);
+        NbtList colList = nbt.getListOrEmpty("Colonists");
         for (int i = 0; i < colList.size(); i++) {
-            d.colonistUuids.add(colList.getCompound(i).getUuid("UUID"));
+            colList.getCompound(i).ifPresent(c ->
+                c.getIntArray("UUID").map(Uuids::toUuid).ifPresent(d.colonistUuids::add));
         }
 
         d.unlockedJobs.clear();
-        NbtList jobList = nbt.getList("UnlockedJobs", 8);
+        NbtList jobList = nbt.getListOrEmpty("UnlockedJobs");
         for (int i = 0; i < jobList.size(); i++) {
-            d.unlockedJobs.add(jobList.getString(i));
+            d.unlockedJobs.add(jobList.getString(i, ""));
         }
 
         return d;

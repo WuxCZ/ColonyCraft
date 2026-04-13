@@ -9,7 +9,9 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,16 +35,16 @@ public class ColonyMonsterEntity extends HostileEntity {
 
     public static DefaultAttributeContainer.Builder createMonsterAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.28)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
+                .add(EntityAttributes.MAX_HEALTH, 20.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.28)
+                .add(EntityAttributes.ATTACK_DAMAGE, 3.0)
+                .add(EntityAttributes.FOLLOW_RANGE, 48.0);
     }
 
     @Override
     protected void initGoals() {
         goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
-        goalSelector.add(2, new WalkTowardsNearestVillageGoal(this, 1));  // repurposed below
+        goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
         goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
 
         // Attack colonists & guards as secondary target
@@ -79,7 +81,7 @@ public class ColonyMonsterEntity extends HostileEntity {
             monster.colonyId = colony.getColonyId();
 
             // Scale HP
-            monster.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
+            monster.getAttributeInstance(EntityAttributes.MAX_HEALTH)
                    .setBaseValue(baseHp);
             monster.setHealth((float) baseHp);
 
@@ -92,21 +94,22 @@ public class ColonyMonsterEntity extends HostileEntity {
     public BlockPos getTargetBanner() { return targetBanner; }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
         if (targetBanner != null) {
-            nbt.putInt("TgtX", targetBanner.getX());
-            nbt.putInt("TgtY", targetBanner.getY());
-            nbt.putInt("TgtZ", targetBanner.getZ());
+            view.putInt("TgtX", targetBanner.getX());
+            view.putInt("TgtY", targetBanner.getY());
+            view.putInt("TgtZ", targetBanner.getZ());
         }
-        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("TgtX"))
-            targetBanner = new BlockPos(nbt.getInt("TgtX"), nbt.getInt("TgtY"), nbt.getInt("TgtZ"));
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        int tgtX = view.getInt("TgtX", Integer.MIN_VALUE);
+        if (tgtX != Integer.MIN_VALUE)
+            targetBanner = new BlockPos(tgtX, view.getInt("TgtY", 0), view.getInt("TgtZ", 0));
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }

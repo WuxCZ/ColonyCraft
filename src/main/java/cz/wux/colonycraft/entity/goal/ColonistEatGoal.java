@@ -37,24 +37,19 @@ public class ColonistEatGoal extends Goal {
 
     @Override
     public void tick() {
+        if (eatCooldown > 0) { eatCooldown--; return; }
         BlockPos sp = colonist.getStockpilePos();
         if (sp == null) return;
-        double distSq = colonist.getPos().squaredDistanceTo(sp.getX() + 0.5, sp.getY() + 0.5, sp.getZ() + 0.5);
+        double distSq = colonist.squaredDistanceTo(sp.getX() + 0.5, sp.getY() + 0.5, sp.getZ() + 0.5);
         if (distSq <= 4.0) {
             // Close enough to eat
-            StockpileBlockEntity stockpile = (StockpileBlockEntity) colonist.getWorld().getBlockEntity(sp);
+            StockpileBlockEntity stockpile = (StockpileBlockEntity) colonist.getEntityWorld().getBlockEntity(sp);
             if (stockpile != null && stockpile.consumeOneFoodItem()) {
                 colonist.resetHunger();
                 colonist.heal(4.0f); // eating restores health too
                 eatCooldown = 200;   // don't re-trigger eat goal for 10s
             }
         }
-    }
-
-    @Override
-    public void tick(long l) {
-        super.tick(l);
-        if (eatCooldown > 0) eatCooldown--;
     }
 
     @Override

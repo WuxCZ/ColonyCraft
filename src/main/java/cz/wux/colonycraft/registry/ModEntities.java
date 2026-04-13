@@ -9,6 +9,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class ModEntities {
@@ -18,21 +20,21 @@ public class ModEntities {
                     Identifier.of("colonycraft", "colonist"),
                     FabricEntityTypeBuilder.<ColonistEntity>create(SpawnGroup.CREATURE, ColonistEntity::new)
                             .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-                            .build());
+                            .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of("colonycraft", "colonist"))));
 
     public static final EntityType<GuardEntity> GUARD =
             Registry.register(Registries.ENTITY_TYPE,
                     Identifier.of("colonycraft", "guard"),
                     FabricEntityTypeBuilder.<GuardEntity>create(SpawnGroup.CREATURE, GuardEntity::new)
                             .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-                            .build());
+                            .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of("colonycraft", "guard"))));
 
     public static final EntityType<ColonyMonsterEntity> COLONY_MONSTER =
             Registry.register(Registries.ENTITY_TYPE,
                     Identifier.of("colonycraft", "colony_monster"),
                     FabricEntityTypeBuilder.<ColonyMonsterEntity>create(SpawnGroup.MONSTER, ColonyMonsterEntity::new)
                             .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-                            .build());
+                            .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of("colonycraft", "colony_monster"))));
 
     public static void initialize() {}
 }

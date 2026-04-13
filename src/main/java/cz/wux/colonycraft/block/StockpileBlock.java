@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.block;
 
+import com.mojang.serialization.MapCodec;
 import cz.wux.colonycraft.blockentity.StockpileBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,6 +23,11 @@ public class StockpileBlock extends BlockWithEntity {
     }
 
     @Override
+    public MapCodec<? extends BlockWithEntity> getCodec() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
@@ -34,7 +40,7 @@ public class StockpileBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos,
                                  PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) return ActionResult.SUCCESS;
+        if (world.isClient()) return ActionResult.SUCCESS;
 
         NamedScreenHandlerFactory factory = state.createScreenHandlerFactory(world, pos);
         if (factory != null) {
@@ -46,12 +52,12 @@ public class StockpileBlock extends BlockWithEntity {
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (!world.isClient && be instanceof StockpileBlockEntity stockpile) {
+        if (!world.isClient() && be instanceof StockpileBlockEntity stockpile) {
             // Drop all contents
             for (int i = 0; i < stockpile.size(); i++) {
                 net.minecraft.item.ItemStack stack = stockpile.getStack(i);
                 if (!stack.isEmpty()) {
-                    net.minecraft.item.ItemScatterer.spawn(world,
+                    net.minecraft.util.ItemScatterer.spawn(world,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                 }
             }

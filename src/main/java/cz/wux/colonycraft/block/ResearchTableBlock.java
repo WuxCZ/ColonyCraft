@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.block;
 
+import com.mojang.serialization.MapCodec;
 import cz.wux.colonycraft.blockentity.ResearchTableBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -14,6 +15,11 @@ public class ResearchTableBlock extends BlockWithEntity {
 
     public ResearchTableBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends BlockWithEntity> getCodec() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

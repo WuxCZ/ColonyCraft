@@ -1,12 +1,12 @@
 package cz.wux.colonycraft.block;
 
 import cz.wux.colonycraft.blockentity.ColonyBannerBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.hand.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,6 +23,11 @@ public class ColonyBannerBlock extends BlockWithEntity {
     }
 
     @Override
+    public MapCodec<? extends BlockWithEntity> getCodec() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
@@ -33,10 +38,10 @@ public class ColonyBannerBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onPlaced(World world, BlockPos pos, BlockState state,
+    public void onPlaced(World world, BlockPos pos, BlockState state,
                             @Nullable net.minecraft.entity.LivingEntity placer,
                             net.minecraft.item.ItemStack itemStack) {
-        if (!world.isClient && placer instanceof ServerPlayerEntity player) {
+        if (!world.isClient() && placer instanceof ServerPlayerEntity player) {
             BlockEntity be = world.getBlockEntity(pos);
             if (be instanceof ColonyBannerBlockEntity banner) {
                 banner.initColony(player);
@@ -50,7 +55,7 @@ public class ColonyBannerBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos,
                                  PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) return ActionResult.SUCCESS;
+        if (world.isClient()) return ActionResult.SUCCESS;
 
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof ColonyBannerBlockEntity banner) {

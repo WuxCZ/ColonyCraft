@@ -4,6 +4,7 @@ import cz.wux.colonycraft.blockentity.ColonyBannerBlockEntity;
 import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.blockentity.ResearchTableBlockEntity;
 import cz.wux.colonycraft.blockentity.StockpileBlockEntity;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -14,25 +15,25 @@ public class ModBlockEntities {
     public static final BlockEntityType<ColonyBannerBlockEntity> COLONY_BANNER =
             Registry.register(Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of("colonycraft", "colony_banner"),
-                    BlockEntityType.Builder.create(ColonyBannerBlockEntity::new,
+                    FabricBlockEntityTypeBuilder.create(ColonyBannerBlockEntity::new,
                             ModBlocks.COLONY_BANNER).build());
 
     public static final BlockEntityType<StockpileBlockEntity> STOCKPILE =
             Registry.register(Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of("colonycraft", "stockpile"),
-                    BlockEntityType.Builder.create(StockpileBlockEntity::new,
+                    FabricBlockEntityTypeBuilder.create(StockpileBlockEntity::new,
                             ModBlocks.STOCKPILE).build());
 
     public static final BlockEntityType<ResearchTableBlockEntity> RESEARCH_TABLE =
             Registry.register(Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of("colonycraft", "research_table"),
-                    BlockEntityType.Builder.create(ResearchTableBlockEntity::new,
+                    FabricBlockEntityTypeBuilder.create(ResearchTableBlockEntity::new,
                             ModBlocks.RESEARCH_TABLE).build());
 
     public static final BlockEntityType<JobBlockEntity> JOB_BLOCK =
             Registry.register(Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of("colonycraft", "job_block"),
-                    BlockEntityType.Builder.create(JobBlockEntity::new,
+                    FabricBlockEntityTypeBuilder.create(JobBlockEntity::new,
                             // All job blocks share this entity type
                             ModBlocks.WOODCUTTER_BENCH,
                             ModBlocks.FORESTER_HUT,

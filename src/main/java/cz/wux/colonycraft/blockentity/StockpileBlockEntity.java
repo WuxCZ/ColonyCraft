@@ -13,8 +13,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -182,16 +183,14 @@ public class StockpileBlockEntity extends BlockEntity
     // ── NBT ───────────────────────────────────────────────────────────────────
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.writeNbt(nbt, wrapperLookup);
-        Inventories.writeNbt(nbt, items, wrapperLookup);
-        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+    protected void writeData(WriteView view) {
+        Inventories.writeData(view, items);
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.readNbt(nbt, wrapperLookup);
-        Inventories.readNbt(nbt, items, wrapperLookup);
-        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+    protected void readData(ReadView view) {
+        Inventories.readData(view, items);
+        colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }

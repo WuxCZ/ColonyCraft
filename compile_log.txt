@@ -1,0 +1,1141 @@
+﻿To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+Fabric Loom: 1.16.1
+
+> Task :compileJava
+.\gradlew.bat : C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBan
+nerBlock.java:9: error: package net.minecraft.util.hand does not exist
+At line:1 char:150
++ ... "PATH","Machine"); .\gradlew.bat compileJava --no-daemon 2>&1 | Out-F ...
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\ColonyCraft\... does not exist 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+import net.minecraft.util.hand.Hand;
+                              ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:28: 
+error: cannot find symbol
+    private static final Type<ColonyManager> TYPE = new Type<>(
+                         ^
+  symbol:   class Type
+  location: class ColonyManager
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:19
+: error: ColonyBannerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class ColonyBannerBlock extends BlockWithEntity {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:36
+: error: onPlaced(World,BlockPos,BlockState,LivingEntity,ItemStack) in 
+ColonyBannerBlock cannot override 
+onPlaced(World,BlockPos,BlockState,LivingEntity,ItemStack) in Block
+    protected void onPlaced(World world, BlockPos pos, BlockState state,
+                   ^
+  attempting to assign weaker access privileges; was public
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:39
+: error: isClient has private access in World
+        if (!world.isClient && placer instanceof ServerPlayerEntity player) {
+                  ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:53
+: error: isClient has private access in World
+        if (world.isClient) return ActionResult.SUCCESS;
+                 ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\JobBlock.java:55: 
+error: isClient has private access in World
+        if (world.isClient) return ActionResult.SUCCESS;
+                 ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\AlchemistBlock.java:3
+: error: AlchemistBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class AlchemistBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BeekeeperBlock.java:3
+: error: BeekeeperBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class BeekeeperBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BerryFarmerBlock.java
+:3: error: BerryFarmerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class BerryFarmerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BlacksmithBlock.java:
+3: error: BlacksmithBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class BlacksmithBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ChickenFarmerBlock.ja
+va:3: error: ChickenFarmerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class ChickenFarmerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ComposterJobBlock.jav
+a:3: error: ComposterJobBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class ComposterJobBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\CookBlock.java:3: 
+error: CookBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class CookBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FarmerBlock.java:3: 
+error: FarmerBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class FarmerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FishermanBlock.java:3
+: error: FishermanBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class FishermanBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FletcherBlock.java:3:
+ error: FletcherBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class FletcherBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ForesterBlock.java:3:
+ error: ForesterBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class ForesterBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GlassblowerBlock.java
+:3: error: GlassblowerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class GlassblowerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GrinderBlock.java:3: 
+error: GrinderBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class GrinderBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GuardTowerBlock.java:
+3: error: GuardTowerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class GuardTowerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\MinerBlock.java:3: 
+error: MinerBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class MinerBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\PotteryBlock.java:3: 
+error: PotteryBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class PotteryBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ResearcherBlock.java:
+3: error: ResearcherBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class ResearcherBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\SmelterBlock.java:3: 
+error: SmelterBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class SmelterBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\StonemasonBlock.java:
+3: error: StonemasonBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class StonemasonBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\TailorBlock.java:3: 
+error: TailorBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class TailorBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\TannersBlock.java:3: 
+error: TannersBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class TannersBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\WaterGathererBlock.ja
+va:3: error: WaterGathererBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class WaterGathererBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\WoodcutterBlock.java:
+3: error: WoodcutterBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class WoodcutterBlock extends JobBlock {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ResearchTableBlock.java:1
+3: error: ResearchTableBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+public class ResearchTableBlock extends BlockWithEntity {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:18: 
+error: StockpileBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+public class StockpileBlock extends BlockWithEntity {
+       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:37: 
+error: isClient has private access in World
+        if (world.isClient) return ActionResult.SUCCESS;
+                 ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:49: 
+error: isClient has private access in World
+        if (!world.isClient && be instanceof StockpileBlockEntity stockpile) {
+                  ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:54: 
+error: cannot find symbol
+                    net.minecraft.item.ItemScatterer.spawn(world,
+                                      ^
+  symbol:   class ItemScatterer
+  location: package net.minecraft.item
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:68: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:70: error: cannot find symbol
+        super.writeNbt(nbt, wrapperLookup);
+             ^
+  symbol: method writeNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:71: error: cannot find symbol
+        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                 ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:74: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:76: error: cannot find symbol
+        super.readNbt(nbt, wrapperLookup);
+             ^
+  symbol: method readNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:77: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+               ^
+  symbol:   method containsUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlockEn
+tity.java:77: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                        ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:73: 
+error: cannot find symbol
+        nbt.putUuid("ColonyId",   colonyId);
+           ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:74: 
+error: cannot find symbol
+        nbt.putUuid("OwnerUuid",  ownerUuid);
+           ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:94: 
+error: cannot find symbol
+            c.putUuid("UUID", u);
+             ^
+  symbol:   method putUuid(String,UUID)
+  location: variable c of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:107: 
+error: cannot find symbol
+        UUID colonyId  = nbt.getUuid("ColonyId");
+                            ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:108: 
+error: cannot find symbol
+        UUID ownerUuid = nbt.getUuid("OwnerUuid");
+                            ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:109: 
+error: incompatible types: Optional<String> cannot be converted to String
+        String name    = nbt.getString("OwnerName");
+                                      ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:111: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+                nbt.getInt("BannerX"), nbt.getInt("BannerY"), 
+nbt.getInt("BannerZ"));
+                          ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:114: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+        d.populationCap  = nbt.getInt("PopCap");
+                                     ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:115: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+        d.foodUnits      = nbt.getInt("FoodUnits");
+                                     ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:116: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+        d.sciencePoints  = nbt.getInt("Science");
+                                     ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:117: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+        d.daysSurvived   = nbt.getInt("Days");
+                                     ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:118: 
+error: incompatible types: Optional<Long> cannot be converted to long
+        d.nextWaveDayTime = nbt.getLong("NextWave");
+                                       ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:122: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+                    nbt.getInt("StockX"), nbt.getInt("StockY"), 
+nbt.getInt("StockZ"));
+                              ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:125: 
+error: method getList in class NbtCompound cannot be applied to given types;
+        NbtList colList = nbt.getList("Colonists", 10);
+                             ^
+  required: String
+  found:    String,int
+  reason: actual and formal argument lists differ in length
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:127: 
+error: cannot find symbol
+            d.colonistUuids.add(colList.getCompound(i).getUuid("UUID"));
+                                                      ^
+  symbol:   method getUuid(String)
+  location: class Optional<NbtCompound>
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:131: 
+error: method getList in class NbtCompound cannot be applied to given types;
+        NbtList jobList = nbt.getList("UnlockedJobs", 8);
+                             ^
+  required: String
+  found:    String,int
+  reason: actual and formal argument lists differ in length
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:133: 
+error: incompatible types: Optional<String> cannot be converted to String
+            d.unlockedJobs.add(jobList.getString(i));
+                                                ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:51: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:53: error: cannot find symbol
+        super.writeNbt(nbt, wrapperLookup);
+             ^
+  symbol: method writeNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:55: error: cannot find symbol
+        if (assignedColonistId != null) nbt.putUuid("AssignedColonist", 
+assignedColonistId);
+                                           ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:56: error: cannot find symbol
+        if (colonyId != null)           nbt.putUuid("ColonyId", colonyId);
+                                           ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:59: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:61: error: cannot find symbol
+        super.readNbt(nbt, wrapperLookup);
+             ^
+  symbol: method readNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:62: error: no suitable method found for valueOf(Optional<String>)
+        try { job = ColonistJob.valueOf(nbt.getString("Job")); }
+                               ^
+    method Enum.<T>valueOf(Class<T>,String) is not applicable
+      (cannot infer type-variable(s) T
+        (actual and formal argument lists differ in length))
+    method ColonistJob.valueOf(String) is not applicable
+      (argument mismatch; Optional<String> cannot be converted to String)
+  where T is a type-variable:
+    T extends Enum<T> declared in method <T>valueOf(Class<T>,String)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:64: error: cannot find symbol
+        if (nbt.containsUuid("AssignedColonist")) assignedColonistId = 
+nbt.getUuid("AssignedColonist");
+               ^
+  symbol:   method containsUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:64: error: cannot find symbol
+        if (nbt.containsUuid("AssignedColonist")) assignedColonistId = 
+nbt.getUuid("AssignedColonist");
+                                                                          ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:65: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId"))         colonyId           = 
+nbt.getUuid("ColonyId");
+               ^
+  symbol:   method containsUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.java
+:65: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId"))         colonyId           = 
+nbt.getUuid("ColonyId");
+                                                                          ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:37: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:39: error: cannot find symbol
+        super.writeNbt(nbt, wrapperLookup);
+             ^
+  symbol: method writeNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:41: error: cannot find symbol
+        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                 ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:44: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:46: error: cannot find symbol
+        super.readNbt(nbt, wrapperLookup);
+             ^
+  symbol: method readNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:47: error: incompatible types: Optional<Integer> cannot be 
+converted to int
+        pendingScience = nbt.getInt("PendingScience");
+                                   ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:48: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+               ^
+  symbol:   method containsUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBlockE
+ntity.java:48: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                        ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:184: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:186: error: cannot find symbol
+        super.writeNbt(nbt, wrapperLookup);
+             ^
+  symbol: method writeNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:187: error: cannot find symbol
+        Inventories.writeNbt(nbt, items, wrapperLookup);
+                   ^
+  symbol:   method writeNbt(NbtCompound,DefaultedList<ItemStack>,WrapperLookup)
+  location: class Inventories
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:188: error: cannot find symbol
+        if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                 ^
+  symbol:   method putUuid(String,UUID)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:191: error: method does not override or implement a method from a 
+supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:193: error: cannot find symbol
+        super.readNbt(nbt, wrapperLookup);
+             ^
+  symbol: method readNbt(NbtCompound,WrapperLookup)
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:194: error: cannot find symbol
+        Inventories.readNbt(nbt, items, wrapperLookup);
+                   ^
+  symbol:   method readNbt(NbtCompound,DefaultedList<ItemStack>,WrapperLookup)
+  location: class Inventories
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:195: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+               ^
+  symbol:   method containsUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEntit
+y.java:195: error: cannot find symbol
+        if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                        ^
+  symbol:   method getUuid(String)
+  location: variable nbt of type NbtCompound
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:28: 
+error: cannot find symbol
+    private static final Type<ColonyManager> TYPE = new Type<>(
+                                                        ^
+  symbol:   class Type
+  location: class ColonyManager
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:44: 
+error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:56: 
+error: method getList in class NbtCompound cannot be applied to given types;
+        NbtList list = nbt.getList("Colonies", 10);
+                          ^
+  required: String
+  found:    String,int
+  reason: actual and formal argument lists differ in length
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:58: 
+error: incompatible types: Optional<NbtCompound> cannot be converted to 
+NbtCompound
+            ColonyData cd = ColonyData.fromNbt(list.getCompound(i), 
+wrapperLookup);
+                                                               ^
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:60: 
+error: cannot find symbol
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
+                                     ^
+  symbol:   variable GENERIC_KNOCKBACK_RESISTANCE
+  location: class EntityAttributes
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:59: 
+error: cannot find symbol
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
+                                     ^
+  symbol:   variable GENERIC_FOLLOW_RANGE
+  location: class EntityAttributes
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:58: 
+error: cannot find symbol
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
+                                     ^
+  symbol:   variable GENERIC_MOVEMENT_SPEED
+  location: class EntityAttributes
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:57: 
+error: cannot find symbol
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
+                                     ^
+  symbol:   variable GENERIC_MAX_HEALTH
+  location: class EntityAttributes
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:86: 
+error: cannot find symbol
+        if (getWorld().isClient) return;
+            ^
+  symbol:   method getWorld()
+  location: class ColonistEntity
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:91: 
+error: method kill in class LivingEntity cannot be applied to given types;
+            this.kill();
+                ^
+  required: ServerWorld
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:127:
+ error: cannot find symbol
+        var be = getWorld().getBlockEntity(stockpilePos);
+                 ^
+  symbol:   method getWorld()
+  location: class ColonistEntity
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:134:
+ error: cannot find symbol
+        var be = getWorld().getBlockEntity(jobBlockPos);
+                 ^
+  symbol:   method getWorld()
+  location: class ColonistEntity
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:187:
+ error: method does not override or implement a method from a supertype
+    @Override
+    ^
+Note: 
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\registry\ModEntities.java uses 
+or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to 
+get full output
+100 errors
+
+> Task :compileJava FAILED
+
+[Incubating] Problems report is available at: file:///C:/ColonyCraft/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:125: 
+error: method getList in class NbtCompound cannot be applied to given types;
+          NbtList colList = nbt.getList("Colonists", 10);
+                               ^
+    required: String
+    found:    String,int
+    reason: actual and formal argument lists differ in length
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:131: 
+error: method getList in class NbtCompound cannot be applied to given types;
+          NbtList jobList = nbt.getList("UnlockedJobs", 8);
+                               ^
+    required: String
+    found:    String,int
+    reason: actual and formal argument lists differ in length
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:56: 
+error: method getList in class NbtCompound cannot be applied to given types;
+          NbtList list = nbt.getList("Colonies", 10);
+                            ^
+    required: String
+    found:    String,int
+    reason: actual and formal argument lists differ in length
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:91: 
+error: method kill in class LivingEntity cannot be applied to given types;
+              this.kill();
+                  ^
+    required: ServerWorld
+    found:    no arguments
+    reason: actual and formal argument lists differ in length
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:62: error: no suitable method found for valueOf(Optional<String>)
+          try { job = ColonistJob.valueOf(nbt.getString("Job")); }
+                                 ^
+      method Enum.<T>valueOf(Class<T>,String) is not applicable
+        (cannot infer type-variable(s) T
+          (actual and formal argument lists differ in length))
+      method ColonistJob.valueOf(String) is not applicable
+        (argument mismatch; Optional<String> cannot be converted to String)
+    where T is a type-variable:
+      T extends Enum<T> declared in method <T>valueOf(Class<T>,String)
+  Note: Recompile with -Xlint:deprecation for details.
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:
+36: error: onPlaced(World,BlockPos,BlockState,LivingEntity,ItemStack) in 
+ColonyBannerBlock cannot override 
+onPlaced(World,BlockPos,BlockState,LivingEntity,ItemStack) in Block
+      protected void onPlaced(World world, BlockPos pos, BlockState state,
+                     ^
+    attempting to assign weaker access privileges; was public
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:28: 
+error: cannot find symbol
+      private static final Type<ColonyManager> TYPE = new Type<>(
+                           ^
+    symbol:   class Type
+    location: class ColonyManager
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:54: 
+error: cannot find symbol
+                      net.minecraft.item.ItemScatterer.spawn(world,
+                                        ^
+    symbol:   class ItemScatterer
+    location: package net.minecraft.item
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:28: 
+error: cannot find symbol
+      private static final Type<ColonyManager> TYPE = new Type<>(
+                                                          ^
+    symbol:   class Type
+    location: class ColonyManager
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:60: 
+error: cannot find symbol
+                  .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
+                                       ^
+    symbol:   variable GENERIC_KNOCKBACK_RESISTANCE
+    location: class EntityAttributes
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:59: 
+error: cannot find symbol
+                  .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
+                                       ^
+    symbol:   variable GENERIC_FOLLOW_RANGE
+    location: class EntityAttributes
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:58: 
+error: cannot find symbol
+                  .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
+                                       ^
+    symbol:   variable GENERIC_MOVEMENT_SPEED
+    location: class EntityAttributes
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:57: 
+error: cannot find symbol
+                  .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
+                                       ^
+    symbol:   variable GENERIC_MAX_HEALTH
+    location: class EntityAttributes
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:
+39: error: isClient has private access in World
+          if (!world.isClient && placer instanceof ServerPlayerEntity player) {
+                    ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:
+53: error: isClient has private access in World
+          if (world.isClient) return ActionResult.SUCCESS;
+                   ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\JobBlock.java:55: 
+error: isClient has private access in World
+          if (world.isClient) return ActionResult.SUCCESS;
+                   ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:37: 
+error: isClient has private access in World
+          if (world.isClient) return ActionResult.SUCCESS;
+                   ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:49: 
+error: isClient has private access in World
+          if (!world.isClient && be instanceof StockpileBlockEntity stockpile) 
+{
+                    ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:68: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:74: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:51: error: method does not override or implement a method from a supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:59: error: method does not override or implement a method from a supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:37: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:44: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:184: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:191: error: method does not override or implement a method from a 
+supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:44: 
+error: method does not override or implement a method from a supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:18
+7: error: method does not override or implement a method from a supertype
+      @Override
+      ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:71: error: cannot find symbol
+          if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                   ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:77: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                 ^
+    symbol:   method containsUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:77: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                          ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:73: 
+error: cannot find symbol
+          nbt.putUuid("ColonyId",   colonyId);
+             ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:74: 
+error: cannot find symbol
+          nbt.putUuid("OwnerUuid",  ownerUuid);
+             ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:94: 
+error: cannot find symbol
+              c.putUuid("UUID", u);
+               ^
+    symbol:   method putUuid(String,UUID)
+    location: variable c of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:107: 
+error: cannot find symbol
+          UUID colonyId  = nbt.getUuid("ColonyId");
+                              ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:108: 
+error: cannot find symbol
+          UUID ownerUuid = nbt.getUuid("OwnerUuid");
+                              ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:127: 
+error: cannot find symbol
+              d.colonistUuids.add(colList.getCompound(i).getUuid("UUID"));
+                                                        ^
+    symbol:   method getUuid(String)
+    location: class Optional<NbtCompound>
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:55: error: cannot find symbol
+          if (assignedColonistId != null) nbt.putUuid("AssignedColonist", 
+assignedColonistId);
+                                             ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:56: error: cannot find symbol
+          if (colonyId != null)           nbt.putUuid("ColonyId", colonyId);
+                                             ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:64: error: cannot find symbol
+          if (nbt.containsUuid("AssignedColonist")) assignedColonistId = 
+nbt.getUuid("AssignedColonist");
+                 ^
+    symbol:   method containsUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:64: error: cannot find symbol
+          if (nbt.containsUuid("AssignedColonist")) assignedColonistId = 
+nbt.getUuid("AssignedColonist");
+                                                                            ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:65: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId"))         colonyId           = 
+nbt.getUuid("ColonyId");
+                 ^
+    symbol:   method containsUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:65: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId"))         colonyId           = 
+nbt.getUuid("ColonyId");
+                                                                            ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:41: error: cannot find symbol
+          if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                   ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:48: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                 ^
+    symbol:   method containsUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:48: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                          ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:187: error: cannot find symbol
+          Inventories.writeNbt(nbt, items, wrapperLookup);
+                     ^
+    symbol:   method 
+writeNbt(NbtCompound,DefaultedList<ItemStack>,WrapperLookup)
+    location: class Inventories
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:188: error: cannot find symbol
+          if (colonyId != null) nbt.putUuid("ColonyId", colonyId);
+                                   ^
+    symbol:   method putUuid(String,UUID)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:194: error: cannot find symbol
+          Inventories.readNbt(nbt, items, wrapperLookup);
+                     ^
+    symbol:   method 
+readNbt(NbtCompound,DefaultedList<ItemStack>,WrapperLookup)
+    location: class Inventories
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:195: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                 ^
+    symbol:   method containsUuid(String)
+    location: variable nbt of type NbtCompound
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:195: error: cannot find symbol
+          if (nbt.containsUuid("ColonyId")) colonyId = nbt.getUuid("ColonyId");
+                                                          ^
+    symbol:   method getUuid(String)
+    location: variable nbt of type NbtCompound
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:86: 
+error: cannot find symbol
+          if (getWorld().isClient) return;
+              ^
+    symbol:   method getWorld()
+    location: class ColonistEntity
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:12
+7: error: cannot find symbol
+          var be = getWorld().getBlockEntity(stockpilePos);
+                   ^
+    symbol:   method getWorld()
+    location: class ColonistEntity
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\entity\ColonistEntity.java:13
+4: error: cannot find symbol
+          var be = getWorld().getBlockEntity(jobBlockPos);
+                   ^
+    symbol:   method getWorld()
+    location: class ColonistEntity
+  Note: 
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\registry\ModEntities.java uses 
+or overrides a deprecated API.
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:70: error: cannot find symbol
+          super.writeNbt(nbt, wrapperLookup);
+               ^
+    symbol: method writeNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ColonyBannerBlock
+Entity.java:76: error: cannot find symbol
+          super.readNbt(nbt, wrapperLookup);
+               ^
+    symbol: method readNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:53: error: cannot find symbol
+          super.writeNbt(nbt, wrapperLookup);
+               ^
+    symbol: method writeNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\JobBlockEntity.ja
+va:61: error: cannot find symbol
+          super.readNbt(nbt, wrapperLookup);
+               ^
+    symbol: method readNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:39: error: cannot find symbol
+          super.writeNbt(nbt, wrapperLookup);
+               ^
+    symbol: method writeNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:46: error: cannot find symbol
+          super.readNbt(nbt, wrapperLookup);
+               ^
+    symbol: method readNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:186: error: cannot find symbol
+          super.writeNbt(nbt, wrapperLookup);
+               ^
+    symbol: method writeNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\StockpileBlockEnt
+ity.java:193: error: cannot find symbol
+          super.readNbt(nbt, wrapperLookup);
+               ^
+    symbol: method readNbt(NbtCompound,WrapperLookup)
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:109: 
+error: incompatible types: Optional<String> cannot be converted to String
+          String name    = nbt.getString("OwnerName");
+                                        ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:111: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+                  nbt.getInt("BannerX"), nbt.getInt("BannerY"), 
+nbt.getInt("BannerZ"));
+                            ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:114: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+          d.populationCap  = nbt.getInt("PopCap");
+                                       ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:115: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+          d.foodUnits      = nbt.getInt("FoodUnits");
+                                       ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:116: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+          d.sciencePoints  = nbt.getInt("Science");
+                                       ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:117: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+          d.daysSurvived   = nbt.getInt("Days");
+                                       ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:118: 
+error: incompatible types: Optional<Long> cannot be converted to long
+          d.nextWaveDayTime = nbt.getLong("NextWave");
+                                         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:122: 
+error: incompatible types: Optional<Integer> cannot be converted to int
+                      nbt.getInt("StockX"), nbt.getInt("StockY"), 
+nbt.getInt("StockZ"));
+                                ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyData.java:133: 
+error: incompatible types: Optional<String> cannot be converted to String
+              d.unlockedJobs.add(jobList.getString(i));
+                                                  ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\blockentity\ResearchTableBloc
+kEntity.java:47: error: incompatible types: Optional<Integer> cannot be 
+converted to int
+          pendingScience = nbt.getInt("PendingScience");
+                                     ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\data\ColonyManager.java:58: 
+error: incompatible types: Optional<NbtCompound> cannot be converted to 
+NbtCompound
+              ColonyData cd = ColonyData.fromNbt(list.getCompound(i), 
+wrapperLookup);
+                                                                 ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:
+19: error: ColonyBannerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class ColonyBannerBlock extends BlockWithEntity {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\AlchemistBlock.java
+:3: error: AlchemistBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class AlchemistBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BeekeeperBlock.java
+:3: error: BeekeeperBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class BeekeeperBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BerryFarmerBlock.ja
+va:3: error: BerryFarmerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class BerryFarmerBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\BlacksmithBlock.jav
+a:3: error: BlacksmithBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class BlacksmithBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ChickenFarmerBlock.
+java:3: error: ChickenFarmerBlock is not abstract and does not override 
+abstract method getCodec() in BlockWithEntity
+  public class ChickenFarmerBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ComposterJobBlock.j
+ava:3: error: ComposterJobBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class ComposterJobBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\CookBlock.java:3: 
+error: CookBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class CookBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FarmerBlock.java:3: 
+error: FarmerBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class FarmerBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FishermanBlock.java
+:3: error: FishermanBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class FishermanBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\FletcherBlock.java:
+3: error: FletcherBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class FletcherBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ForesterBlock.java:
+3: error: ForesterBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class ForesterBlock extends JobBlock {
+         ^
+1 actionable task: 1 executed
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GlassblowerBlock.ja
+va:3: error: GlassblowerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class GlassblowerBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GrinderBlock.java:3: 
+error: GrinderBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class GrinderBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\GuardTowerBlock.jav
+a:3: error: GuardTowerBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class GuardTowerBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\MinerBlock.java:3: 
+error: MinerBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class MinerBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\PotteryBlock.java:3: 
+error: PotteryBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class PotteryBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\ResearcherBlock.jav
+a:3: error: ResearcherBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class ResearcherBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\SmelterBlock.java:3: 
+error: SmelterBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class SmelterBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\StonemasonBlock.jav
+a:3: error: StonemasonBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class StonemasonBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\TailorBlock.java:3: 
+error: TailorBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class TailorBlock extends JobBlock {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\TannersBlock.java:3: 
+error: TannersBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class TannersBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\WaterGathererBlock.
+java:3: error: WaterGathererBlock is not abstract and does not override 
+abstract method getCodec() in BlockWithEntity
+  public class WaterGathererBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\job\WoodcutterBlock.jav
+a:3: error: WoodcutterBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class WoodcutterBlock extends JobBlock {
+         ^
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ResearchTableBlock.java
+:13: error: ResearchTableBlock is not abstract and does not override abstract 
+method getCodec() in BlockWithEntity
+  public class ResearchTableBlock extends BlockWithEntity {
+         ^
+  
+C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\StockpileBlock.java:18: 
+error: StockpileBlock is not abstract and does not override abstract method 
+getCodec() in BlockWithEntity
+  public class StockpileBlock extends BlockWithEntity {
+         ^
+  Note: Some messages have been simplified; recompile with -Xdiags:verbose to 
+get full output
+  C:\ColonyCraft\src\main\java\cz\wux\colonycraft\block\ColonyBannerBlock.java:
+9: error: package net.minecraft.util.hand does not exist
+  import net.minecraft.util.hand.Hand;
+                                ^
+  100 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by 
+Develocity).
+
+BUILD FAILED in 19s

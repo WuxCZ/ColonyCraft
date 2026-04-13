@@ -1,12 +1,13 @@
 package cz.wux.colonycraft.data;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 
 import java.util.*;
 
@@ -25,14 +26,20 @@ public class ColonyManager extends PersistentState {
 
     // ── PersistentState factory ───────────────────────────────────────────────
 
-    private static final Type<ColonyManager> TYPE = new Type<>(
+    private static final Codec<ColonyManager> CODEC = NbtCompound.CODEC.xmap(
+            ColonyManager::fromNbt,
+            ColonyManager::toNbt
+    );
+
+    private static final PersistentStateType<ColonyManager> TYPE = new PersistentStateType<>(
+            DATA_KEY,
             ColonyManager::new,
-            (nbt, wrapperLookup) -> fromNbt(nbt, wrapperLookup),
+            CODEC,
             null
     );
 
     public static ColonyManager get(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(TYPE, DATA_KEY);
+        return world.getPersistentStateManager().getOrCreate(TYPE);
     }
 
     public static ColonyManager get(MinecraftServer server) {
@@ -41,21 +48,21 @@ public class ColonyManager extends PersistentState {
 
     // ── Serialization ─────────────────────────────────────────────────────────
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+    private NbtCompound toNbt() {
+        NbtCompound nbt = new NbtCompound();
         NbtList list = new NbtList();
         for (ColonyData cd : colonies.values()) {
-            list.add(cd.toNbt(wrapperLookup));
+            list.add(cd.toNbt());
         }
         nbt.put("Colonies", list);
         return nbt;
     }
 
-    private static ColonyManager fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+    private static ColonyManager fromNbt(NbtCompound nbt) {
         ColonyManager mgr = new ColonyManager();
-        NbtList list = nbt.getList("Colonies", 10);
+        NbtList list = nbt.getListOrEmpty("Colonies");
         for (int i = 0; i < list.size(); i++) {
-            ColonyData cd = ColonyData.fromNbt(list.getCompound(i), wrapperLookup);
+            ColonyData cd = ColonyData.fromNbt(list.getCompoundOrEmpty(i));
             mgr.colonies.put(cd.getColonyId(), cd);
         }
         return mgr;

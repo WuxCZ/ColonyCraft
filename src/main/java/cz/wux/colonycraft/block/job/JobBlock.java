@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.block.job;
 
+import com.mojang.serialization.MapCodec;
 import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.data.ColonistJob;
 import net.minecraft.block.*;
@@ -38,6 +39,11 @@ public abstract class JobBlock extends BlockWithEntity {
     public abstract ColonistJob getJob();
 
     @Override
+    public MapCodec<? extends BlockWithEntity> getCodec() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
@@ -52,7 +58,7 @@ public abstract class JobBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos,
                                  PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) return ActionResult.SUCCESS;
+        if (world.isClient()) return ActionResult.SUCCESS;
 
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof JobBlockEntity job) {

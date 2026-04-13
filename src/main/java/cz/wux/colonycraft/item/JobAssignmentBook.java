@@ -23,7 +23,7 @@ public class JobAssignmentBook extends Item {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (world.isClient) return ActionResult.SUCCESS;
+        if (world.isClient()) return ActionResult.SUCCESS;
 
         HitResult hit = user.raycast(5.0, 0, false);
         if (hit instanceof BlockHitResult blockHit) {

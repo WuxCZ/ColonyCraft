@@ -5,6 +5,7 @@ import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.util.Identifier;
 
 /**
@@ -12,7 +13,7 @@ import net.minecraft.util.Identifier;
  * The texture at {@code assets/colonycraft/textures/entity/colonist.png} is a
  * 64×64 skin-format PNG.
  */
-public class ColonistEntityRenderer extends BipedEntityRenderer<ColonistEntity, BipedEntityModel<ColonistEntity>> {
+public class ColonistEntityRenderer extends BipedEntityRenderer<ColonistEntity, BipedEntityRenderState, BipedEntityModel<BipedEntityRenderState>> {
 
     private static final Identifier TEXTURE =
             Identifier.of("colonycraft", "textures/entity/colonist.png");
@@ -23,7 +24,12 @@ public class ColonistEntityRenderer extends BipedEntityRenderer<ColonistEntity, 
     }
 
     @Override
-    public Identifier getTexture(ColonistEntity entity) {
+    public BipedEntityRenderState createRenderState() {
+        return new BipedEntityRenderState();
+    }
+
+    @Override
+    public Identifier getTexture(BipedEntityRenderState state) {
         return TEXTURE;
     }
 }

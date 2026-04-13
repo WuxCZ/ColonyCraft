@@ -4,8 +4,9 @@ import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.Uuids;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -49,19 +50,17 @@ public class JobBlockEntity extends BlockEntity {
     // ── NBT ───────────────────────────────────────────────────────────────────
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.writeNbt(nbt, wrapperLookup);
-        nbt.putString("Job", job.name());
-        if (assignedColonistId != null) nbt.putUuid("AssignedColonist", assignedColonistId);
-        if (colonyId != null)           nbt.putUuid("ColonyId", colonyId);
+    protected void writeData(WriteView view) {
+        view.putString("Job", job.name());
+        if (assignedColonistId != null) view.putIntArray("AssignedColonist", Uuids.toIntArray(assignedColonistId));
+        if (colonyId != null)           view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        super.readNbt(nbt, wrapperLookup);
-        try { job = ColonistJob.valueOf(nbt.getString("Job")); }
+    protected void readData(ReadView view) {
+        try { job = ColonistJob.valueOf(view.getString("Job", "UNEMPLOYED")); }
         catch (IllegalArgumentException ignored) { job = ColonistJob.UNEMPLOYED; }
-        if (nbt.containsUuid("AssignedColonist")) assignedColonistId = nbt.getUuid("AssignedColonist");
-        if (nbt.containsUuid("ColonyId"))         colonyId           = nbt.getUuid("ColonyId");
+        assignedColonistId = view.getOptionalIntArray("AssignedColonist").map(Uuids::toUuid).orElse(null);
+        colonyId           = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }
