@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "colonycraft",
+  "version": "${version}",
+  "name": "ColonyCraft",
+  "description": "Colony Survival mechanics recreated in Minecraft! Place a Colony Banner, assign Colonists to Jobs, collect resources automatically and defend your colony from nightly monster hordes.",
+  "authors": [
+    "Wux"
+  ],
+  "contact": {
+    "sources": "https://github.com/WuxCZ/colonycraft"
+  },
+  "license": "MIT",
+  "icon": "assets/colonycraft/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "cz.wux.colonycraft.ColonyCraftMod"
+    ],
+    "client": [
+      "cz.wux.colonycraft.client.ColonyCraftClient"
+    ]
+  },
+  "mixins": [
+    "colonycraft.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  }
+}

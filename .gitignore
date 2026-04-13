@@ -1,0 +1,23 @@
+# Compiled output
+build/
+.gradle/
+out/
+
+# Gradle wrapper cache
+.gradle/
+
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+*.classpath
+*.project
+*.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Run configs
+run/

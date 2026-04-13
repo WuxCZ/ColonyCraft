@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "minecraft:block/beehive_front",
+    "side": "minecraft:block/beehive_side",
+    "top": "minecraft:block/beehive_end"
+  }
+}
