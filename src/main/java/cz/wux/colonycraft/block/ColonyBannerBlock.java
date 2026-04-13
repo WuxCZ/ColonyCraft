@@ -1,11 +1,16 @@
 package cz.wux.colonycraft.block;
 
 import cz.wux.colonycraft.blockentity.ColonyBannerBlockEntity;
+import cz.wux.colonycraft.data.ColonyManager;
+import cz.wux.colonycraft.entity.ColonistEntity;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -48,20 +53,30 @@ public class ColonyBannerBlock extends BlockWithEntity {
                 player.sendMessage(
                         net.minecraft.text.Text.translatable("message.colonycraft.colony_founded",
                                 player.getName().getString()), false);
+
+                // Give starting resources to player (starter kit)
+                giveStarterKit(player);
+
+                // Spawn first 2 colonists immediately so the colony feels alive
+                if (world instanceof ServerWorld sw) {
+                    ColonyManager mgr = ColonyManager.get(sw);
+                    mgr.getColonyAtBanner(pos).ifPresent(colony -> {
+                        // Give colony 60 starting food units
+                        colony.addFood(60);
+                        mgr.markDirty();
+                        // Spawn 2 colonists
+                        ColonistEntity.spawnForColony(sw, colony, pos, mgr);
+                        ColonistEntity.spawnForColony(sw, colony, pos, mgr);
+                    });
+                }
             }
         }
     }
 
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos,
-                                 PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient()) return ActionResult.SUCCESS;
-
-        BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof ColonyBannerBlockEntity banner) {
-            player.openHandledScreen(banner);
-        }
-        return ActionResult.CONSUME;
+    private static void giveStarterKit(ServerPlayerEntity player) {
+        player.getInventory().insertStack(new ItemStack(Items.BREAD, 16));
+        player.getInventory().insertStack(new ItemStack(Items.WHEAT_SEEDS, 16));
+        player.getInventory().insertStack(new ItemStack(Items.OAK_SAPLING, 8));
     }
 
     @Override

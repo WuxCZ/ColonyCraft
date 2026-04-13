@@ -69,14 +69,19 @@ public class ColonistEntity extends PathAwareEntity {
         goalSelector.add(1, new ReturnToColonyGoal(this));
         // Priority 2 – eat food if hungry
         goalSelector.add(2, new ColonistEatGoal(this));
-        // Priority 3 – work at job block
-        goalSelector.add(3, new WorkAtJobGoal(this));
-        // Priority 4 – wander near home
-        goalSelector.add(4, new WanderAroundFarGoal(this, 0.8));
-        // Priority 5 – look at nearby player
-        goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        // Priority 6 – look around randomly
-        goalSelector.add(6, new LookAroundGoal(this));
+        // Priority 3a – physical jobs: these check job in canStart()
+        goalSelector.add(3, new ChopTreeGoal(this));       // WOODCUTTER
+        goalSelector.add(3, new HarvestCropsGoal(this));   // FARMER
+        goalSelector.add(3, new MineBlocksGoal(this));     // MINER
+        goalSelector.add(3, new PlantSaplingsGoal(this));  // FORESTER
+        // Priority 3b – recipe-based jobs (cook, smelter, etc.)
+        goalSelector.add(4, new WorkAtJobGoal(this));
+        // Priority 5 – wander near home
+        goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
+        // Priority 6 – look at nearby player
+        goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        // Priority 7 – look around randomly
+        goalSelector.add(7, new LookAroundGoal(this));
     }
 
     // ── Tick ──────────────────────────────────────────────────────────────────

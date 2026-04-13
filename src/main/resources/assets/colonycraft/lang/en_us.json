@@ -31,5 +31,6 @@
   "message.colonycraft.colony_founded": "§aColony founded! Welcome, %s. Place job blocks nearby and colonists will join.",
   "entity.colonycraft.colonist": "Colonist",
   "entity.colonycraft.guard": "Colony Guard",
-  "entity.colonycraft.colony_monster": "Colony Raider"
+  "entity.colonycraft.colony_monster": "Colony Raider",
+  "itemgroup.colonycraft.main": "ColonyCraft"
 }

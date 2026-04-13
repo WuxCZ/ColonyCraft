@@ -36,6 +36,7 @@ public class ColonyCraftMod implements ModInitializer {
         // Register all content
         ModBlocks.initialize();
         ModItems.initialize();
+        ModItemGroups.initialize();
         ModBlockEntities.initialize();
         ModEntities.initialize();
         ModScreenHandlers.initialize();
