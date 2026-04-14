@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["SPS","SSS","___"],
+  "pattern": ["SPS","SSS","   "],
   "key": {
-    "S": {"item": "minecraft:cobblestone"},
-    "P": {"item": "minecraft:stick"},
-    "_": {"item": "minecraft:air"}
+    "S": {"id": "minecraft:cobblestone"},
+    "P": {"id": "minecraft:stick"}
   },
   "result": {"id": "colonycraft:grindstone_station","count": 1}
 }

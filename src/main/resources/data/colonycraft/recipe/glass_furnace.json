@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GFG","G_G","GGG"],
+  "pattern": ["GFG","G G","GGG"],
   "key": {
-    "G": {"item": "minecraft:glass"},
-    "F": {"item": "minecraft:furnace"},
-    "_": {"item": "minecraft:air"}
+    "G": {"id": "minecraft:glass"},
+    "F": {"id": "minecraft:furnace"}
   },
   "result": {"id": "colonycraft:glass_furnace","count": 1}
 }

@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GPG","PPP","___"],
+  "pattern": ["GPG","PPP","   "],
   "key": {
-    "G": {"item": "minecraft:glass_bottle"},
-    "P": {"item": "minecraft:oak_planks"},
-    "_": {"item": "minecraft:air"}
+    "G": {"id": "minecraft:glass_bottle"},
+    "P": {"id": "minecraft:oak_planks"}
   },
   "result": {"id": "colonycraft:alchemist_table","count": 1}
 }

@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["BBB","PPP","___"],
+  "pattern": ["BBB","PPP","   "],
   "key": {
-    "B": {"item": "minecraft:sweet_berries"},
-    "P": {"item": "minecraft:oak_planks"},
-    "_": {"item": "minecraft:air"}
+    "B": {"id": "minecraft:sweet_berries"},
+    "P": {"id": "minecraft:oak_planks"}
   },
   "result": {"id": "colonycraft:berry_farm","count": 1}
 }

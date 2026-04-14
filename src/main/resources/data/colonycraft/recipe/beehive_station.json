@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["HHH","PPP","___"],
+  "pattern": ["HHH","PPP","   "],
   "key": {
-    "H": {"item": "minecraft:honeycomb"},
-    "P": {"item": "minecraft:oak_planks"},
-    "_": {"item": "minecraft:air"}
+    "H": {"id": "minecraft:honeycomb"},
+    "P": {"id": "minecraft:oak_planks"}
   },
   "result": {"id": "colonycraft:beehive_station","count": 1}
 }

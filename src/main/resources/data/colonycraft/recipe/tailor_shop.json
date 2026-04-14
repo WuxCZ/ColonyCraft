@@ -1,11 +1,11 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
   "pattern": ["WSW","PXP","PPP"],
   "key": {
-    "W": {"item": "minecraft:white_wool"},
-    "S": {"item": "minecraft:shears"},
-    "P": {"item": "minecraft:oak_planks"},
-    "X": {"item": "minecraft:string"}
+    "W": {"id": "minecraft:white_wool"},
+    "S": {"id": "minecraft:shears"},
+    "P": {"id": "minecraft:oak_planks"},
+    "X": {"id": "minecraft:string"}
   },
   "result": {"id": "colonycraft:tailor_shop","count": 1}
 }

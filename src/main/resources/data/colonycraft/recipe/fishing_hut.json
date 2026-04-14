@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["_R_","PPP","___"],
+  "pattern": [" R ","PPP","   "],
   "key": {
-    "R": {"item": "minecraft:fishing_rod"},
-    "P": {"item": "minecraft:oak_planks"},
-    "_": {"item": "minecraft:air"}
+    "R": {"id": "minecraft:fishing_rod"},
+    "P": {"id": "minecraft:oak_planks"}
   },
   "result": {"id": "colonycraft:fishing_hut","count": 1}
 }

@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["SPS","SSS","___"],
+  "pattern": ["SPS","SSS","   "],
   "key": {
-    "S": {"item": "minecraft:stone"},
-    "P": {"item": "minecraft:stone_pickaxe"},
-    "_": {"item": "minecraft:air"}
+    "S": {"id": "minecraft:stone"},
+    "P": {"id": "minecraft:stone_pickaxe"}
   },
   "result": {"id": "colonycraft:stonemason_bench","count": 1}
 }

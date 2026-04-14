@@ -1,10 +1,10 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
   "pattern": ["PFP","PDP","PPP"],
   "key": {
-    "P": {"item": "minecraft:oak_planks"},
-    "F": {"item": "minecraft:oak_fence"},
-    "D": {"item": "minecraft:dirt"}
+    "P": {"id": "minecraft:oak_planks"},
+    "F": {"id": "minecraft:oak_fence"},
+    "D": {"id": "minecraft:dirt"}
   },
   "result": {"id": "colonycraft:compost_bin","count": 1}
 }

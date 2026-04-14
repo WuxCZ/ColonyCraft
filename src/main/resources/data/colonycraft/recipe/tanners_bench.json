@@ -1,10 +1,9 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["LLL","PPP","___"],
+  "pattern": ["LLL","PPP","   "],
   "key": {
-    "L": {"item": "minecraft:leather"},
-    "P": {"item": "minecraft:oak_planks"},
-    "_": {"item": "minecraft:air"}
+    "L": {"id": "minecraft:leather"},
+    "P": {"id": "minecraft:oak_planks"}
   },
   "result": {"id": "colonycraft:tanners_bench","count": 1}
 }

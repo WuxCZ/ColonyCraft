@@ -1,12 +1,11 @@
-﻿{
+{
   "type": "minecraft:crafting_shaped",
-  "pattern": ["F__","BP_","I__"],
+  "pattern": ["F  ","BP ","I  "],
   "key": {
-    "F": {"item": "minecraft:feather"},
-    "B": {"item": "minecraft:book"},
-    "P": {"item": "minecraft:paper"},
-    "I": {"item": "minecraft:ink_sac"},
-    "_": {"item": "minecraft:air"}
+    "F": {"id": "minecraft:feather"},
+    "B": {"id": "minecraft:book"},
+    "P": {"id": "minecraft:paper"},
+    "I": {"id": "minecraft:ink_sac"}
   },
   "result": {"id": "colonycraft:guidebook","count": 1}
 }
