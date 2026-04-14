@@ -1,4 +1,4 @@
-﻿package cz.wux.colonycraft.client.render;
+package cz.wux.colonycraft.client.render;
 
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;

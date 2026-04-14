@@ -1,9 +1,10 @@
-﻿package cz.wux.colonycraft.client;
+package cz.wux.colonycraft.client;
 
 import cz.wux.colonycraft.client.render.ColonistEntityRenderer;
 import cz.wux.colonycraft.client.render.ColonyMonsterRenderer;
 import cz.wux.colonycraft.client.render.GuardEntityRenderer;
 import cz.wux.colonycraft.client.screen.ColonyBannerScreen;
+import cz.wux.colonycraft.client.screen.ResearchScreen;
 import cz.wux.colonycraft.client.screen.StockpileScreen;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
@@ -21,17 +22,16 @@ public class ColonyCraftClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Entity renderers
         EntityRendererRegistry.register(ModEntities.COLONIST,       ColonistEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.GUARD,          GuardEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.COLONY_MONSTER, ColonyMonsterRenderer::new);
 
-        // GUI screens
         HandledScreens.register(ModScreenHandlers.STOCKPILE,     StockpileScreen::new);
         HandledScreens.register(ModScreenHandlers.COLONY_BANNER, ColonyBannerScreen::new);
+        HandledScreens.register(ModScreenHandlers.RESEARCH,      ResearchScreen::new);
 
         // Colony HUD overlay
-        HudRenderCallback.EVENT.register((drawContext, tickCounter) -> {
+        HudRenderCallback.EVENT.register((drawContext, deltaTick) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.getServer() == null || mc.player == null) return;
             Collection<ColonyData> colonies = ColonyManager.get(mc.getServer()).getAllColonies();

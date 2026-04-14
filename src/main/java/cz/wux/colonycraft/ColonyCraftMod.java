@@ -6,6 +6,7 @@ import cz.wux.colonycraft.entity.ColonistEntity;
 import cz.wux.colonycraft.entity.ColonyMonsterEntity;
 import cz.wux.colonycraft.entity.GuardEntity;
 import cz.wux.colonycraft.registry.*;
+import net.minecraft.sound.SoundCategory;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -31,7 +32,10 @@ public class ColonyCraftMod implements ModInitializer {
 
     /** How many ticks between colony "tick" updates (once every ~3 seconds). */
     private static final int COLONY_TICK_INTERVAL = 60;
-    private int tickCounter = 0;
+    /** Food is consumed once every this many colony-ticks (~5 min real time per colonist). */
+    private static final int FOOD_CONSUME_INTERVAL = 100;
+    private int tickCounter  = 0;
+    private int foodCounter  = 0;
 
     @Override
     public void onInitialize() {
@@ -44,6 +48,7 @@ public class ColonyCraftMod implements ModInitializer {
         ModBlockEntities.initialize();
         ModEntities.initialize();
         ModScreenHandlers.initialize();
+        ModSounds.initialize();
 
         // Register default entity attributes
         FabricDefaultAttributeRegistry.register(ModEntities.COLONIST,
@@ -78,6 +83,9 @@ public class ColonyCraftMod implements ModInitializer {
             tickCounter++;
             if (tickCounter < COLONY_TICK_INTERVAL) return;
             tickCounter = 0;
+            foodCounter++;
+            boolean doConsumFood = (foodCounter >= FOOD_CONSUME_INTERVAL);
+            if (doConsumFood) foodCounter = 0;
 
             ColonyManager mgr = ColonyManager.get(server);
             Collection<ColonyData> colonies = mgr.getAllColonies();
@@ -88,12 +96,12 @@ public class ColonyCraftMod implements ModInitializer {
 
             for (ColonyData colony : colonies) {
 
-                // ── Food consumption (every tick interval per colonist) ─────
-                int colCount = colony.getColonistCount();
-                for (int i = 0; i < colCount; i++) {
-                    colony.consumeFood();
+                // ── Food consumption (~every 5 min real time per colonist) ─
+                if (doConsumFood) {
+                    int colCount = colony.getColonistCount();
+                    for (int i = 0; i < colCount; i++) colony.consumeFood();
+                    mgr.markDirty();
                 }
-                mgr.markDirty();
 
                 // ── Population growth (spawn new colonist if food & cap OK) ─
                 if (colony.canSpawnMoreColonists() && colony.getFoodUnits() > 20) {
@@ -108,11 +116,13 @@ public class ColonyCraftMod implements ModInitializer {
 
                 // ── Night wave spawning ────────────────────────────────────
                 if (dayTime >= 13000 && dayTime <= 13100) {
-                    // Dusk of each night: spawn a wave scaled by days survived
                     BlockPos bp = colony.getBannerPos();
                     if (bp != null) {
                         ServerWorld world = server.getWorld(World.OVERWORLD);
                         if (world != null) {
+                            // Play wave horn at banner position
+                            world.playSound(null, bp, ModSounds.WAVE_HORN,
+                                    SoundCategory.HOSTILE, 2.0f, 0.8f);
                             ColonyMonsterEntity.spawnWave(world, colony, bp);
                         }
                     }

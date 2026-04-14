@@ -59,10 +59,15 @@ public class ColonyMonsterEntity extends HostileEntity {
      * Spawns a wave of monsters around the colony. Wave size:
      * 4 + daysSurvived * 2; health scales every 5 days.
      */
+    /**
+     * Maximum wave size caps at 40 monsters (reached around day 18).
+     * HP scales with days but is also soft-capped via a log curve.
+     */
     public static void spawnWave(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
         int days   = colony.getDaysSurvived();
-        int count  = 4 + days * 2;
-        double baseHp = 20.0 + (days / 5) * 10.0;
+        // S-curve: grows fast early, slows after day 10, hard-caps at 40
+        int count  = Math.min(40, 4 + (int)(36.0 * (1.0 - Math.exp(-days * 0.12))));
+        double baseHp = 20.0 + Math.min(days * 4.0, 160.0);
 
         for (int i = 0; i < count; i++) {
             // Spawn 40–64 blocks out from banner, random direction

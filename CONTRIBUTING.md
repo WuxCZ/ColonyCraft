@@ -1,4 +1,4 @@
-# Contributing to ColonyCraft
+﻿# Contributing to ColonyCraft
 
 Thanks for wanting to help! This document explains how the project is structured, how to get it running, and what specifically still needs to be done.
 
@@ -16,7 +16,7 @@ cd ColonyCraft
 
 On Windows use `gradlew.bat` instead of `./gradlew`.
 
-The dev client launches with the mod pre-loaded — no `.jar` install needed.
+The dev client launches with the mod pre-loaded â€” no `.jar` install needed.
 
 ---
 
@@ -24,53 +24,53 @@ The dev client launches with the mod pre-loaded — no `.jar` install needed.
 
 ```
 src/
-├── main/java/cz/wux/colonycraft/
-│   ├── block/           – All 26 job blocks + ColonyBanner + Stockpile
-│   ├── blockentity/     – BlockEntity + screen handlers for interactive blocks
-│   ├── data/
-│   │   ├── ColonistJob.java    – Enum of all 27 jobs
-│   │   ├── ColonyData.java     – Per-colony data: food, pop, science, days
-│   │   └── ColonyManager.java  – Server-side singleton, PersistentState
-│   ├── entity/
-│   │   ├── ColonistEntity.java       – The main worker colonist
-│   │   ├── GuardEntity.java          – Combat colonist, patrols banner radius
-│   │   ├── ColonyMonsterEntity.java  – Nightly wave attacker
-│   │   └── goal/                     – All AI goals
-│   ├── item/            – JobAssignmentBook, GuidebookItem
-│   ├── registry/        – ModBlocks, ModItems, ModEntities (all registrations)
-│   └── screen/          – Server-side screen handlers
-└── client/java/cz/wux/colonycraft/client/
-    ├── render/
-    │   ├── ColonistEntityRenderer.java  – Per-job vanilla texture mapping
-    │   └── ColonistRenderState.java     – Custom render state with jobTexture field
-    └── screen/          – Client GUI screens (Stockpile, ColonyBanner)
+â”œâ”€â”€ main/java/cz/wux/colonycraft/
+â”‚   â”œâ”€â”€ block/           â€“ All 26 job blocks + ColonyBanner + Stockpile
+â”‚   â”œâ”€â”€ blockentity/     â€“ BlockEntity + screen handlers for interactive blocks
+â”‚   â”œâ”€â”€ data/
+â”‚   â”‚   â”œâ”€â”€ ColonistJob.java    â€“ Enum of all 27 jobs
+â”‚   â”‚   â”œâ”€â”€ ColonyData.java     â€“ Per-colony data: food, pop, science, days
+â”‚   â”‚   â””â”€â”€ ColonyManager.java  â€“ Server-side singleton, PersistentState
+â”‚   â”œâ”€â”€ entity/
+â”‚   â”‚   â”œâ”€â”€ ColonistEntity.java       â€“ The main worker colonist
+â”‚   â”‚   â”œâ”€â”€ GuardEntity.java          â€“ Combat colonist, patrols banner radius
+â”‚   â”‚   â”œâ”€â”€ ColonyMonsterEntity.java  â€“ Nightly wave attacker
+â”‚   â”‚   â””â”€â”€ goal/                     â€“ All AI goals
+â”‚   â”œâ”€â”€ item/            â€“ JobAssignmentBook, GuidebookItem
+â”‚   â”œâ”€â”€ registry/        â€“ ModBlocks, ModItems, ModEntities (all registrations)
+â”‚   â””â”€â”€ screen/          â€“ Server-side screen handlers
+â””â”€â”€ client/java/cz/wux/colonycraft/client/
+    â”œâ”€â”€ render/
+    â”‚   â”œâ”€â”€ ColonistEntityRenderer.java  â€“ Per-job vanilla texture mapping
+    â”‚   â””â”€â”€ ColonistRenderState.java     â€“ Custom render state with jobTexture field
+    â””â”€â”€ screen/          â€“ Client GUI screens (Stockpile, ColonyBanner)
 ```
 
 ---
 
 ## Current Status & TODO
 
-### 🔴 High priority (bugs / missing core features)
+### ðŸ”´ High priority (bugs / missing core features)
 
-- [ ] **Build & compile check** — run `./gradlew build` and fix any compile errors after recent changes
-- [ ] **Colony border visualizer** — show particles or an outline at the colony's 64-block radius so the player can see the border
-- [ ] **Multiplayer testing** — multiple players each founding their own colony; confirm no UUID collisions or shared state bugs
-- [ ] **Wave scaling balance** — `4 + days×2` monsters gets brutal fast; needs a cap or curve
+- [x] **Build & compile check** - BUILD SUCCESSFUL
+- [x] **Colony border visualizer** - HUD overlay shows live colony radius; border particle ring added (orange dust, 64-block radius, 40-tick interval)
+- [ ] **Multiplayer testing** â€” multiple players each founding their own colony; confirm no UUID collisions or shared state bugs
+- [x] **Wave scaling balance** - S-curve cap: max 40 monsters (reached ~day 18); HP soft-capped at 180
 
-### 🟡 Medium priority (polish / gameplay)
+### ðŸŸ¡ Medium priority (polish / gameplay)
 
-- [ ] **More production recipes** — `ColonistEntity.PRODUCTION_RECIPES` currently has ~18 entries; fill in the remaining jobs (Beekeeper, Chicken Farmer, Potter, Glassblower, Alchemist, Tanner, Tailor, etc.)
-- [ ] **Research tree GUI** — currently science points accumulate but there's no GUI to spend them; needs a screen + unlock tree
-- [ ] **Food consumption balance** — colonists eat every `200` ticks; tune based on play-testing
-- [ ] **Guard improvements** — Guards currently only use bow; GUARD_CROSSBOW and GUARD_MUSKET use the same logic
+- [x] **More production recipes** - All 27 jobs fully mapped in WorkAtJobGoal.RECIPES
+- [x] **Research tree GUI** - ResearchScreen + ResearchScreenHandler + ResearchTableBlock: click job row to spend science and unlock
+- [x] **Food consumption balance** - Colonists eat every 100 colony-ticks (~5 min real time), configurable via ColonyCraftConfig
+- [x] **Guard improvements** - GUARD_BOW=20t/2dmg, GUARD_CROSSBOW=14t/3dmg, GUARD_MUSKET=40t/7dmg
 
-### 🟢 Low priority (nice to have)
+### ðŸŸ¢ Low priority (nice to have)
 
-- [ ] **Custom colonist models** — currently reuses vanilla entity skins (zombie/pillager/etc.); proper humanoid model with job-specific outfit would be ideal
-- [ ] **Sound effects** — ambient colony sounds, job sounds (chopping, mining), wave horn
-- [ ] **Colonist name tags** — show colonist name + job above head
-- [ ] **Colony statistics screen** — detailed screen showing all colonists, their jobs, and production rates
-- [ ] **Config file** — allow tuning wave size, food rates, pop cap growth via a config
+- [ ] **Custom colonist models** â€” currently reuses vanilla entity skins (zombie/pillager/etc.); proper humanoid model with job-specific outfit would be ideal
+- [x] **Sound effects** - ModSounds registered: colonist.work, colonist.spawn, wave.horn (via vanilla MC sounds.json)
+- [x] **Colonist name tags** - Job name shown above colonist head after auto-assign and job change
+- [x] **Colony statistics screen** - ColonyBannerScreen shows live colonists/food/science/day data
+- [x] **Config file** - ColonyCraftConfig.java, saved to config/colonycraft.json on first run
 
 ---
 
@@ -84,7 +84,7 @@ src/
 | `ColonistEntityRenderer.java` | Maps each `ColonistJob` enum value to a vanilla texture path. |
 | `ModBlocks.java` | All block registrations. Add new blocks here. |
 | `ModItems.java` | All item registrations including `BlockItem` wrappers. |
-| `ColonistJob.java` | The master enum of all 27 jobs — add new jobs here first. |
+| `ColonistJob.java` | The master enum of all 27 jobs â€” add new jobs here first. |
 
 ---
 
@@ -108,9 +108,9 @@ src/
 | Branch | Purpose |
 |---|---|
 | `master` | Stable, working builds only |
-| `dev` | Active development — push your work here |
+| `dev` | Active development â€” push your work here |
 
-Open a Pull Request from `dev` → `master` when a feature is complete and builds successfully.
+Open a Pull Request from `dev` â†’ `master` when a feature is complete and builds successfully.
 
 ---
 

@@ -177,6 +177,11 @@ public class WorkAtJobGoal extends Goal {
         if (distSq <= 6.0) {
             // At workstation — perform one production cycle
             performWork();
+            // Play ambient work sound
+            colonist.getEntityWorld().playSound(null, colonist.getBlockPos(),
+                    cz.wux.colonycraft.registry.ModSounds.COLONIST_WORK,
+                    net.minecraft.sound.SoundCategory.NEUTRAL,
+                    0.5f, 0.8f + colonist.getEntityWorld().random.nextFloat() * 0.4f);
             colonist.startWorkCooldown(WORK_TICKS);
         }
     }

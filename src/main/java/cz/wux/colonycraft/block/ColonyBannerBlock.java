@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -84,5 +85,17 @@ public class ColonyBannerBlock extends BlockWithEntity {
         // When the banner is broken, the colony data persists so colonists don't vanish
         // (players must explicitly disband via the GUI)
         return super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos,
+                                 PlayerEntity player, BlockHitResult hit) {
+        if (!world.isClient() && player instanceof ServerPlayerEntity sp) {
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof NamedScreenHandlerFactory factory) {
+                sp.openHandledScreen(factory);
+            }
+        }
+        return ActionResult.SUCCESS;
     }
 }

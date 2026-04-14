@@ -52,8 +52,13 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     @Override
     protected void initGoals() {
-        // Attack any nearby hostile mob
-        goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
+        // Attack interval differs by weapon: BOW=20t, CROSSBOW=14t, MUSKET=40t
+        int attackInterval = switch (guardJob) {
+            case GUARD_CROSSBOW -> 14;
+            case GUARD_MUSKET   -> 40;
+            default             -> 20;
+        };
+        goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, attackInterval, 15.0f));
         goalSelector.add(2, new GuardPatrolGoal(this));
         goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         goalSelector.add(4, new LookAroundGoal(this));
@@ -63,7 +68,6 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     @Override
     public void shootAt(net.minecraft.entity.LivingEntity target, float pullProgress) {
-        // Fire an arrow toward the target
         net.minecraft.entity.projectile.ArrowEntity arrow =
                 new net.minecraft.entity.projectile.ArrowEntity(getEntityWorld(), this,
                         new net.minecraft.item.ItemStack(net.minecraft.item.Items.ARROW),
@@ -72,7 +76,15 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
         double dy = target.getBodyY(0.3333) - arrow.getY();
         double dz = target.getZ() - getZ();
         double dist = Math.sqrt(dx*dx + dz*dz) * 0.2;
-        arrow.setVelocity(dx, dy + dist, dz, 1.6f, 14 - getEntityWorld().getDifficulty().getId() * 4);
+
+        // Weapon-specific damage and speed
+        float speed  = 1.6f;
+        float damage = 2.0f;
+        if (guardJob == ColonistJob.GUARD_CROSSBOW) { speed = 2.2f; damage = 3.0f; }
+        if (guardJob == ColonistJob.GUARD_MUSKET)   { speed = 3.0f; damage = 7.0f; }
+
+        arrow.setVelocity(dx, dy + dist, dz, speed, 14 - getEntityWorld().getDifficulty().getId() * 4);
+        arrow.setDamage(damage);
         getEntityWorld().spawnEntity(arrow);
     }
 

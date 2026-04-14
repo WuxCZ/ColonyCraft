@@ -108,7 +108,12 @@ public class ColonistEntity extends PathAwareEntity {
     public void setColonyId(UUID id)                  { this.colonyId = id; }
 
     public ColonistJob getColonistJob()               { return job; }
-    public void setColonistJob(ColonistJob j)         { this.job = j; }
+    public void setColonistJob(ColonistJob j)         {
+        this.job = j;
+        String label = (j == ColonistJob.UNEMPLOYED) ? "Colonist" : j.displayName;
+        this.setCustomName(net.minecraft.text.Text.literal(label));
+        this.setCustomNameVisible(true);
+    }
 
     public BlockPos getJobBlockPos()                  { return jobBlockPos; }
     public void setJobBlockPos(BlockPos p)            { this.jobBlockPos = p; }
@@ -165,7 +170,15 @@ public class ColonistEntity extends PathAwareEntity {
         // Auto-assign to an unclaimed job block nearby
         autoAssignJob(world, colonist, colony, bannerPos);
 
+        // Name tag: show job above head
+        String jobLabel = colonist.job == ColonistJob.UNEMPLOYED
+                ? "Colonist" : colonist.job.displayName;
+        colonist.setCustomName(net.minecraft.text.Text.literal(jobLabel));
+        colonist.setCustomNameVisible(true);
+
         world.spawnEntity(colonist);
+        world.playSound(null, bannerPos, cz.wux.colonycraft.registry.ModSounds.COLONIST_SPAWN,
+                net.minecraft.sound.SoundCategory.NEUTRAL, 1.0f, 0.9f + world.random.nextFloat() * 0.2f);
         colony.addColonist(colonist.getUuid());
         mgr.markDirty();
     }

@@ -1,0 +1,22 @@
+{
+  "colonist.work": {
+    "subtitle": "Colonist works",
+    "sounds": [
+      {"name": "block.wood.hit",    "type": "minecraft"},
+      {"name": "block.stone.hit",   "type": "minecraft"},
+      {"name": "block.gravel.hit",  "type": "minecraft"}
+    ]
+  },
+  "colonist.spawn": {
+    "subtitle": "Colonist arrives",
+    "sounds": [
+      {"name": "entity.villager.yes", "type": "minecraft"}
+    ]
+  },
+  "wave.horn": {
+    "subtitle": "Raider wave incoming!",
+    "sounds": [
+      {"name": "entity.evoker.prepare_wololo", "type": "minecraft"}
+    ]
+  }
+}
