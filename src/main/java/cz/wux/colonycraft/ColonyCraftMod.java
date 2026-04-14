@@ -8,8 +8,12 @@ import cz.wux.colonycraft.entity.GuardEntity;
 import cz.wux.colonycraft.registry.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -48,6 +52,26 @@ public class ColonyCraftMod implements ModInitializer {
                 GuardEntity.createGuardAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COLONY_MONSTER,
                 ColonyMonsterEntity.createMonsterAttributes());
+
+        // Give starter kit + guidebook to brand-new players
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            // "New player" = completely empty inventory (slots 0–8 are hotbar)
+            boolean hotbarEmpty = true;
+            for (int i = 0; i < 9; i++) {
+                if (!player.getInventory().getStack(i).isEmpty()) { hotbarEmpty = false; break; }
+            }
+            if (!hotbarEmpty) return;
+
+            server.execute(() -> {
+                player.getInventory().setStack(0, new ItemStack(ModItems.COLONY_BANNER_ITEM));
+                player.getInventory().setStack(1, new ItemStack(ModItems.STOCKPILE_ITEM));
+                player.getInventory().setStack(2, new ItemStack(ModItems.JOB_ASSIGNMENT_BOOK));
+                player.getInventory().setStack(3, new ItemStack(ModItems.GUIDEBOOK));
+                player.sendMessage(Text.literal(
+                        "§6§lWelcome to ColonyCraft! §r§7Right-click the §aGuide Book§7 in your hotbar to learn how to play."), false);
+            });
+        });
 
         // Server tick: manage food consumption, wave spawning, population growth
         ServerTickEvents.END_SERVER_TICK.register(server -> {

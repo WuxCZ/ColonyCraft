@@ -26,6 +26,7 @@
   "block.colonycraft.pottery_station": "Pottery Station",
   "block.colonycraft.glass_furnace": "Glass Furnace",
   "item.colonycraft.job_assignment_book": "Job Assignment Book",
+  "item.colonycraft.guidebook": "ColonyCraft Guide",
   "container.colonycraft.stockpile": "Colony Stockpile",
   "container.colonycraft.colony_banner": "Colony Management",
   "message.colonycraft.colony_founded": "§aColony founded! Welcome, %s. Place job blocks nearby and colonists will join.",

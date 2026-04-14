@@ -1,8 +1,4 @@
-﻿{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "minecraft:block/blast_furnace_front",
-    "side": "minecraft:block/blast_furnace_side",
-    "top": "minecraft:block/blast_furnace_top"
-  }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/bloomery" }
 }

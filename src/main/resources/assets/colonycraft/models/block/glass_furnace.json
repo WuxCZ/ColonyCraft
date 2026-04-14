@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/glass" }
+  "textures": { "all": "colonycraft:block/glass_furnace" }
 }

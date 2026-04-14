@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/prismarine_bricks" }
+  "textures": { "all": "colonycraft:block/fishing_hut" }
 }

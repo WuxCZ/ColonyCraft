@@ -1,8 +1,4 @@
-﻿{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "minecraft:block/furnace_front",
-    "side": "minecraft:block/furnace_side",
-    "top": "minecraft:block/furnace_top"
-  }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/stove" }
 }

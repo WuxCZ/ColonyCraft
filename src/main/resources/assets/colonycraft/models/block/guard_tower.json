@@ -1,4 +1,4 @@
-﻿{
-  "parent": "minecraft:block/cube_column",
-  "textures": { "end": "minecraft:block/stone_bricks", "side": "minecraft:block/cobblestone" }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/guard_tower" }
 }

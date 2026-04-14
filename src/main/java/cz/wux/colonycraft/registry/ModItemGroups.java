@@ -26,6 +26,9 @@ public class ModItemGroups {
                     .icon(() -> new ItemStack(ModItems.COLONY_BANNER_ITEM))
                     .displayName(Text.translatable("itemgroup.colonycraft.main"))
                     .entries((context, entries) -> {
+                        // Guidebook first so players see it
+                        entries.add(ModItems.GUIDEBOOK);
+
                         // Core colony blocks
                         entries.add(ModItems.COLONY_BANNER_ITEM);
                         entries.add(ModItems.STOCKPILE_ITEM);

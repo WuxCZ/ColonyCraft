@@ -1,4 +1,4 @@
-﻿{
-  "parent": "minecraft:block/cube_column",
-  "textures": { "end": "minecraft:block/oak_planks", "side": "minecraft:block/bookshelf" }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/research_desk" }
 }

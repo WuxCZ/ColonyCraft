@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.registry;
 
+import cz.wux.colonycraft.item.GuidebookItem;
 import cz.wux.colonycraft.item.JobAssignmentBook;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -14,6 +15,10 @@ import net.minecraft.util.Identifier;
  * Registers all ColonyCraft items (including BlockItems for every block).
  */
 public class ModItems {
+
+    // Guidebook (tutorial)
+    public static final GuidebookItem GUIDEBOOK = reg("guidebook",
+            key -> new GuidebookItem(new Item.Settings().maxCount(1).registryKey(key)));
 
     // Job assignment tool
     public static final JobAssignmentBook JOB_ASSIGNMENT_BOOK = reg("job_assignment_book",

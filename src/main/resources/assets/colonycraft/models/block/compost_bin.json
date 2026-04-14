@@ -1,4 +1,4 @@
-﻿{
-  "parent": "minecraft:block/cube_column",
-  "textures": { "end": "minecraft:block/dirt", "side": "minecraft:block/grass_block_side" }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/compost_bin" }
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/white_wool" }
+  "textures": { "all": "colonycraft:block/tailor_shop" }
 }

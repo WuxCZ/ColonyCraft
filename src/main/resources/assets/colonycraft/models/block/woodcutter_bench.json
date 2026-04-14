@@ -1,8 +1,4 @@
-﻿{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "minecraft:block/crafting_table_front",
-    "side": "minecraft:block/oak_planks",
-    "top": "minecraft:block/oak_planks"
-  }
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": { "all": "colonycraft:block/woodcutter_bench" }
 }

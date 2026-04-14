@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/smooth_stone" }
+  "textures": { "all": "colonycraft:block/stonemason_bench" }
 }
