@@ -204,11 +204,11 @@ src/
 ---
 
 <!-- AUTO-GENERATED STATS - DO NOT EDIT BELOW -->
-## 📊 Mod Statistics
+## Stats
 
 | Metric | Count |
 |---|---|
-| Job Types | 4 |
+| Job Types | 3 |
 | Block Types | 26 |
 | Item Types | 29 |
 | Recipe Files | 28 |
