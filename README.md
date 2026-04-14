@@ -208,14 +208,14 @@ src/
 
 | Metric | Count |
 |---|---|
-| Job Types | 27 |
+| Job Types | 4 |
 | Block Types | 26 |
 | Item Types | 29 |
 | Recipe Files | 28 |
-| Source Files | ~60 |
-| Textures | 29 |
+| Source Files | ~73 |
+| Textures | 32 |
 
-*Auto-updated on each push by GitHub Actions.*
+*Auto-updated on 2026-04-14 by GitHub Actions.*
 <!-- END AUTO-GENERATED STATS -->
 
 ---
