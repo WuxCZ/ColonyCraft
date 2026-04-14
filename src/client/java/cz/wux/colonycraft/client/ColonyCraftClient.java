@@ -8,9 +8,11 @@ import cz.wux.colonycraft.client.render.GuardEntityRenderer;
 import cz.wux.colonycraft.client.screen.ColonyBannerScreen;
 import cz.wux.colonycraft.client.screen.ColonyManagementScreen;
 import cz.wux.colonycraft.client.screen.GuidebookScreen;
+import cz.wux.colonycraft.client.screen.JobSelectionScreen;
 import cz.wux.colonycraft.client.screen.ResearchScreen;
 import cz.wux.colonycraft.client.screen.StockpileScreen;
 import cz.wux.colonycraft.item.GuidebookItem;
+import cz.wux.colonycraft.item.AreaWandItem;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
 import cz.wux.colonycraft.registry.ModEntities;
@@ -24,6 +26,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -46,6 +49,10 @@ public class ColonyCraftClient implements ClientModInitializer {
         // Wire up guidebook to open GUI screen instead of chat
         GuidebookItem.clientScreenOpener = () -> MinecraftClient.getInstance().setScreen(new GuidebookScreen());
 
+        // Wire up area wand to open job selection screen after both corners set
+        AreaWandItem.clientAreaCompleteHandler = () -> MinecraftClient.getInstance().execute(() ->
+            MinecraftClient.getInstance().setScreen(new JobSelectionScreen()));
+
         // ';' key -> Colony Management Screen (like Colony Survival)
         KeyBinding.Category ccCategory = new KeyBinding.Category(Identifier.of("colonycraft", "colonycraft"));
         colonyManagementKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -67,19 +74,22 @@ public class ColonyCraftClient implements ClientModInitializer {
             AreaWandRenderer.tick(client);
         });
 
-        // Colony HUD overlay
+        // Colony HUD overlay — top-left corner with semi-transparent background
         HudRenderCallback.EVENT.register((drawContext, deltaTick) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.getServer() == null || mc.player == null) return;
+            if (mc.currentScreen != null) return; // hide when any screen is open
             Collection<ColonyData> colonies = ColonyManager.get(mc.getServer()).getAllColonies();
             if (colonies.isEmpty()) return;
             ColonyData colony = colonies.iterator().next();
             int x = 6, y = 6;
-            drawContext.drawText(mc.textRenderer, "\u00a76[Colony] \u00a7f" + colony.getOwnerName(), x, y,      0xFFFFFF, true);
-            drawContext.drawText(mc.textRenderer, "\u00a7aFood: \u00a7f"    + colony.getFoodUnits(),            x, y + 11, 0xFFFFFF, true);
-            drawContext.drawText(mc.textRenderer, "\u00a7bPop:  \u00a7f"    + colony.getColonistCount() + "/" + colony.getPopulationCap(), x, y + 22, 0xFFFFFF, true);
-            drawContext.drawText(mc.textRenderer, "\u00a7eSci:  \u00a7f"    + colony.getSciencePoints(),        x, y + 33, 0xFFFFFF, true);
-            drawContext.drawText(mc.textRenderer, "\u00a7cDay:  \u00a7f"    + colony.getDaysSurvived(),         x, y + 44, 0xFFFFFF, true);
+            // Dark background panel behind HUD text
+            drawContext.fill(x - 3, y - 3, x + 120, y + 57, 0x88000000);
+            drawContext.drawText(mc.textRenderer, Text.literal("\u00a76\u2654 Colony"),                                                        x, y,      0xFFFFD700, true);
+            drawContext.drawText(mc.textRenderer, Text.literal("\u00a7aFood: \u00a7f" + colony.getFoodUnits()),                                 x, y + 11, 0xFFFFFFFF, true);
+            drawContext.drawText(mc.textRenderer, Text.literal("\u00a7bPop:  \u00a7f" + colony.getColonistCount() + "/" + colony.getPopulationCap()), x, y + 22, 0xFFFFFFFF, true);
+            drawContext.drawText(mc.textRenderer, Text.literal("\u00a7eSci:  \u00a7f" + colony.getSciencePoints()),                             x, y + 33, 0xFFFFFFFF, true);
+            drawContext.drawText(mc.textRenderer, Text.literal("\u00a7cDay:  \u00a7f" + colony.getDaysSurvived()),                              x, y + 44, 0xFFFFFFFF, true);
         });
     }
 }

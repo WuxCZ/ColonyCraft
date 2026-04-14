@@ -1,12 +1,12 @@
-﻿<div align="center">
+<div align="center">
 
 ```
  ██████╗ ██████╗ ██╗      ██████╗ ███╗   ██╗██╗   ██╗ ██████╗██████╗  █████╗ ███████╗████████╗
 ██╔════╝██╔═══██╗██║     ██╔═══██╗████╗  ██║╚██╗ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
-██║     ██║   ██║██║     ██║   ██║██╔██╗ ██║ ╚████╔╝ ██║     ██████╔╝███████║█████╗     ██║   
-██║     ██║   ██║██║     ██║   ██║██║╚██╗██║  ╚██╔╝  ██║     ██╔══██╗██╔══██║██╔══╝     ██║   
-╚██████╗╚██████╔╝███████╗╚██████╔╝██║ ╚████║   ██║   ╚██████╗██║  ██║██║  ██║██║        ██║   
- ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝  
+██║     ██║   ██║██║     ██║   ██║██╔██╗ ██║ ╚████╔╝ ██║     ██████╔╝███████║█████╗     ██║
+██║     ██║   ██║██║     ██║   ██║██║╚██╗██║  ╚██╔╝  ██║     ██╔══██╗██╔══██║██╔══╝     ██║
+╚██████╗╚██████╔╝███████╗╚██████╔╝██║ ╚████║   ██║   ╚██████╗██║  ██║██║  ██║██║        ██║
+ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝
 ```
 
 ### Colony Survival mechanics — rebuilt from scratch inside Minecraft
@@ -20,7 +20,7 @@
 
 <br/>
 
-> **What if Colony Survival and Minecraft had a baby?**  
+> **What if Colony Survival and Minecraft had a baby?**
 > ColonyCraft is a Fabric mod that recreates the full Colony Survival gameplay loop — colonists with jobs, nightly monster waves, food economy, research, and colony management — all inside vanilla Minecraft.
 
 </div>
@@ -35,9 +35,10 @@
 
 **🏰 Colony Management**
 - Place a **Colony Banner** to found your colony
+- Press **;** to open Colony Management screen
 - Track food, science, population and days survived
-- Colony data persists across sessions via `PersistentState`
 - **Colony HUD** shows real-time status top-left of your screen
+- Recruit colonists directly from the management screen
 
 </td>
 <td width="50%">
@@ -45,7 +46,7 @@
 **👷 27 Colonist Jobs**
 - Every major job from Colony Survival
 - Colonists auto-claim job blocks near the banner
-- Each job has custom visual appearance (vanilla entity skin reuse)
+- Each job has a dedicated workstation block with unique texture
 - Jobs produce items into and take inputs from the Stockpile
 
 </td>
@@ -53,11 +54,31 @@
 <tr>
 <td width="50%">
 
+**🔮 Colony Survey Wand**
+- Select work areas with 2-corner selection (like Colony Survival!)
+- **Particle visualization** when holding the wand
+- Gold particles show your current selection
+- Green particles show all assigned job areas nearby
+- Job selection popup after marking an area
+
+</td>
+<td width="50%">
+
 **⚔️ Nightly Waves**
 - Waves spawn at dusk every in-game day
 - Wave size = `4 + days × 2`, HP scales with time
 - **Guard colonists** patrol and shoot hostile mobs
 - Survive long enough and your colony grows unstoppable
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**📖 In-Game Guidebook**
+- 10-page illustrated guide with book-style GUI
+- Covers all gameplay mechanics
+- Accessible from inventory right-click or colony management
 
 </td>
 <td width="50%">
@@ -86,66 +107,49 @@
 
 ---
 
-## 🚀 Getting Started (In-Game)
+## 🚀 Getting Started
 
+### In-Game Tutorial
 ```
-1. Craft a Colony Banner and place it in the ground
-2. Craft a Stockpile and place it within 64 blocks of the banner
-3. Fill the Stockpile with food (bread, cooked fish, etc.)
-4. Craft any job block and place it near the banner
-5. Colonists spawn automatically — up to your population cap
-6. Survive the nightly wave at dusk!
+1. Craft a Colony Banner and place it on flat ground
+2. A Stockpile and food are given as starter kit
+3. Press ; to open Colony Management
+4. Place job blocks within 32 blocks of the banner
+5. Use the Colony Survey Wand to mark work areas
+6. Colonists spawn automatically and start working
+7. Survive the nightly wave at dusk!
 ```
 
-> Population cap starts at **2** and grows by +1 per in-game day survived.
+> Population cap starts at **2** and grows by +1 per in-game day survived (max 50).
+
+### Installation (Official Minecraft Launcher)
+```
+1. Download and install Fabric Loader from https://fabricmc.net/use/installer/
+2. Select Minecraft 1.21.11 and install
+3. Download Fabric API from https://modrinth.com/mod/fabric-api
+4. Download ColonyCraft from the Releases page
+5. Put both .jar files in .minecraft/mods/
+6. Launch Minecraft with the "fabric-loader-1.21.11" profile
+```
 
 ---
 
-## 🔨 Key Crafting Recipes
+## 🖥️ HUD & Controls
 
-| Item | Recipe |
+| Control | Action |
 |---|---|
-| **Colony Banner** | White wool (top row) + Red wool center + Stick |
-| **Stockpile** | Oak planks ring (like a chest) |
-| **Job Assignment Book** | Book + Paper + Oak planks |
-| **Guidebook** | Feather + Book + Paper + Ink Sac |
-| **Woodcutter Bench** | Oak log + Iron axe + Planks |
-| **Guard Tower** | Stone + Bow + Iron ingot |
-
-*All 26 job blocks have unique shaped recipes. Open the recipe book in-game (press **E → Recipe Book**).*
-
----
-
-## 🖥️ HUD
+| **;** | Open Colony Management screen |
+| **Right-click** Guide Book | Open 10-page in-game guide |
+| **Right-click** with Wand | Set work area corners → auto job selection |
+| **Right-click** Job Block | View job info / assign area |
 
 When you have an active colony, a status panel appears top-left:
-
 ```
-[Colony] PlayerName
+🏰 Colony
 Food:  42
 Pop:   2/3
 Sci:   15
 Day:   4
-```
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── main/java/cz/wux/colonycraft/
-│   ├── block/           – ColonyBanner, Stockpile + 24 job blocks
-│   ├── blockentity/     – BlockEntity implementations + screen handlers
-│   ├── data/            – ColonistJob enum, ColonyData, ColonyManager
-│   ├── entity/          – ColonistEntity, GuardEntity, ColonyMonsterEntity
-│   │   └── goal/        – AI goals: Work, Eat, Return, Patrol, Wave
-│   ├── item/            – JobAssignmentBook, GuidebookItem
-│   ├── registry/        – ModBlocks, ModItems, ModEntities, ModScreenHandlers
-│   └── screen/          – Stockpile + ColonyBanner screen handlers
-└── client/java/cz/wux/colonycraft/client/
-    ├── render/          – ColonistEntityRenderer (per-job textures), Guards
-    └── screen/          – Stockpile GUI, ColonyBanner GUI
 ```
 
 ---
@@ -168,6 +172,26 @@ cd ColonyCraft
 
 ---
 
+## 📁 Project Structure
+
+```
+src/
+├── main/java/cz/wux/colonycraft/
+│   ├── block/           – ColonyBanner, Stockpile + 24 job blocks
+│   ├── blockentity/     – BlockEntity implementations + screen handlers
+│   ├── data/            – ColonistJob enum, ColonyData, ColonyManager
+│   ├── entity/          – ColonistEntity, GuardEntity, ColonyMonsterEntity
+│   │   └── goal/        – AI goals: Chop, Harvest, Mine, Plant, Eat, Patrol
+│   ├── item/            – GuidebookItem, JobAssignmentBook, AreaWandItem
+│   ├── registry/        – ModBlocks, ModItems, ModEntities, ModScreenHandlers
+│   └── screen/          – Stockpile + ColonyBanner screen handlers
+└── client/java/cz/wux/colonycraft/client/
+    ├── render/          – Entity renderers, AreaWandRenderer, ColonyBorderRenderer
+    └── screen/          – Management, Guidebook, Research, JobSelection GUIs
+```
+
+---
+
 ## 📦 Dependencies
 
 | Dependency | Version |
@@ -179,24 +203,20 @@ cd ColonyCraft
 
 ---
 
-## 🧩 What Still Needs Work
+<!-- AUTO-GENERATED STATS - DO NOT EDIT BELOW -->
+## 📊 Mod Statistics
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full task list and how to help.
+| Metric | Count |
+|---|---|
+| Job Types | 27 |
+| Block Types | 26 |
+| Item Types | 29 |
+| Recipe Files | 28 |
+| Source Files | ~60 |
+| Textures | 29 |
 
-Quick overview of what's missing or rough:
-- [ ] Custom colonist models (currently reuses vanilla entity skins)
-- [ ] Colony border visual (particle or block outline)
-- [ ] Sound effects for jobs and waves
-- [ ] More production recipes (currently ~18 mapped)
-- [ ] Research tree GUI
-- [ ] Multiplayer — each player owns their own colony, no conflicts yet tested
-- [ ] Balance pass on wave difficulty and food consumption rates
-
----
-
-## 🤝 Contributing
-
-Contributions are very welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md) to get up to speed quickly.
+*Auto-updated on each push by GitHub Actions.*
+<!-- END AUTO-GENERATED STATS -->
 
 ---
 

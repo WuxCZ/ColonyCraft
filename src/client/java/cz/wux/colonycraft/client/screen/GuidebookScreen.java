@@ -72,16 +72,16 @@ public class GuidebookScreen extends Screen {
         if (currentPage < PAGES.size()) {
             Page page = PAGES.get(currentPage);
             int ty = cy + 12;
-            ctx.drawText(textRenderer, page.title, cx + 12, ty, 0xFFD700, true);
+            ctx.drawText(textRenderer, Text.literal(page.title), cx + 12, ty, 0xFFFFD700, true);
             ty += 16;
             for (String line : page.lines) {
-                ctx.drawText(textRenderer, line, cx + 12, ty, 0xDDDDDD, false);
+                ctx.drawText(textRenderer, Text.literal(line), cx + 12, ty, 0xFFDDDDDD, false);
                 ty += 11;
             }
         }
         String pageInfo = "Page " + (currentPage + 1) + " / " + PAGES.size();
         int piWidth = textRenderer.getWidth(pageInfo);
-        ctx.drawText(textRenderer, "\u00a78" + pageInfo, cx + (BOOK_WIDTH - piWidth) / 2, cy + BOOK_HEIGHT - 24, 0x888888, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a78" + pageInfo), cx + (BOOK_WIDTH - piWidth) / 2, cy + BOOK_HEIGHT - 24, 0xFF888888, false);
         super.render(ctx, mouseX, mouseY, delta);
     }
 

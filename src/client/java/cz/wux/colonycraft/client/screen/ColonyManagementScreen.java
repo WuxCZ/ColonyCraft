@@ -99,35 +99,35 @@ public class ColonyManagementScreen extends Screen {
         ctx.fill(cx + PANEL_WIDTH - 2, cy, cx + PANEL_WIDTH, cy + PANEL_HEIGHT, 0xFFFFD700);
 
         // Title
-        ctx.drawText(textRenderer, "\u00a76\u00a7l\u2654 Colony Management", cx + 8, cy + 8, 0xFFD700, true);
+        ctx.drawText(textRenderer, Text.literal("\u00a76\u00a7l\u2654 Colony Management"), cx + 8, cy + 8, 0xFFFFD700, true);
         ctx.fill(cx + 4, cy + 22, cx + PANEL_WIDTH - 4, cy + 23, 0x88FFD700);
 
         if (colony == null) {
-            ctx.drawText(textRenderer, "\u00a77No colony found. Place a Colony Banner first.", cx + 8, cy + 32, 0xAAAAAA, false);
+            ctx.drawText(textRenderer, Text.literal("\u00a77No colony found. Place a Colony Banner first."), cx + 8, cy + 32, 0xFFAAAAAA, false);
             super.render(ctx, mouseX, mouseY, delta);
             return;
         }
 
         // Stats bar
         int sy = cy + 28;
-        ctx.drawText(textRenderer, "\u00a77Owner: \u00a7f" + colony.getOwnerName(), cx + 8, sy, 0xFFFFFF, false);
-        ctx.drawText(textRenderer, "\u00a7aPop: \u00a7f" + colony.getColonistCount() + "/" + colony.getPopulationCap(), cx + 130, sy, 0xFFFFFF, false);
-        ctx.drawText(textRenderer, "\u00a7eFood: \u00a7f" + colony.getFoodUnits(), cx + 210, sy, 0xFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a77Owner: \u00a7f" + colony.getOwnerName()), cx + 8, sy, 0xFFFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7aPop: \u00a7f" + colony.getColonistCount() + "/" + colony.getPopulationCap()), cx + 130, sy, 0xFFFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7eFood: \u00a7f" + colony.getFoodUnits()), cx + 210, sy, 0xFFFFFFFF, false);
         sy += 12;
-        ctx.drawText(textRenderer, "\u00a7bScience: \u00a7f" + colony.getSciencePoints(), cx + 8, sy, 0xFFFFFF, false);
-        ctx.drawText(textRenderer, "\u00a7cDay: \u00a7f" + colony.getDaysSurvived(), cx + 130, sy, 0xFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7bScience: \u00a7f" + colony.getSciencePoints()), cx + 8, sy, 0xFFFFFFFF, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7cDay: \u00a7f" + colony.getDaysSurvived()), cx + 130, sy, 0xFFFFFFFF, false);
 
         int recruitCost = 5;
         boolean canRecruit = colony.canSpawnMoreColonists() && colony.getFoodUnits() >= recruitCost;
-        ctx.drawText(textRenderer, canRecruit ? "\u00a7a(Recruit costs 5 food)" : "\u00a7c(Can't recruit - need food/cap)", cx + 8, cy + PANEL_HEIGHT - 24, 0x888888, false);
+        ctx.drawText(textRenderer, Text.literal(canRecruit ? "\u00a7a(Recruit costs 5 food)" : "\u00a7c(Can't recruit - need food/cap)"), cx + 8, cy + PANEL_HEIGHT - 24, 0xFF888888, false);
 
         // Divider
         ctx.fill(cx + 4, sy + 14, cx + PANEL_WIDTH - 4, sy + 15, 0x44FFFFFF);
 
         // Colonist list header
         int listY = sy + 18;
-        ctx.drawText(textRenderer, "\u00a7n\u00a77#  Name / Job", cx + 8, listY, 0xBBBBBB, false);
-        ctx.drawText(textRenderer, "\u00a7n\u00a77Status", cx + 200, listY, 0xBBBBBB, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7n\u00a77#  Name / Job"), cx + 8, listY, 0xFFBBBBBB, false);
+        ctx.drawText(textRenderer, Text.literal("\u00a7n\u00a77Status"), cx + 200, listY, 0xFFBBBBBB, false);
         listY += LINE_HEIGHT + 2;
 
         // Colonist entries
@@ -138,14 +138,14 @@ public class ColonyManagementScreen extends Screen {
             ColonistInfo ci = colonists.get(i);
             String idx = String.format("\u00a78%2d  ", i + 1);
             String jobColor = ci.isGuard ? "\u00a7c" : (ci.job.equals("Unemployed") ? "\u00a78" : "\u00a7a");
-            ctx.drawText(textRenderer, idx + jobColor + ci.job, cx + 8, listY, 0xFFFFFF, false);
+            ctx.drawText(textRenderer, Text.literal(idx + jobColor + ci.job), cx + 8, listY, 0xFFFFFFFF, false);
             String status = ci.isHungry ? "\u00a7c\u2620 Hungry" : (ci.isWorking ? "\u00a7a\u2692 Working" : "\u00a77\u25CB Idle");
-            ctx.drawText(textRenderer, status, cx + 200, listY, 0xFFFFFF, false);
+            ctx.drawText(textRenderer, Text.literal(status), cx + 200, listY, 0xFFFFFFFF, false);
             listY += LINE_HEIGHT;
         }
 
         if (colonists.isEmpty()) {
-            ctx.drawText(textRenderer, "\u00a78No colonists yet.", cx + 8, listY, 0x888888, false);
+            ctx.drawText(textRenderer, Text.literal("\u00a78No colonists yet."), cx + 8, listY, 0xFF888888, false);
         }
 
         super.render(ctx, mouseX, mouseY, delta);

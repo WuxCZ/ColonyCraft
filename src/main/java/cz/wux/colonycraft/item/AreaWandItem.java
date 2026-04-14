@@ -32,6 +32,14 @@ public class AreaWandItem extends Item {
         return SELECTIONS.get(playerId);
     }
 
+    /** Clear selection after area assignment. */
+    public static void clearSelection(UUID playerId) {
+        SELECTIONS.remove(playerId);
+    }
+
+    /** Callback set by client to open job selection screen when both corners are set. */
+    public static Runnable clientAreaCompleteHandler = null;
+
     public AreaWandItem(Settings settings) {
         super(settings);
     }
@@ -106,7 +114,11 @@ public class AreaWandItem extends Item {
             player.sendMessage(Text.literal(
                 "§a[Wand] Corner 2: §f" + clicked.getX() + " " + clicked.getY() + " " + clicked.getZ() +
                 " §7— Area: §e" + w + "×" + h + "×" + d +
-                "§7. Right-click the §ejob block§7 to assign this area."), false);
+                "§7. Opening job selection..."), false);
+            // Open job selection screen on client
+            if (clientAreaCompleteHandler != null) {
+                clientAreaCompleteHandler.run();
+            }
         }
         return ActionResult.SUCCESS;
     }
