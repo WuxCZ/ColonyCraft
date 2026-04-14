@@ -102,10 +102,8 @@ public class ColonistEntity extends PathAwareEntity {
             currentStatus = "\u2639 No job";
         } else if (isNight()) {
             currentStatus = "\u263E Going to bed";
-        } else if (jobBlockPos != null) {
-            currentStatus = "\u27A1 Going to work";
         } else {
-            currentStatus = "\u25CB Idle";
+            currentStatus = "\u2692 " + job.displayName;
         }
     }
 
@@ -258,8 +256,7 @@ public class ColonistEntity extends PathAwareEntity {
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
-        try { job = ColonistJob.valueOf(view.getString("Job", "UNEMPLOYED")); }
-        catch (Exception e) { job = ColonistJob.UNEMPLOYED; }
+        setColonistJob(ColonistJob.fromString(view.getString("Job", "UNEMPLOYED")));
         hungerTicks = view.getInt("HungerTicks", 0);
         int jobX = view.getInt("JobX", Integer.MIN_VALUE);
         if (jobX != Integer.MIN_VALUE) jobBlockPos = new BlockPos(jobX, view.getInt("JobY", 0), view.getInt("JobZ", 0));

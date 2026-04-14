@@ -37,8 +37,9 @@ public enum ColonistJob {
     // -- Knowledge --
     RESEARCHER  ("Researcher",   "research_desk",      true,  0),
 
-    // -- Defense (single guard type - zombies/skeletons burn at dawn) --
-    GUARD       ("Guard",        "guard_tower",        false, 32);
+    // -- Defense --
+    GUARD_SWORD ("Guard (Sword)", "guard_tower",        false, 32),
+    GUARD_BOW   ("Guard (Bow)",   "guard_tower",        false, 16);
 
     public final String displayName;
     public final String jobBlockKey;
@@ -59,7 +60,14 @@ public enum ColonistJob {
     }
 
     public boolean isGuard() {
-        return this == GUARD;
+        return this == GUARD_SWORD || this == GUARD_BOW;
+    }
+
+    /** Migration helper: converts old save strings (e.g. "GUARD") to current enum values. */
+    public static ColonistJob fromString(String name) {
+        if ("GUARD".equals(name)) return GUARD_SWORD;
+        try { return valueOf(name); }
+        catch (Exception e) { return UNEMPLOYED; }
     }
 
     public boolean isFarmer() {

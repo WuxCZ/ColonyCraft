@@ -39,8 +39,7 @@ public class PlantSaplingsGoal extends Goal {
         return colonist.getColonistJob() == ColonistJob.FORESTER
                 && !colonist.isWorkCoolingDown()
                 && !colonist.isHungry()
-                && !colonist.isNight()
-                && colonist.getStockpile().map(s -> s.hasItem(Items.OAK_SAPLING, 1)).orElse(false);
+                && !colonist.isNight();
     }
 
     @Override
@@ -77,10 +76,8 @@ public class PlantSaplingsGoal extends Goal {
             World world    = colonist.getEntityWorld();
             BlockState gnd = world.getBlockState(targetPos.down());
             BlockState air = world.getBlockState(targetPos);
-            boolean hasSapling = colonist.getStockpile()
-                    .map(s -> s.hasItem(Items.OAK_SAPLING, 1)).orElse(false);
+            boolean hasSapling = true; // Foresters have infinite planting materials
             if (isGround(gnd) && air.isAir() && hasSapling) {
-                colonist.getStockpile().ifPresent(s -> s.withdrawItem(Items.OAK_SAPLING, 1));
                 world.setBlockState(targetPos, Blocks.OAK_SAPLING.getDefaultState());
             }
             workTick  = 0;

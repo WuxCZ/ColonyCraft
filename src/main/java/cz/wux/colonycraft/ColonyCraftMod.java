@@ -177,7 +177,7 @@ public class ColonyCraftMod implements ModInitializer {
                                     guard.setHomePos(scan);
                                     guard.setGuardJob(jb.getJob());
                                     jb.assignColonist(guard.getUuid());
-                                    guard.setCustomName(net.minecraft.text.Text.literal("Guard"));
+                                    guard.setCustomName(net.minecraft.text.Text.literal(jb.getJob().displayName));
                                     guard.setCustomNameVisible(true);
                                     world.spawnEntity(guard);
                                     world.playSound(null, scan, ModSounds.COLONIST_SPAWN,

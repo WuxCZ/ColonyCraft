@@ -17,7 +17,7 @@ public class ResearchScreenHandler extends ScreenHandler {
         ColonistJob.STONEMASON,     ColonistJob.GRINDER,       ColonistJob.POTTER,
         ColonistJob.BLACKSMITH,     ColonistJob.SMELTER,       ColonistJob.ALCHEMIST,
         ColonistJob.GLASSBLOWER,    ColonistJob.RESEARCHER,    ColonistJob.BEEKEEPER,
-        ColonistJob.CHICKEN_FARMER, ColonistJob.GUARD
+        ColonistJob.CHICKEN_FARMER, ColonistJob.GUARD_SWORD,   ColonistJob.GUARD_BOW
     };
 
     private final PropertyDelegate props;
@@ -56,7 +56,7 @@ public class ResearchScreenHandler extends ScreenHandler {
             case ALCHEMIST, GLASSBLOWER        -> 60;
             case RESEARCHER                    -> 50;
             case BEEKEEPER, CHICKEN_FARMER     -> 25;
-            case GUARD                         -> 80;
+            case GUARD_SWORD, GUARD_BOW          -> 80;
             case FLETCHER                      -> 35;
             default -> 0;
         };

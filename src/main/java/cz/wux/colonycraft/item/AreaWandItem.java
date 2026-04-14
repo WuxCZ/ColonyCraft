@@ -153,8 +153,8 @@ public class AreaWandItem extends Item {
                             center.getX() + 0.5, center.getY() + 1, center.getZ() + 0.5, 0, 0);
                         guard.setColonyId(colony.getColonyId());
                         guard.setHomePos(center);
-                        guard.setGuardJob(ColonistJob.GUARD);
-                        guard.setCustomName(net.minecraft.text.Text.literal("Guard"));
+                        guard.setGuardJob(selectedJob);
+                        guard.setCustomName(net.minecraft.text.Text.literal(selectedJob.displayName));
                         guard.setCustomNameVisible(true);
                         sw.spawnEntity(guard);
                         colony.addColonist(guard.getUuid());

@@ -3,6 +3,7 @@ package cz.wux.colonycraft.entity;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.goal.GuardPatrolGoal;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -10,6 +11,8 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Uuids;
@@ -22,7 +25,8 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     private UUID colonyId;
     private BlockPos homePos;
-    private ColonistJob guardJob = ColonistJob.GUARD;
+    private ColonistJob guardJob = ColonistJob.GUARD_SWORD;
+    private boolean goalsConfigured = false;
 
     public static final int PATROL_RADIUS = 24;
 
@@ -38,23 +42,42 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
                 .add(EntityAttributes.MOVEMENT_SPEED, 0.35)
                 .add(EntityAttributes.FOLLOW_RANGE, 40.0)
                 .add(EntityAttributes.ARMOR, 4.0)
-                .add(EntityAttributes.ATTACK_DAMAGE, 4.0);
+                .add(EntityAttributes.ATTACK_DAMAGE, 6.0);
     }
 
     @Override
     protected void initGoals() {
-        goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
-        goalSelector.add(3, new GuardPatrolGoal(this));
+        // Universal goals only — combat/patrol goals added by configureGoals()
         goalSelector.add(4, new LookAroundGoal(this));
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));
+    }
+
+    /** Configures combat goals and equipment based on guard type. */
+    private void configureGoals() {
+        if (goalsConfigured) return;
+        goalsConfigured = true;
+
+        if (guardJob == ColonistJob.GUARD_BOW) {
+            // Stationary archer — ranged attack, no patrol
+            goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+        } else {
+            // Melee patrol — sword + leather armor
+            goalSelector.add(1, new MeleeAttackGoal(this, 1.2, true));
+            goalSelector.add(3, new GuardPatrolGoal(this));
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+            this.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+            this.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.LEATHER_CHESTPLATE));
+            this.equipStack(EquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS));
+            this.equipStack(EquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+        }
     }
 
     @Override
     public void shootAt(net.minecraft.entity.LivingEntity target, float pullProgress) {
         net.minecraft.entity.projectile.ArrowEntity arrow =
                 new net.minecraft.entity.projectile.ArrowEntity(getEntityWorld(), this,
-                        new net.minecraft.item.ItemStack(net.minecraft.item.Items.ARROW),
-                        null);
+                        new ItemStack(Items.ARROW), null);
         double dx = target.getX() - getX();
         double dy = target.getBodyY(0.3333) - arrow.getY();
         double dz = target.getZ() - getZ();
@@ -73,7 +96,10 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
     public BlockPos getHomePos()               { return homePos; }
     public void    setHomePos(BlockPos p)      { this.homePos = p; }
     public ColonistJob getGuardJob()           { return guardJob; }
-    public void    setGuardJob(ColonistJob j)  { this.guardJob = j; }
+    public void    setGuardJob(ColonistJob j)  {
+        this.guardJob = j;
+        configureGoals();
+    }
 
     @Override
     public void writeCustomData(WriteView view) {
@@ -91,8 +117,8 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
-        try { guardJob = ColonistJob.valueOf(view.getString("GuardJob", "GUARD")); }
-        catch (Exception e) { guardJob = ColonistJob.GUARD; }
+        guardJob = ColonistJob.fromString(view.getString("GuardJob", "GUARD_SWORD"));
+        configureGoals();
         int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
         if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
     }

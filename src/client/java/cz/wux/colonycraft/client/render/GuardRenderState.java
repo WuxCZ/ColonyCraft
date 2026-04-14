@@ -8,4 +8,5 @@ public class GuardRenderState extends BipedEntityRenderState {
     public float currentHealth = 30.0f;
     public String statusText = "Patrolling";
     public String jobName = "Guard";
+    public boolean isBowGuard = false;
 }

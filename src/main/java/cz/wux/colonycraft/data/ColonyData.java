@@ -46,7 +46,8 @@ public class ColonyData {
         unlockedJobs.add("COOK");
         unlockedJobs.add("WATER_GATHERER");
         unlockedJobs.add("BERRY_FARMER");
-        unlockedJobs.add("GUARD");
+        unlockedJobs.add("GUARD_SWORD");
+        unlockedJobs.add("GUARD_BOW");
         unlockedJobs.add("MINER");
     }
 
@@ -124,6 +125,11 @@ public class ColonyData {
         NbtList jobList = nbt.getListOrEmpty("UnlockedJobs");
         for (int i = 0; i < jobList.size(); i++) {
             d.unlockedJobs.add(jobList.getString(i, ""));
+        }
+        // Migration: old saves with "GUARD" → both new guard types
+        if (d.unlockedJobs.remove("GUARD")) {
+            d.unlockedJobs.add("GUARD_SWORD");
+            d.unlockedJobs.add("GUARD_BOW");
         }
 
         NbtList memberList = nbt.getListOrEmpty("Members");

@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.client.render;
 
+import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.GuardEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -12,12 +13,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
- * Guard colonist renderer — uses guard texture, shows health bar + status.
+ * Guard colonist renderer — picks texture based on guard type (sword/bow),
+ * shows health bar + status.
  */
 public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardRenderState, BipedEntityModel<GuardRenderState>> {
 
-    private static final Identifier TEXTURE =
-            Identifier.ofVanilla("textures/entity/player/wide/steve.png");
+    private static final Identifier SWORD_TEXTURE =
+            Identifier.ofVanilla("textures/entity/illager/vindicator.png");
+    private static final Identifier BOW_TEXTURE =
+            Identifier.ofVanilla("textures/entity/illager/pillager.png");
 
     public GuardEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER)), 0.5f);
@@ -35,15 +39,20 @@ public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardR
         state.currentHealth = entity.getHealth();
         state.healthPercent = state.currentHealth / state.maxHealth;
         state.jobName = entity.getGuardJob().displayName;
+        state.isBowGuard = entity.getGuardJob() == ColonistJob.GUARD_BOW;
         if (entity.getTarget() != null) {
             state.statusText = "\u2694 Fighting!";
+        } else if (state.isBowGuard) {
+            state.statusText = "\u263A Watching";
         } else {
             state.statusText = "\u263A Patrolling";
         }
     }
 
     @Override
-    public Identifier getTexture(GuardRenderState state) { return TEXTURE; }
+    public Identifier getTexture(GuardRenderState state) {
+        return state.isBowGuard ? BOW_TEXTURE : SWORD_TEXTURE;
+    }
 
     @Override
     protected boolean hasLabel(GuardEntity entity, double squaredDistanceToCamera) {

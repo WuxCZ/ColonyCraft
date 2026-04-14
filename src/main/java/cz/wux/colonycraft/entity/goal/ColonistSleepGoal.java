@@ -66,9 +66,11 @@ public class ColonistSleepGoal extends Goal {
             // Arrived at bed — lie down
             sleeping = true;
             colonist.getNavigation().stop();
-            // Position colonist on the bed
+            // Mark bed as occupied
+            world.setBlockState(bedPos, state.with(BedBlock.OCCUPIED, true));
+            // Position colonist on the bed surface
             colonist.refreshPositionAndAngles(
-                    bedPos.getX() + 0.5, bedPos.getY() + 0.4, bedPos.getZ() + 0.5,
+                    bedPos.getX() + 0.5, bedPos.getY() + 0.5625, bedPos.getZ() + 0.5,
                     colonist.getYaw(), 0);
             colonist.setPose(EntityPose.SLEEPING);
             colonist.setCurrentStatus("\u263E Sleeping");
@@ -91,6 +93,14 @@ public class ColonistSleepGoal extends Goal {
     public void stop() {
         if (sleeping) {
             colonist.setPose(EntityPose.STANDING);
+            // Unmark bed as occupied
+            if (bedPos != null) {
+                World world = colonist.getEntityWorld();
+                BlockState state = world.getBlockState(bedPos);
+                if (state.getBlock() instanceof BedBlock) {
+                    world.setBlockState(bedPos, state.with(BedBlock.OCCUPIED, false));
+                }
+            }
             sleeping = false;
             colonist.setCurrentStatus("\u25CB Idle");
         }

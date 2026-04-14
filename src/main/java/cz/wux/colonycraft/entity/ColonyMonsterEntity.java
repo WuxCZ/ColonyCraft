@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
@@ -53,15 +54,14 @@ public class ColonyMonsterEntity extends HostileEntity {
     }
 
     /**
-     * Spawns a wave of vanilla zombies and skeletons.
-     * Wave size = colonist count * 1.5 (min 4, max 60).
-     * Zombies/skeletons burn at sunrise - no day guards needed!
+     * Spawns a wave of vanilla zombies, skeletons and spiders.
+     * Colony Survival-like scaling: wave size grows aggressively with colony size and days.
      */
     public static void spawnWave(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
         int colonists = colony.getColonistCount();
         int days = colony.getDaysSurvived();
-        // Scale with both colonists and days (like Colony Survival)
-        int count = Math.max(4, Math.min(60, (int)(colonists * 1.5) + days));
+        // Aggressive Colony Survival-like scaling
+        int count = Math.max(6, Math.min(100, (int)(colonists * 2.5) + days * 2));
         
         for (int i = 0; i < count; i++) {
             double angle  = world.random.nextDouble() * Math.PI * 2;
@@ -71,18 +71,30 @@ public class ColonyMonsterEntity extends HostileEntity {
             int    spawnY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE,
                     (int) spawnX, (int) spawnZ);
 
-            // 60% zombies, 40% skeletons
-            if (world.random.nextFloat() < 0.6f) {
+            float roll = world.random.nextFloat();
+            if (days >= 5 && roll < 0.15f) {
+                // 15% spiders after day 5
+                net.minecraft.entity.mob.SpiderEntity spider =
+                        EntityType.SPIDER.create(world, SpawnReason.EVENT);
+                if (spider == null) continue;
+                spider.refreshPositionAndAngles(spawnX, spawnY, spawnZ,
+                    world.random.nextFloat() * 360f, 0);
+                double hp = 16.0 + Math.min(days * 1.5, 50.0);
+                spider.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
+                spider.setHealth((float) hp);
+                world.spawnEntity(spider);
+            } else if (roll < 0.55f) {
+                // ~40% zombies
                 ZombieEntity zombie = EntityType.ZOMBIE.create(world, SpawnReason.EVENT);
                 if (zombie == null) continue;
                 zombie.refreshPositionAndAngles(spawnX, spawnY, spawnZ, 
                     world.random.nextFloat() * 360f, 0);
-                // Scale HP with days
                 double hp = 20.0 + Math.min(days * 2.0, 80.0);
                 zombie.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
                 zombie.setHealth((float) hp);
                 world.spawnEntity(zombie);
             } else {
+                // ~45% skeletons
                 SkeletonEntity skeleton = EntityType.SKELETON.create(world, SpawnReason.EVENT);
                 if (skeleton == null) continue;
                 skeleton.refreshPositionAndAngles(spawnX, spawnY, spawnZ,

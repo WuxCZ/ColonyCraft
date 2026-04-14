@@ -24,29 +24,30 @@ public class ColonistEntityRenderer
     private static final Map<ColonistJob, Identifier> JOB_TEXTURES = new EnumMap<>(ColonistJob.class);
 
     static {
-        put(ColonistJob.WOODCUTTER,     "textures/entity/zombie/zombie.png");
-        put(ColonistJob.FORESTER,       "textures/entity/illager/pillager.png");
-        put(ColonistJob.MINER,          "textures/entity/zombie/husk.png");
+        put(ColonistJob.WOODCUTTER,     "textures/entity/player/wide/kai.png");
+        put(ColonistJob.FORESTER,       "textures/entity/player/wide/makena.png");
+        put(ColonistJob.MINER,          "textures/entity/player/wide/noor.png");
         put(ColonistJob.FARMER,         "textures/entity/player/slim/alex.png");
-        put(ColonistJob.BERRY_FARMER,   "textures/entity/player/slim/alex.png");
-        put(ColonistJob.FISHERMAN,      "textures/entity/player/wide/steve.png");
-        put(ColonistJob.WATER_GATHERER, "textures/entity/player/wide/steve.png");
-        put(ColonistJob.COOK,           "textures/entity/illager/vindicator.png");
-        put(ColonistJob.SMELTER,        "textures/entity/zombie/zombie_villager.png");
-        put(ColonistJob.BLACKSMITH,     "textures/entity/illager/vindicator.png");
-        put(ColonistJob.TANNER,         "textures/entity/zombie/drowned.png");
-        put(ColonistJob.TAILOR,         "textures/entity/player/slim/alex.png");
-        put(ColonistJob.FLETCHER,       "textures/entity/illager/pillager.png");
-        put(ColonistJob.STONEMASON,     "textures/entity/zombie/husk.png");
-        put(ColonistJob.COMPOSTER,      "textures/entity/illager/pillager.png");
-        put(ColonistJob.GRINDER,        "textures/entity/zombie/zombie.png");
-        put(ColonistJob.POTTER,         "textures/entity/player/wide/steve.png");
-        put(ColonistJob.ALCHEMIST,      "textures/entity/illager/evoker.png");
-        put(ColonistJob.GLASSBLOWER,    "textures/entity/player/wide/steve.png");
+        put(ColonistJob.BERRY_FARMER,   "textures/entity/player/slim/sunny.png");
+        put(ColonistJob.FISHERMAN,      "textures/entity/player/wide/zuri.png");
+        put(ColonistJob.WATER_GATHERER, "textures/entity/player/slim/efe.png");
+        put(ColonistJob.COOK,           "textures/entity/player/wide/ari.png");
+        put(ColonistJob.SMELTER,        "textures/entity/player/wide/noor.png");
+        put(ColonistJob.BLACKSMITH,     "textures/entity/player/wide/kai.png");
+        put(ColonistJob.TANNER,         "textures/entity/player/wide/zuri.png");
+        put(ColonistJob.TAILOR,         "textures/entity/player/slim/sunny.png");
+        put(ColonistJob.FLETCHER,       "textures/entity/player/slim/efe.png");
+        put(ColonistJob.STONEMASON,     "textures/entity/player/wide/makena.png");
+        put(ColonistJob.COMPOSTER,      "textures/entity/player/wide/ari.png");
+        put(ColonistJob.GRINDER,        "textures/entity/player/wide/steve.png");
+        put(ColonistJob.POTTER,         "textures/entity/player/wide/ari.png");
+        put(ColonistJob.ALCHEMIST,      "textures/entity/player/slim/efe.png");
+        put(ColonistJob.GLASSBLOWER,    "textures/entity/player/slim/sunny.png");
         put(ColonistJob.BEEKEEPER,      "textures/entity/player/slim/alex.png");
-        put(ColonistJob.CHICKEN_FARMER, "textures/entity/illager/pillager.png");
-        put(ColonistJob.RESEARCHER,     "textures/entity/illager/evoker.png");
-        put(ColonistJob.GUARD,          "textures/entity/illager/vindicator.png");
+        put(ColonistJob.CHICKEN_FARMER, "textures/entity/player/wide/makena.png");
+        put(ColonistJob.RESEARCHER,     "textures/entity/player/wide/noor.png");
+        put(ColonistJob.GUARD_SWORD,    "textures/entity/illager/vindicator.png");
+        put(ColonistJob.GUARD_BOW,      "textures/entity/illager/pillager.png");
     }
 
     private static void put(ColonistJob job, String vanillaPath) {
