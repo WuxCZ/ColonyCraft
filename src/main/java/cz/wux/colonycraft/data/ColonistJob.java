@@ -7,47 +7,55 @@ package cz.wux.colonycraft.data;
 public enum ColonistJob {
 
     // -- Unemployed --
-    UNEMPLOYED("Unemployed", "none", false),
+    UNEMPLOYED("Unemployed", "none", false, 0),
 
     // -- Resource gathering --
-    WOODCUTTER    ("Woodcutter",     "woodcutter_bench",   true),
-    FORESTER      ("Forester",       "forester_hut",       true),
-    MINER         ("Miner",          "miner_hut",          true),
-    FARMER        ("Farmer",         "farmer_hut",         true),
-    BERRY_FARMER  ("Berry Farmer",   "berry_farm",         false),
-    FISHERMAN     ("Fisherman",      "fishing_hut",        false),
-    WATER_GATHERER("Water Gatherer", "water_well",         true),
+    WOODCUTTER    ("Woodcutter",     "woodcutter_bench",   true,  16),
+    FORESTER      ("Forester",       "forester_hut",       true,  16),
+    MINER         ("Miner",          "miner_hut",          true,  12),
+    FARMER        ("Farmer",         "farmer_hut",         true,  10),
+    BERRY_FARMER  ("Berry Farmer",   "berry_farm",         false, 10),
+    FISHERMAN     ("Fisherman",      "fishing_hut",        false, 10),
+    WATER_GATHERER("Water Gatherer", "water_well",         true,  0),
 
     // -- Processing --
-    COOK        ("Cook",         "stove",              true),
-    SMELTER     ("Smelter",      "bloomery",           true),
-    BLACKSMITH  ("Blacksmith",   "blast_furnace",      true),
-    TANNER      ("Tanner",       "tanners_bench",      true),
-    TAILOR      ("Tailor",       "tailor_shop",        true),
-    FLETCHER    ("Fletcher",     "fletcher_bench",     true),
-    STONEMASON  ("Stonemason",   "stonemason_bench",   true),
-    COMPOSTER   ("Composter",    "compost_bin",        true),
-    GRINDER     ("Grinder",      "grindstone_station", true),
-    POTTER      ("Potter",       "pottery_station",    true),
-    ALCHEMIST   ("Alchemist",    "alchemist_table",    true),
-    GLASSBLOWER ("Glassblower",  "glass_furnace",      true),
-    BEEKEEPER   ("Beekeeper",    "beehive_station",    true),
-    CHICKEN_FARMER("Chicken Farmer","chicken_coop",    true),
+    COOK        ("Cook",         "stove",              true,  0),
+    SMELTER     ("Smelter",      "bloomery",           true,  0),
+    BLACKSMITH  ("Blacksmith",   "blast_furnace",      true,  0),
+    TANNER      ("Tanner",       "tanners_bench",      true,  0),
+    TAILOR      ("Tailor",       "tailor_shop",        true,  0),
+    FLETCHER    ("Fletcher",     "fletcher_bench",     true,  0),
+    STONEMASON  ("Stonemason",   "stonemason_bench",   true,  0),
+    COMPOSTER   ("Composter",    "compost_bin",        true,  0),
+    GRINDER     ("Grinder",      "grindstone_station", true,  0),
+    POTTER      ("Potter",       "pottery_station",    true,  0),
+    ALCHEMIST   ("Alchemist",    "alchemist_table",    true,  0),
+    GLASSBLOWER ("Glassblower",  "glass_furnace",      true,  0),
+    BEEKEEPER   ("Beekeeper",    "beehive_station",    true,  10),
+    CHICKEN_FARMER("Chicken Farmer","chicken_coop",    true,  10),
 
     // -- Knowledge --
-    RESEARCHER  ("Researcher",   "research_desk",      true),
+    RESEARCHER  ("Researcher",   "research_desk",      true,  0),
 
     // -- Defense (single guard type - zombies/skeletons burn at dawn) --
-    GUARD       ("Guard",        "guard_tower",        true);
+    GUARD       ("Guard",        "guard_tower",        false, 32);
 
     public final String displayName;
     public final String jobBlockKey;
     public final boolean requiresBlock;
+    /** Max area width/depth in blocks. 0 = no area needed (workshop-type jobs). */
+    public final int maxAreaSize;
 
-    ColonistJob(String displayName, String jobBlockKey, boolean requiresBlock) {
+    ColonistJob(String displayName, String jobBlockKey, boolean requiresBlock, int maxAreaSize) {
         this.displayName   = displayName;
         this.jobBlockKey   = jobBlockKey;
         this.requiresBlock = requiresBlock;
+        this.maxAreaSize   = maxAreaSize;
+    }
+
+    /** Returns true if this job uses a work area (farming, forestry, mining, etc.) */
+    public boolean usesArea() {
+        return maxAreaSize > 0;
     }
 
     public boolean isGuard() {

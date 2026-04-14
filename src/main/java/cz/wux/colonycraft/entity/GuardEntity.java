@@ -44,6 +44,7 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
     @Override
     protected void initGoals() {
         goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
+        goalSelector.add(3, new GuardPatrolGoal(this));
         goalSelector.add(4, new LookAroundGoal(this));
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));
     }

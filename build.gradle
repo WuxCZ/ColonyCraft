@@ -12,6 +12,7 @@ base {
 
 repositories {
     // Loom adds essential maven repositories automatically
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 
 loom {
@@ -33,6 +34,10 @@ dependencies {
 
     // Fabric API
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // GeckoLib — entity animations
+    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.21.11:5.4.5'
+    include 'software.bernie.geckolib:geckolib-fabric-1.21.11:5.4.5'
 }
 
 processResources {

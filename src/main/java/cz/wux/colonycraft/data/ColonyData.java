@@ -146,8 +146,11 @@ public class ColonyData {
     public void setFoodUnits(int count) { this.foodUnits = Math.max(0, Math.min(count, 9999)); }
 
     private void recalcPopCap() {
-        populationCap = Math.min(50, 2 + daysSurvived);
+        // Pop cap now set externally by bed count scan — this is a no-op fallback
     }
+
+    /** Set population cap based on available beds near the colony banner. */
+    public void setPopulationCap(int cap) { this.populationCap = Math.min(50, Math.max(0, cap)); }
 
     public boolean isJobUnlocked(ColonistJob job) { return unlockedJobs.contains(job.name()); }
     public void unlockJob(ColonistJob job) { unlockedJobs.add(job.name()); }

@@ -38,6 +38,7 @@ public class ChopTreeGoal extends Goal {
         return colonist.getColonistJob() == ColonistJob.WOODCUTTER
                 && !colonist.isWorkCoolingDown()
                 && !colonist.isHungry()
+                && !colonist.isNight()
                 && colonist.getStockpile().isPresent();
     }
 
@@ -157,7 +158,7 @@ public class ChopTreeGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return !colonist.isWorkCoolingDown() && !colonist.isHungry();
+        return !colonist.isWorkCoolingDown() && !colonist.isHungry() && !colonist.isNight();
     }
 
     @Override

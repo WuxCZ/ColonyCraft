@@ -47,6 +47,7 @@ public class HarvestCropsGoal extends Goal {
         return colonist.getColonistJob() == ColonistJob.FARMER
                 && !colonist.isWorkCoolingDown()
                 && !colonist.isHungry()
+                && !colonist.isNight()
                 && colonist.getStockpile().isPresent();
     }
 
@@ -141,7 +142,7 @@ public class HarvestCropsGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return !colonist.isWorkCoolingDown() && !colonist.isHungry();
+        return !colonist.isWorkCoolingDown() && !colonist.isHungry() && !colonist.isNight();
     }
 
     @Override

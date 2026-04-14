@@ -1,5 +1,6 @@
 package cz.wux.colonycraft;
 
+import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.blockentity.StockpileBlockEntity;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
@@ -12,6 +13,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.enums.BedPart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -89,10 +92,45 @@ public class ColonyCraftMod implements ModInitializer {
 
             for (ColonyData colony : colonies) {
 
+                BlockPos bp = colony.getBannerPos();
+
+                // -- Auto-discover/verify stockpile near banner --
+                {
+                    BlockPos existingSp = colony.getStockpilePos();
+                    if (existingSp != null && !(overworld.getBlockEntity(existingSp) instanceof StockpileBlockEntity)) {
+                        colony.setStockpilePos(null);
+                        mgr.markDirty();
+                    }
+                    if (colony.getStockpilePos() == null && bp != null) {
+                        for (BlockPos scan : BlockPos.iterate(bp.add(-32, -4, -32), bp.add(32, 4, 32))) {
+                            if (overworld.getBlockEntity(scan) instanceof StockpileBlockEntity sbe) {
+                                colony.setStockpilePos(scan.toImmutable());
+                                sbe.setColonyId(colony.getColonyId());
+                                mgr.markDirty();
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 // -- Sync food from stockpile every colony tick --
                 BlockPos sp = colony.getStockpilePos();
                 if (sp != null && overworld.getBlockEntity(sp) instanceof StockpileBlockEntity stockpile) {
+                    stockpile.setColonyId(colony.getColonyId());
                     stockpile.syncFoodToColony();
+                }
+
+                // -- Count beds near banner for population cap --
+                if (bp != null) {
+                    int bedCount = 0;
+                    for (BlockPos scan : BlockPos.iterate(bp.add(-32, -4, -32), bp.add(32, 4, 32))) {
+                        var blockState = overworld.getBlockState(scan);
+                        if (blockState.getBlock() instanceof BedBlock
+                                && blockState.get(BedBlock.PART) == BedPart.HEAD) {
+                            bedCount++;
+                        }
+                    }
+                    colony.setPopulationCap(bedCount);
                 }
 
                 // -- Food consumption (colonists eat from stockpile) --
@@ -110,24 +148,57 @@ public class ColonyCraftMod implements ModInitializer {
 
                 // -- Population growth --
                 if (colony.canSpawnMoreColonists() && colony.getFoodUnits() > 20) {
-                    BlockPos bp = colony.getBannerPos();
-                    if (bp != null) {
+                    BlockPos bannerPos = colony.getBannerPos();
+                    if (bannerPos != null) {
                         ServerWorld world = server.getWorld(World.OVERWORLD);
                         if (world != null) {
-                            ColonistEntity.spawnForColony(world, colony, bp, mgr);
+                            ColonistEntity.spawnForColony(world, colony, bannerPos, mgr);
+                        }
+                    }
+                }
+
+                // -- Auto-spawn guards for unclaimed guard towers --
+                if (colony.canSpawnMoreColonists() && bp != null) {
+                    ServerWorld world = server.getWorld(World.OVERWORLD);
+                    if (world != null) {
+                        for (BlockPos scan : BlockPos.iterate(bp.add(-32, -4, -32), bp.add(32, 4, 32))) {
+                            if (!colony.canSpawnMoreColonists()) break;
+                            var be = world.getBlockEntity(scan);
+                            if (be instanceof JobBlockEntity jb && jb.getJob().isGuard()
+                                    && !jb.hasAssignedColonist()) {
+                                GuardEntity guard = ModEntities.GUARD.create(world,
+                                        net.minecraft.entity.SpawnReason.MOB_SUMMONED);
+                                if (guard != null) {
+                                    BlockPos spawnPos = scan.add(0, 1, 0);
+                                    guard.refreshPositionAndAngles(
+                                            spawnPos.getX() + 0.5, spawnPos.getY(),
+                                            spawnPos.getZ() + 0.5, 0, 0);
+                                    guard.setColonyId(colony.getColonyId());
+                                    guard.setHomePos(scan);
+                                    guard.setGuardJob(jb.getJob());
+                                    jb.assignColonist(guard.getUuid());
+                                    guard.setCustomName(net.minecraft.text.Text.literal("Guard"));
+                                    guard.setCustomNameVisible(true);
+                                    world.spawnEntity(guard);
+                                    world.playSound(null, scan, ModSounds.COLONIST_SPAWN,
+                                            SoundCategory.NEUTRAL, 1.0f, 0.9f);
+                                    colony.addColonist(guard.getUuid());
+                                    mgr.markDirty();
+                                }
+                            }
                         }
                     }
                 }
 
                 // -- Night wave: spawn zombies and skeletons --
                 if (dayTime >= 13000 && dayTime <= 13100) {
-                    BlockPos bp = colony.getBannerPos();
-                    if (bp != null) {
+                    BlockPos wavePos = colony.getBannerPos();
+                    if (wavePos != null) {
                         ServerWorld world = server.getWorld(World.OVERWORLD);
                         if (world != null) {
-                            world.playSound(null, bp, ModSounds.WAVE_HORN,
+                            world.playSound(null, wavePos, ModSounds.WAVE_HORN,
                                     SoundCategory.HOSTILE, 2.0f, 0.8f);
-                            ColonyMonsterEntity.spawnWave(world, colony, bp);
+                            ColonyMonsterEntity.spawnWave(world, colony, wavePos);
                         }
                     }
                     colony.incrementDays();

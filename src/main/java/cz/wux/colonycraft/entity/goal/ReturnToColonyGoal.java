@@ -15,19 +15,11 @@ import java.util.EnumSet;
  */
 public class ReturnToColonyGoal extends Goal {
 
-    private static final long NIGHT_START = 12786;
-    private static final long NIGHT_END   = 23215;
-
     private final ColonistEntity colonist;
 
     public ReturnToColonyGoal(ColonistEntity colonist) {
         this.colonist = colonist;
         setControls(EnumSet.of(Control.MOVE));
-    }
-
-    private boolean isNight() {
-        long time = colonist.getEntityWorld().getTimeOfDay() % 24000L;
-        return time >= NIGHT_START || time <= NIGHT_END - 24000 + 24000;
     }
 
     @Override
@@ -37,7 +29,7 @@ public class ReturnToColonyGoal extends Goal {
 
         boolean starving = colonist.getHungerTicks() >=
                 (int)(ColonistEntity.HUNGER_INTERVAL * 1.5);
-        boolean nightTime = isNight();
+        boolean nightTime = colonist.isNight();
         double distSq = colonist.squaredDistanceTo(home.getX() + 0.5,
                 home.getY() + 0.5, home.getZ() + 0.5);
 

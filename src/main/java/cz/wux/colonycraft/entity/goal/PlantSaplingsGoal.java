@@ -39,6 +39,7 @@ public class PlantSaplingsGoal extends Goal {
         return colonist.getColonistJob() == ColonistJob.FORESTER
                 && !colonist.isWorkCoolingDown()
                 && !colonist.isHungry()
+                && !colonist.isNight()
                 && colonist.getStockpile().map(s -> s.hasItem(Items.OAK_SAPLING, 1)).orElse(false);
     }
 
@@ -90,7 +91,7 @@ public class PlantSaplingsGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return !colonist.isWorkCoolingDown() && !colonist.isHungry();
+        return !colonist.isWorkCoolingDown() && !colonist.isHungry() && !colonist.isNight();
     }
 
     @Override

@@ -150,16 +150,20 @@ public class WorkAtJobGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        return colonist.getColonistJob() != ColonistJob.UNEMPLOYED
-                && !colonist.getColonistJob().isGuard()
-                && !colonist.isWorkCoolingDown()
-                && !colonist.isHungry()
-                && colonist.getJobBlockPos() != null;
+        if (colonist.getColonistJob() == ColonistJob.UNEMPLOYED) return false;
+        if (colonist.getColonistJob().isGuard()) return false;
+        if (colonist.isWorkCoolingDown()) return false;
+        if (colonist.isHungry()) return false;
+        if (colonist.isNight()) return false;
+        // Jobs without requiresBlock can work from homePos
+        if (colonist.getJobBlockPos() == null && colonist.getColonistJob().requiresBlock) return false;
+        return true;
     }
 
     @Override
     public void start() {
         BlockPos target = colonist.getJobBlockPos();
+        if (target == null) target = colonist.getHomePos();
         if (target != null) {
             colonist.getNavigation().startMovingTo(
                     target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 0.9);
@@ -169,6 +173,7 @@ public class WorkAtJobGoal extends Goal {
     @Override
     public void tick() {
         BlockPos jobPos = colonist.getJobBlockPos();
+        if (jobPos == null) jobPos = colonist.getHomePos();
         if (jobPos == null) return;
 
         // Check if close enough to work
@@ -188,8 +193,9 @@ public class WorkAtJobGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return !colonist.isWorkCoolingDown() && !colonist.isHungry()
-                && colonist.getJobBlockPos() != null;
+        if (colonist.isWorkCoolingDown() || colonist.isHungry() || colonist.isNight()) return false;
+        // Jobs without requiresBlock can continue working from homePos
+        return colonist.getJobBlockPos() != null || !colonist.getColonistJob().requiresBlock;
     }
 
     private void performWork() {

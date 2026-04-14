@@ -57,6 +57,7 @@ public class ColonistEntity extends PathAwareEntity {
     @Override
     protected void initGoals() {
         goalSelector.add(1, new ReturnToColonyGoal(this));
+        goalSelector.add(1, new ColonistSleepGoal(this));
         goalSelector.add(2, new ColonistEatGoal(this));
         goalSelector.add(3, new ChopTreeGoal(this));
         goalSelector.add(3, new HarvestCropsGoal(this));
@@ -81,13 +82,26 @@ public class ColonistEntity extends PathAwareEntity {
 
         if (workCooldown > 0) workCooldown--;
 
+        // Dynamically update stockpilePos from colony data if not set
+        if (stockpilePos == null && colonyId != null && getEntityWorld() instanceof ServerWorld sw) {
+            ColonyManager.get(sw.getServer()).getColony(colonyId).ifPresent(colony -> {
+                if (colony.getStockpilePos() != null) {
+                    stockpilePos = colony.getStockpilePos();
+                }
+            });
+        }
+
         // Update status for thought bubble
-        if (hungerTicks > HUNGER_INTERVAL) {
+        if (getPose() == net.minecraft.entity.EntityPose.SLEEPING) {
+            currentStatus = "\u263E Sleeping";
+        } else if (hungerTicks > HUNGER_INTERVAL) {
             currentStatus = "\u2620 Hungry!";
         } else if (workCooldown > 0) {
             currentStatus = "\u2692 Working";
         } else if (job == ColonistJob.UNEMPLOYED) {
             currentStatus = "\u2639 No job";
+        } else if (isNight()) {
+            currentStatus = "\u263E Going to bed";
         } else if (jobBlockPos != null) {
             currentStatus = "\u27A1 Going to work";
         } else {
@@ -127,6 +141,11 @@ public class ColonistEntity extends PathAwareEntity {
     public void startWorkCooldown(int ticks) { workCooldown = ticks; }
 
     public boolean isHungry() { return hungerTicks > HUNGER_INTERVAL; }
+
+    public boolean isNight() {
+        long time = getEntityWorld().getTimeOfDay() % 24000L;
+        return time >= 12786;
+    }
 
     public Optional<StockpileBlockEntity> getStockpile() {
         if (stockpilePos == null) return Optional.empty();

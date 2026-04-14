@@ -1,8 +1,10 @@
 package cz.wux.colonycraft.entity.goal;
 
 import cz.wux.colonycraft.blockentity.StockpileBlockEntity;
+import cz.wux.colonycraft.data.ColonyManager;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.EnumSet;
@@ -23,7 +25,17 @@ public class ColonistEatGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        return eatCooldown <= 0 && colonist.isHungry() && colonist.getStockpilePos() != null;
+        if (eatCooldown > 0 || !colonist.isHungry()) return false;
+        // Try to resolve stockpile from colony if not already set
+        if (colonist.getStockpilePos() == null && colonist.getColonyId() != null
+                && colonist.getEntityWorld() instanceof ServerWorld sw) {
+            ColonyManager.get(sw.getServer()).getColony(colonist.getColonyId()).ifPresent(colony -> {
+                if (colony.getStockpilePos() != null) {
+                    colonist.setStockpilePos(colony.getStockpilePos());
+                }
+            });
+        }
+        return colonist.getStockpilePos() != null;
     }
 
     @Override

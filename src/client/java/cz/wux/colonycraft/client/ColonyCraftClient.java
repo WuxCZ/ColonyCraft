@@ -13,9 +13,11 @@ import cz.wux.colonycraft.client.screen.ResearchScreen;
 import cz.wux.colonycraft.client.screen.StockpileScreen;
 import cz.wux.colonycraft.item.GuidebookItem;
 import cz.wux.colonycraft.item.AreaWandItem;
+import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
 import cz.wux.colonycraft.registry.ModEntities;
+import cz.wux.colonycraft.registry.ModItems;
 import cz.wux.colonycraft.registry.ModScreenHandlers;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,6 +30,9 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collection;
@@ -49,7 +54,7 @@ public class ColonyCraftClient implements ClientModInitializer {
         // Guidebook still works if right-clicked (but not in starter kit)
         GuidebookItem.clientScreenOpener = () -> MinecraftClient.getInstance().setScreen(new GuidebookScreen());
 
-        // Area wand -> job selection screen
+        // Area wand -> job selection screen (shown FIRST before area selection)
         AreaWandItem.clientAreaCompleteHandler = () -> MinecraftClient.getInstance().execute(() ->
             MinecraftClient.getInstance().setScreen(new JobSelectionScreen()));
 
@@ -87,6 +92,37 @@ public class ColonyCraftClient implements ClientModInitializer {
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7bPop:  \u00a7f" + colony.getColonistCount() + "/" + colony.getPopulationCap()), x, y + 22, 0xFFFFFFFF, true);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7eSci:  \u00a7f" + colony.getSciencePoints()),                             x, y + 33, 0xFFFFFFFF, true);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7cDay:  \u00a7f" + colony.getDaysSurvived()),                              x, y + 44, 0xFFFFFFFF, true);
+
+            // -- Area size display above hotbar during wand selection --
+            boolean holdingWand = mc.player.getMainHandStack().isOf(ModItems.AREA_WAND)
+                               || mc.player.getOffHandStack().isOf(ModItems.AREA_WAND);
+            if (holdingWand) {
+                BlockPos[] sel = AreaWandItem.getSelection(mc.player.getUuid());
+                ColonistJob selectedJob = AreaWandItem.getSelectedJob(mc.player.getUuid());
+                if (sel != null && sel[0] != null && selectedJob != null) {
+                    BlockPos other;
+                    if (sel[1] != null) {
+                        other = sel[1];
+                    } else if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+                        other = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
+                    } else {
+                        other = null;
+                    }
+                    if (other != null) {
+                        int w = Math.abs(other.getX() - sel[0].getX()) + 1;
+                        int d = Math.abs(other.getZ() - sel[0].getZ()) + 1;
+                        String sizeText = "\u00a7a" + selectedJob.displayName + ": \u00a7e" + w + "\u00d7" + d;
+                        if (selectedJob.maxAreaSize > 0 && (w > selectedJob.maxAreaSize || d > selectedJob.maxAreaSize)) {
+                            sizeText = "\u00a7c" + selectedJob.displayName + ": \u00a74" + w + "\u00d7" + d + " \u00a7c(max " + selectedJob.maxAreaSize + ")";
+                        }
+                        int textWidth = mc.textRenderer.getWidth(Text.literal(sizeText));
+                        int hx = drawContext.getScaledWindowWidth() / 2 - textWidth / 2;
+                        int hy = drawContext.getScaledWindowHeight() - 59;
+                        drawContext.fill(hx - 4, hy - 2, hx + textWidth + 4, hy + 11, 0xAA000000);
+                        drawContext.drawText(mc.textRenderer, Text.literal(sizeText), hx, hy, 0xFFFFFFFF, true);
+                    }
+                }
+            }
         });
     }
 }
