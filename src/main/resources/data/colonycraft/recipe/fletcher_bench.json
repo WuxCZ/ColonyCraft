@@ -1,0 +1,11 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["SFS","PPP","___"],
+  "key": {
+    "S": {"item": "minecraft:stick"},
+    "F": {"item": "minecraft:feather"},
+    "P": {"item": "minecraft:oak_planks"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:fletcher_bench","count": 1}
+}

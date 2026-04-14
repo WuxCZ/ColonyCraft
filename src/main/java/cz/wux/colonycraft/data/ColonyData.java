@@ -28,7 +28,8 @@ public class ColonyData {
 
     // ── Population ────────────────────────────────────────────────────────────
     private final List<UUID> colonistUuids = new ArrayList<>();
-    private int populationCap = 4;
+    /** Hard cap on colonist count. Grows by 1 per in-game day survived (base 2). */
+    private int populationCap = 2;
 
     // ── Resources ─────────────────────────────────────────────────────────────
     /** Food units currently in stockpile. Each "meal" = 1 unit. */
@@ -150,12 +151,11 @@ public class ColonyData {
 
     public void addFood(int amount) {
         foodUnits = Math.min(foodUnits + amount, 9999);
-        recalcPopCap();
     }
 
     private void recalcPopCap() {
-        // Every 10 food = +1 pop cap above base of 4, up to 50
-        populationCap = Math.min(50, 4 + (foodUnits / 10));
+        // Pop cap grows with days survived: base 2 + 1 per day, max 50
+        populationCap = Math.min(50, 2 + daysSurvived);
     }
 
     public boolean isJobUnlocked(ColonistJob job) {
@@ -189,7 +189,7 @@ public class ColonyData {
     public int getFoodUnits()       { return foodUnits; }
     public int getSciencePoints()   { return sciencePoints; }
     public int getDaysSurvived()    { return daysSurvived; }
-    public void incrementDays()     { daysSurvived++; }
+    public void incrementDays()     { daysSurvived++; recalcPopCap(); }
 
     public long getNextWaveDayTime()               { return nextWaveDayTime; }
     public void setNextWaveDayTime(long t)         { this.nextWaveDayTime = t; }

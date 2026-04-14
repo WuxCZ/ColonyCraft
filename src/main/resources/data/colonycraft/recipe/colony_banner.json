@@ -1,0 +1,11 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["WWW","WRW","_S_"],
+  "key": {
+    "W": {"item": "minecraft:white_wool"},
+    "R": {"item": "minecraft:red_wool"},
+    "S": {"item": "minecraft:stick"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:colony_banner","count": 1}
+}

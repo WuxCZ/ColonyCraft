@@ -1,0 +1,10 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["SPS","SSS","___"],
+  "key": {
+    "S": {"item": "minecraft:cobblestone"},
+    "P": {"item": "minecraft:iron_pickaxe"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:miner_hut","count": 1}
+}

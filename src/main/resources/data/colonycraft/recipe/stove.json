@@ -1,0 +1,10 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IFI","I_I","III"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "F": {"item": "minecraft:furnace"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:stove","count": 1}
+}

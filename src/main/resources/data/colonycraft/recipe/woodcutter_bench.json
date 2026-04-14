@@ -1,0 +1,11 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["LAL","PPP","___"],
+  "key": {
+    "L": {"item": "minecraft:oak_log"},
+    "A": {"item": "minecraft:iron_axe"},
+    "P": {"item": "minecraft:oak_planks"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:woodcutter_bench","count": 1}
+}

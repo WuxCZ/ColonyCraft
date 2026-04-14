@@ -1,60 +1,174 @@
-# ColonyCraft
+﻿<div align="center">
 
-> **Colony Survival mechanics recreated inside Minecraft as a Fabric mod.**
+```
+ ██████╗ ██████╗ ██╗      ██████╗ ███╗   ██╗██╗   ██╗ ██████╗██████╗  █████╗ ███████╗████████╗
+██╔════╝██╔═══██╗██║     ██╔═══██╗████╗  ██║╚██╗ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
+██║     ██║   ██║██║     ██║   ██║██╔██╗ ██║ ╚████╔╝ ██║     ██████╔╝███████║█████╗     ██║   
+██║     ██║   ██║██║     ██║   ██║██║╚██╗██║  ╚██╔╝  ██║     ██╔══██╗██╔══██║██╔══╝     ██║   
+╚██████╗╚██████╔╝███████╗╚██████╔╝██║ ╚████║   ██║   ╚██████╗██║  ██║██║  ██║██║        ██║   
+ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝  
+```
 
-ColonyCraft ports the core gameplay loop of [Colony Survival](https://store.steampowered.com/app/366090/Colony_Survival/) into Minecraft 1.21.11 using the [Fabric](https://fabricmc.net/) modloader.
+### Colony Survival mechanics — rebuilt from scratch inside Minecraft
+
+[![Build](https://github.com/WuxCZ/ColonyCraft/actions/workflows/build.yml/badge.svg)](https://github.com/WuxCZ/ColonyCraft/actions/workflows/build.yml)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-62b47a?logo=minecraft&logoColor=white)
+![Fabric](https://img.shields.io/badge/Fabric-0.19.1-dbb468?logo=curseforge&logoColor=white)
+![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-blue)
+![Status](https://img.shields.io/badge/Status-Active%20Dev-brightgreen)
+
+<br/>
+
+> **What if Colony Survival and Minecraft had a baby?**  
+> ColonyCraft is a Fabric mod that recreates the full Colony Survival gameplay loop — colonists with jobs, nightly monster waves, food economy, research, and colony management — all inside vanilla Minecraft.
+
+</div>
 
 ---
 
-## Features
+## ✨ Feature Overview
 
-### Colony Management
+<table>
+<tr>
+<td width="50%">
+
+**🏰 Colony Management**
 - Place a **Colony Banner** to found your colony
-- Colonies persist across sessions (saved with world data via `PersistentState`)
-- Track food reserves, science points, population cap, and days survived
+- Track food, science, population and days survived
+- Colony data persists across sessions via `PersistentState`
+- **Colony HUD** shows real-time status top-left of your screen
 
-### 27 Colonist Jobs
-All major jobs from Colony Survival are implemented as craftable job blocks:
+</td>
+<td width="50%">
+
+**👷 27 Colonist Jobs**
+- Every major job from Colony Survival
+- Colonists auto-claim job blocks near the banner
+- Each job has custom visual appearance (vanilla entity skin reuse)
+- Jobs produce items into and take inputs from the Stockpile
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**⚔️ Nightly Waves**
+- Waves spawn at dusk every in-game day
+- Wave size = `4 + days × 2`, HP scales with time
+- **Guard colonists** patrol and shoot hostile mobs
+- Survive long enough and your colony grows unstoppable
+
+</td>
+<td width="50%">
+
+**🔬 Research & Economy**
+- Researchers produce science points
+- Science points unlock new job types
+- Food economy — colonists eat and die without supply
+- 54-slot Stockpile GUI is the colony's heart
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🗂️ All Jobs
 
 | Category | Jobs |
 |---|---|
-| **Resource gathering** | Woodcutter, Forester, Miner, Farmer, Berry Farmer, Fisherman, Water Gatherer |
-| **Processing** | Cook, Smelter (Bloomery), Blacksmith (Blast Furnace), Tanner, Tailor, Fletcher, Stonemason, Composter, Grinder, Potter, Glassblower |
-| **Science** | Researcher, Alchemist |
-| **Beekeeping / Farming** | Beekeeper, Chicken Farmer |
-| **Defense** | Guard (Bow), Guard (Crossbow), Guard (Musket) |
-
-### AI Colonists
-- Colonists automatically claim nearby unclaimed job blocks
-- **WorkAtJobGoal** — colonists walk to their job block, withdraw inputs from the Stockpile, and deposit outputs
-- **ColonistEatGoal** — colonists consume food from the Stockpile when hungry; they die after ~20 minutes without food
-- **ReturnToColonyGoal** — colonists return home when idle or lost
-- 18+ mapped production recipes mirroring Colony Survival output rates
-
-### Guards
-- Guard colonists shoot arrows at hostile mobs near the banner radius
-- **GuardPatrolGoal** — patrols 24-block radius around the colony
-
-### Nightly Waves
-- At dusk (game time 13 000) a wave of **ColonyMonster** entities spawns
-- Wave size: `4 + daysSurvived × 2`
-- Monster HP scales with days: `20 + (days / 5) × 10`
-
-### Stockpile
-- 54-slot inventory block (double-chest layout)
-- Automatically tracks 19 food items and syncs food count to the colony
-- Full GUI accessible by right-clicking
-
-### Research
-- **Research Table** block accumulates science points produced by Researchers
-- Science points unlock new job types (extensible)
-
-### Job Assignment Book
-- Right-click any job block with the Job Assignment Book to see its job type and assigned colonist
+| 🌲 **Gathering** | Woodcutter, Forester, Miner, Farmer, Berry Farmer, Fisherman, Water Gatherer |
+| 🔥 **Processing** | Cook, Smelter, Blacksmith, Tanner, Tailor, Fletcher, Stonemason, Composter, Grinder, Potter, Glassblower |
+| 🔭 **Science** | Researcher, Alchemist |
+| 🐝 **Animals** | Beekeeper, Chicken Farmer |
+| 🏹 **Defense** | Guard (Bow), Guard (Crossbow), Guard (Musket) |
 
 ---
 
-## Requirements
+## 🚀 Getting Started (In-Game)
+
+```
+1. Craft a Colony Banner and place it in the ground
+2. Craft a Stockpile and place it within 64 blocks of the banner
+3. Fill the Stockpile with food (bread, cooked fish, etc.)
+4. Craft any job block and place it near the banner
+5. Colonists spawn automatically — up to your population cap
+6. Survive the nightly wave at dusk!
+```
+
+> Population cap starts at **2** and grows by +1 per in-game day survived.
+
+---
+
+## 🔨 Key Crafting Recipes
+
+| Item | Recipe |
+|---|---|
+| **Colony Banner** | White wool (top row) + Red wool center + Stick |
+| **Stockpile** | Oak planks ring (like a chest) |
+| **Job Assignment Book** | Book + Paper + Oak planks |
+| **Guidebook** | Feather + Book + Paper + Ink Sac |
+| **Woodcutter Bench** | Oak log + Iron axe + Planks |
+| **Guard Tower** | Stone + Bow + Iron ingot |
+
+*All 26 job blocks have unique shaped recipes. Open the recipe book in-game (press **E → Recipe Book**).*
+
+---
+
+## 🖥️ HUD
+
+When you have an active colony, a status panel appears top-left:
+
+```
+[Colony] PlayerName
+Food:  42
+Pop:   2/3
+Sci:   15
+Day:   4
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── main/java/cz/wux/colonycraft/
+│   ├── block/           – ColonyBanner, Stockpile + 24 job blocks
+│   ├── blockentity/     – BlockEntity implementations + screen handlers
+│   ├── data/            – ColonistJob enum, ColonyData, ColonyManager
+│   ├── entity/          – ColonistEntity, GuardEntity, ColonyMonsterEntity
+│   │   └── goal/        – AI goals: Work, Eat, Return, Patrol, Wave
+│   ├── item/            – JobAssignmentBook, GuidebookItem
+│   ├── registry/        – ModBlocks, ModItems, ModEntities, ModScreenHandlers
+│   └── screen/          – Stockpile + ColonyBanner screen handlers
+└── client/java/cz/wux/colonycraft/client/
+    ├── render/          – ColonistEntityRenderer (per-job textures), Guards
+    └── screen/          – Stockpile GUI, ColonyBanner GUI
+```
+
+---
+
+## ⚙️ Building from Source
+
+**Requirements:** Java 21, Git
+
+```bash
+git clone https://github.com/WuxCZ/ColonyCraft.git
+cd ColonyCraft
+./gradlew build
+# → build/libs/colonycraft-1.0.0.jar
+```
+
+**Run the dev client:**
+```bash
+./gradlew runClient
+```
+
+---
+
+## 📦 Dependencies
 
 | Dependency | Version |
 |---|---|
@@ -65,61 +179,37 @@ All major jobs from Colony Survival are implemented as craftable job blocks:
 
 ---
 
-## Building from source
+## 🧩 What Still Needs Work
 
-```bash
-git clone https://github.com/WuxCZ/colonycraft.git
-cd colonycraft
-./gradlew build
-# Output: build/libs/colonycraft-1.0.0.jar
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full task list and how to help.
 
----
-
-## Installation
-
-1. Install [Fabric Loader 0.19.1+](https://fabricmc.net/use/installer/) for Minecraft 1.21.11
-2. Download [Fabric API](https://modrinth.com/mod/fabric-api) for 1.21.11
-3. Drop both JARs into your `.minecraft/mods/` folder
-4. Launch and enjoy!
+Quick overview of what's missing or rough:
+- [ ] Custom colonist models (currently reuses vanilla entity skins)
+- [ ] Colony border visual (particle or block outline)
+- [ ] Sound effects for jobs and waves
+- [ ] More production recipes (currently ~18 mapped)
+- [ ] Research tree GUI
+- [ ] Multiplayer — each player owns their own colony, no conflicts yet tested
+- [ ] Balance pass on wave difficulty and food consumption rates
 
 ---
 
-## Getting started in-game
+## 🤝 Contributing
 
-1. Craft a **Colony Banner** (gold block recipe) and place it
-2. Craft a **Stockpile** and place it within 64 blocks of the banner
-3. Fill the Stockpile with food (bread, fish, etc.)
-4. Craft job blocks and place them near the banner
-5. Colonists will spawn automatically up to your population cap
-6. Survive the nightly waves!
+Contributions are very welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md) to get up to speed quickly.
 
 ---
 
-## Project structure
+## 📜 License
 
-```
-src/
-├── main/java/cz/wux/colonycraft/
-│   ├── block/          # ColonyBanner, Stockpile, ResearchTable + 23 job blocks
-│   ├── blockentity/    # BlockEntity implementations
-│   ├── data/           # ColonistJob enum, ColonyData, ColonyManager
-│   ├── entity/         # ColonistEntity, GuardEntity, ColonyMonsterEntity
-│   │   └── goal/       # AI goals (Work, Eat, Return, Patrol)
-│   ├── item/           # JobAssignmentBook
-│   ├── registry/       # ModBlocks, ModItems, ModEntities, …
-│   └── screen/         # GUI screen handlers
-└── client/java/cz/wux/colonycraft/client/
-    ├── render/         # Entity renderers
-    └── screen/         # GUI screens
-```
+MIT — do whatever you want with this code.
 
 ---
 
-## License
+<div align="center">
 
-MIT — do whatever you want with this.
+Made with ☕ by **[WuxCZ](https://github.com/WuxCZ)**
 
----
+*Inspired by [Colony Survival](https://store.steampowered.com/app/366090/Colony_Survival/) by Pipliz*
 
-*Made by [WuxCZ](https://github.com/WuxCZ)*
+</div>

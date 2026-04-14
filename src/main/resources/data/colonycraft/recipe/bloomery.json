@@ -1,0 +1,10 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["SIS","S_S","SSS"],
+  "key": {
+    "S": {"item": "minecraft:cobblestone"},
+    "I": {"item": "minecraft:iron_ingot"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:bloomery","count": 1}
+}

@@ -1,0 +1,10 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["CCC","PPP","___"],
+  "key": {
+    "C": {"item": "minecraft:clay_ball"},
+    "P": {"item": "minecraft:oak_planks"},
+    "_": {"item": "minecraft:air"}
+  },
+  "result": {"id": "colonycraft:pottery_station","count": 1}
+}
