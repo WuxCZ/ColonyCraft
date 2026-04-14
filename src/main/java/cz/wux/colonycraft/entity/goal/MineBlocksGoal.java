@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.entity.goal;
 
+import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.block.BlockState;
@@ -105,33 +106,24 @@ public class MineBlocksGoal extends Goal {
     }
 
     private BlockPos findMineTarget() {
-        BlockPos center = colonist.getJobBlockPos();
-        if (center == null) center = colonist.getHomePos();
-        if (center == null) return null;
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
 
         World world  = colonist.getEntityWorld();
-        int r        = SEARCH_RADIUS;
-        // Search downward preferentially (miners go underground)
         BlockPos best   = null;
         double bestD    = Double.MAX_VALUE;
-        // Prioritise ores, fallback to stone
-        // First pass: ores
-        for (BlockPos p : BlockPos.iterate(
-                center.add(-r, -16, -r), center.add(r, 2, r))) {
+        // First pass: ores (higher priority)
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             BlockState s = world.getBlockState(p);
-            if (s.isIn(BlockTags.COAL_ORES) || s.isIn(BlockTags.IRON_ORES)
-                    || s.isIn(BlockTags.STONE_ORE_REPLACEABLES)) {
-                if (!s.isIn(BlockTags.STONE_ORE_REPLACEABLES)) { // actual ore
-                    double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
-                    if (d < bestD) { bestD = d; best = p.toImmutable(); }
-                }
+            if (s.isIn(BlockTags.COAL_ORES) || s.isIn(BlockTags.IRON_ORES)) {
+                double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
+                if (d < bestD) { bestD = d; best = p.toImmutable(); }
             }
         }
         if (best != null) return best;
 
         // Second pass: plain stone / deepslate
-        for (BlockPos p : BlockPos.iterate(
-                center.add(-r, -16, -r), center.add(r, 2, r))) {
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             BlockState s = world.getBlockState(p);
             if (s.isOf(Blocks.STONE) || s.isOf(Blocks.DEEPSLATE) || s.isOf(Blocks.COBBLESTONE)) {
                 double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
@@ -139,6 +131,19 @@ public class MineBlocksGoal extends Goal {
             }
         }
         return best;
+    }
+
+    /** Returns [min, max] — CS-style area if defined, else default radius. */
+    private BlockPos[] getSearchBounds() {
+        var jobBlock = colonist.getJobBlock();
+        if (jobBlock.isPresent() && jobBlock.get().hasArea()) {
+            return new BlockPos[]{ jobBlock.get().getAreaMin(), jobBlock.get().getAreaMax() };
+        }
+        BlockPos center = colonist.getJobBlockPos();
+        if (center == null) center = colonist.getHomePos();
+        if (center == null) return null;
+        int r = SEARCH_RADIUS;
+        return new BlockPos[]{ center.add(-r, -16, -r), center.add(r, 2, r) };
     }
 
     private boolean isMineableBlock(BlockState state) {

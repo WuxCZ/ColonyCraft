@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["DP ","BP ","   "],
-  "key": {
-    "D": {"id": "minecraft:oak_planks"},
-    "B": {"id": "minecraft:book"},
-    "P": {"id": "minecraft:paper"}
-  },
-  "result": {"id": "colonycraft:job_assignment_book","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "DP ",
+                    "BP ",
+                    "   "
+                ],
+    "key":  {
+                "D":  "minecraft:oak_planks",
+                "B":  "minecraft:book",
+                "P":  "minecraft:paper"
+            },
+    "result":  {
+                   "id":  "colonycraft:job_assignment_book",
+                   "count":  1
+               }
 }

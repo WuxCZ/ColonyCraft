@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["WHW","PPP","   "],
-  "key": {
-    "W": {"id": "minecraft:wheat_seeds"},
-    "H": {"id": "minecraft:wooden_hoe"},
-    "P": {"id": "minecraft:oak_planks"}
-  },
-  "result": {"id": "colonycraft:farmer_hut","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "WHW",
+                    "PPP",
+                    "   "
+                ],
+    "key":  {
+                "W":  "minecraft:wheat_seeds",
+                "H":  "minecraft:wooden_hoe",
+                "P":  "minecraft:oak_planks"
+            },
+    "result":  {
+                   "id":  "colonycraft:farmer_hut",
+                   "count":  1
+               }
 }

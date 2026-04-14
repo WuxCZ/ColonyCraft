@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.UUID;
 
 /**
  * A colonist NPC. They path-find to their assigned job block, perform work
@@ -49,6 +50,7 @@ public class ColonistEntity extends PathAwareEntity {
 
     public ColonistEntity(EntityType<? extends ColonistEntity> type, World world) {
         super(type, world);
+        this.setPersistent();
     }
 
     // ── Attributes ────────────────────────────────────────────────────────────
@@ -154,10 +156,37 @@ public class ColonistEntity extends PathAwareEntity {
      */
     public static void spawnForColony(ServerWorld world, ColonyData colony,
                                       BlockPos bannerPos, ColonyManager mgr) {
+        // First, find an unclaimed job block to decide if we need a guard or colonist
+        JobBlockEntity targetJob = findUnclaimedJob(world, colony, bannerPos);
+
+        // If target is a guard job → spawn GuardEntity instead
+        if (targetJob != null && targetJob.getJob().isGuard()) {
+            GuardEntity guard = ModEntities.GUARD.create(world, SpawnReason.MOB_SUMMONED);
+            if (guard == null) return;
+
+            BlockPos spawnPos = bannerPos.add(
+                    world.random.nextInt(7) - 3, 1, world.random.nextInt(7) - 3);
+            guard.refreshPositionAndAngles(
+                    spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, 0, 0);
+            guard.setColonyId(colony.getColonyId());
+            guard.setHomePos(bannerPos);
+            guard.setGuardJob(targetJob.getJob());
+            targetJob.assignColonist(guard.getUuid());
+            guard.setCustomName(net.minecraft.text.Text.literal(targetJob.getJob().displayName));
+            guard.setCustomNameVisible(true);
+
+            world.spawnEntity(guard);
+            world.playSound(null, bannerPos, cz.wux.colonycraft.registry.ModSounds.COLONIST_SPAWN,
+                    net.minecraft.sound.SoundCategory.NEUTRAL, 1.0f, 0.9f + world.random.nextFloat() * 0.2f);
+            colony.addColonist(guard.getUuid());
+            mgr.markDirty();
+            return;
+        }
+
+        // Normal colonist
         ColonistEntity colonist = ModEntities.COLONIST.create(world, SpawnReason.MOB_SUMMONED);
         if (colonist == null) return;
 
-        // Find a spot near the banner
         BlockPos spawnPos = bannerPos.add(
                 world.random.nextInt(7) - 3, 1, world.random.nextInt(7) - 3);
 
@@ -167,10 +196,14 @@ public class ColonistEntity extends PathAwareEntity {
         colonist.setHomePos(bannerPos);
         if (colony.getStockpilePos() != null) colonist.setStockpilePos(colony.getStockpilePos());
 
-        // Auto-assign to an unclaimed job block nearby
-        autoAssignJob(world, colonist, colony, bannerPos);
+        // Auto-assign to the found job block (non-guard)
+        if (targetJob != null) {
+            targetJob.assignColonist(colonist.getUuid());
+            colonist.setColonistJob(targetJob.getJob());
+            colonist.setJobBlockPos(BlockPos.ofFloored(
+                    targetJob.getPos().getX(), targetJob.getPos().getY(), targetJob.getPos().getZ()));
+        }
 
-        // Name tag: show job above head
         String jobLabel = colonist.job == ColonistJob.UNEMPLOYED
                 ? "Colonist" : colonist.job.displayName;
         colonist.setCustomName(net.minecraft.text.Text.literal(jobLabel));
@@ -183,22 +216,18 @@ public class ColonistEntity extends PathAwareEntity {
         mgr.markDirty();
     }
 
-    private static void autoAssignJob(ServerWorld world, ColonistEntity colonist,
-                                      ColonyData colony, BlockPos bannerPos) {
-        // Scan a 32-block radius for unoccupied job blocks
+    /** Find first unclaimed, unlocked job block within 32 blocks of banner. */
+    private static JobBlockEntity findUnclaimedJob(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
         for (BlockPos candidate : BlockPos.iterate(bannerPos.add(-16, -4, -16),
                                                     bannerPos.add(16, 4, 16))) {
             var be = world.getBlockEntity(candidate);
             if (be instanceof JobBlockEntity jb
                     && !jb.hasAssignedColonist()
                     && colony.isJobUnlocked(jb.getJob())) {
-                jb.assignColonist(colonist.getUuid());
-                colonist.setColonistJob(jb.getJob());
-                colonist.setJobBlockPos(candidate.toImmutable());
-                return;
+                return jb;
             }
         }
-        // No job block found — colonist stays unemployed and wanders
+        return null;
     }
 
     // ── NBT ───────────────────────────────────────────────────────────────────

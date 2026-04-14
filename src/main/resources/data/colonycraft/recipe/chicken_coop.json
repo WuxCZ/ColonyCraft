@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["FEF","PPP","   "],
-  "key": {
-    "F": {"id": "minecraft:feather"},
-    "E": {"id": "minecraft:egg"},
-    "P": {"id": "minecraft:oak_planks"}
-  },
-  "result": {"id": "colonycraft:chicken_coop","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "FEF",
+                    "PPP",
+                    "   "
+                ],
+    "key":  {
+                "F":  "minecraft:feather",
+                "E":  "minecraft:egg",
+                "P":  "minecraft:oak_planks"
+            },
+    "result":  {
+                   "id":  "colonycraft:chicken_coop",
+                   "count":  1
+               }
 }

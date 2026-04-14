@@ -34,6 +34,7 @@ public class ModItemGroups {
                         entries.add(ModItems.STOCKPILE_ITEM);
                         entries.add(ModItems.RESEARCH_TABLE_ITEM);
                         entries.add(ModItems.JOB_ASSIGNMENT_BOOK);
+                        entries.add(ModItems.AREA_WAND);
 
                         // Resource gathering jobs
                         entries.add(ModItems.WOODCUTTER_BENCH_ITEM);

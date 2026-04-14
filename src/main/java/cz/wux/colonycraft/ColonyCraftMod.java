@@ -73,6 +73,7 @@ public class ColonyCraftMod implements ModInitializer {
                 player.getInventory().setStack(1, new ItemStack(ModItems.STOCKPILE_ITEM));
                 player.getInventory().setStack(2, new ItemStack(ModItems.JOB_ASSIGNMENT_BOOK));
                 player.getInventory().setStack(3, new ItemStack(ModItems.GUIDEBOOK));
+                player.getInventory().setStack(4, new ItemStack(ModItems.AREA_WAND));
                 player.sendMessage(Text.literal(
                         "§6§lWelcome to ColonyCraft! §r§7Right-click the §aGuide Book§7 in your hotbar to learn how to play."), false);
             });

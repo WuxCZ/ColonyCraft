@@ -25,6 +25,9 @@ public class JobBlockEntity extends BlockEntity {
     private ColonistJob job = ColonistJob.UNEMPLOYED;
     private UUID assignedColonistId;
     private UUID colonyId;
+    /** CS-style work area: colonist searches within this rectangle instead of a fixed radius. */
+    private BlockPos areaMin;
+    private BlockPos areaMax;
 
     public JobBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.JOB_BLOCK, pos, state);
@@ -43,6 +46,13 @@ public class JobBlockEntity extends BlockEntity {
     public UUID getColonyId()                             { return colonyId; }
     public void setColonyId(UUID id)                      { this.colonyId = id; markDirty(); }
 
+    public BlockPos getAreaMin()                          { return areaMin; }
+    public BlockPos getAreaMax()                          { return areaMax; }
+    public boolean  hasArea()                             { return areaMin != null && areaMax != null; }
+    public void setArea(BlockPos min, BlockPos max)       {
+        this.areaMin = min; this.areaMax = max; markDirty();
+    }
+
     public Text getJobDisplay() {
         return Text.of(job.displayName + " Workstation");
     }
@@ -54,6 +64,12 @@ public class JobBlockEntity extends BlockEntity {
         view.putString("Job", job.name());
         if (assignedColonistId != null) view.putIntArray("AssignedColonist", Uuids.toIntArray(assignedColonistId));
         if (colonyId != null)           view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
+        if (areaMin != null) {
+            view.putInt("AreaMinX", areaMin.getX()); view.putInt("AreaMinY", areaMin.getY()); view.putInt("AreaMinZ", areaMin.getZ());
+        }
+        if (areaMax != null) {
+            view.putInt("AreaMaxX", areaMax.getX()); view.putInt("AreaMaxY", areaMax.getY()); view.putInt("AreaMaxZ", areaMax.getZ());
+        }
     }
 
     @Override
@@ -61,6 +77,10 @@ public class JobBlockEntity extends BlockEntity {
         try { job = ColonistJob.valueOf(view.getString("Job", "UNEMPLOYED")); }
         catch (IllegalArgumentException ignored) { job = ColonistJob.UNEMPLOYED; }
         assignedColonistId = view.getOptionalIntArray("AssignedColonist").map(Uuids::toUuid).orElse(null);
-        colonyId           = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
-    }
+        colonyId           = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);        int aMinX = view.getInt("AreaMinX", Integer.MIN_VALUE);
+        if (aMinX != Integer.MIN_VALUE)
+            areaMin = new BlockPos(aMinX, view.getInt("AreaMinY", 0), view.getInt("AreaMinZ", 0));
+        int aMaxX = view.getInt("AreaMaxX", Integer.MIN_VALUE);
+        if (aMaxX != Integer.MIN_VALUE)
+            areaMax = new BlockPos(aMaxX, view.getInt("AreaMaxY", 0), view.getInt("AreaMaxZ", 0));    }
 }

@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["SHS","PPP","   "],
-  "key": {
-    "S": {"id": "minecraft:oak_sapling"},
-    "H": {"id": "minecraft:wooden_hoe"},
-    "P": {"id": "minecraft:oak_planks"}
-  },
-  "result": {"id": "colonycraft:forester_hut","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "SHS",
+                    "PPP",
+                    "   "
+                ],
+    "key":  {
+                "S":  "minecraft:oak_sapling",
+                "H":  "minecraft:wooden_hoe",
+                "P":  "minecraft:oak_planks"
+            },
+    "result":  {
+                   "id":  "colonycraft:forester_hut",
+                   "count":  1
+               }
 }

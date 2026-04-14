@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.entity.goal;
 
+import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.block.BlockState;
@@ -100,20 +101,30 @@ public class PlantSaplingsGoal extends Goal {
     }
 
     private BlockPos findPlantingSpot() {
-        BlockPos center = colonist.getJobBlockPos();
-        if (center == null) center = colonist.getHomePos();
-        if (center == null) return null;
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
 
         World world = colonist.getEntityWorld();
-        int r       = SEARCH_RADIUS;
-        for (BlockPos p : BlockPos.iterate(center.add(-r, -2, -r), center.add(r, 4, r))) {
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             if (!world.getBlockState(p).isAir()) continue;
             if (!isGround(world.getBlockState(p.down()))) continue;
-            // Must have sunlight (open sky or torchlit)
             if (world.getLightLevel(p) < 8 && !world.isSkyVisible(p)) continue;
             return p.toImmutable();
         }
         return null;
+    }
+
+    /** Returns [min, max] — CS-style area if defined, else default radius. */
+    private BlockPos[] getSearchBounds() {
+        var jobBlock = colonist.getJobBlock();
+        if (jobBlock.isPresent() && jobBlock.get().hasArea()) {
+            return new BlockPos[]{ jobBlock.get().getAreaMin(), jobBlock.get().getAreaMax() };
+        }
+        BlockPos center = colonist.getJobBlockPos();
+        if (center == null) center = colonist.getHomePos();
+        if (center == null) return null;
+        int r = SEARCH_RADIUS;
+        return new BlockPos[]{ center.add(-r, -2, -r), center.add(r, 4, r) };
     }
 
     private boolean isGround(BlockState s) {

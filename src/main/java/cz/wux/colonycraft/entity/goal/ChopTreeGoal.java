@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.entity.goal;
 
+import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.block.BlockState;
@@ -117,17 +118,14 @@ public class ChopTreeGoal extends Goal {
     }
 
     private BlockPos findNearestLog() {
-        BlockPos center = colonist.getJobBlockPos();
-        if (center == null) center = colonist.getHomePos();
-        if (center == null) return null;
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
 
         World world   = colonist.getEntityWorld();
         BlockPos best = null;
         double bestD  = Double.MAX_VALUE;
 
-        int r = SEARCH_RADIUS;
-        for (BlockPos p : BlockPos.iterate(
-                center.add(-r, -4, -r), center.add(r, 20, r))) {
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             if (!world.getBlockState(p).isIn(BlockTags.LOGS)) continue;
             double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
             if (d < bestD) {
@@ -136,6 +134,19 @@ public class ChopTreeGoal extends Goal {
             }
         }
         return best;
+    }
+
+    /** Returns [min, max] — CS-style area if defined, else default radius. */
+    private BlockPos[] getSearchBounds() {
+        var jobBlock = colonist.getJobBlock();
+        if (jobBlock.isPresent() && jobBlock.get().hasArea()) {
+            return new BlockPos[]{ jobBlock.get().getAreaMin(), jobBlock.get().getAreaMax() };
+        }
+        BlockPos center = colonist.getJobBlockPos();
+        if (center == null) center = colonist.getHomePos();
+        if (center == null) return null;
+        int r = SEARCH_RADIUS;
+        return new BlockPos[]{ center.add(-r, -4, -r), center.add(r, 20, r) };
     }
 
     private void moveToLog(BlockPos log) {

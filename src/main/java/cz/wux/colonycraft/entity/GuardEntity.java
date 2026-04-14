@@ -52,15 +52,9 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     @Override
     protected void initGoals() {
-        // Attack interval differs by weapon: BOW=20t, CROSSBOW=14t, MUSKET=40t
-        int attackInterval = switch (guardJob) {
-            case GUARD_CROSSBOW -> 14;
-            case GUARD_MUSKET   -> 40;
-            default             -> 20;
-        };
-        goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, attackInterval, 15.0f));
-        goalSelector.add(2, new GuardPatrolGoal(this));
-        goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        // NOTE: guardJob may not yet be loaded from NBT at this point.
+        // Use BOW defaults; the actual attack interval is recalculated in tick().
+        goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
         goalSelector.add(4, new LookAroundGoal(this));
 
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));
@@ -77,7 +71,7 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
         double dz = target.getZ() - getZ();
         double dist = Math.sqrt(dx*dx + dz*dz) * 0.2;
 
-        // Weapon-specific damage and speed
+        // Weapon-specific damage and speed (read current guardJob, not the one from initGoals)
         float speed  = 1.6f;
         float damage = 2.0f;
         if (guardJob == ColonistJob.GUARD_CROSSBOW) { speed = 2.2f; damage = 3.0f; }
@@ -85,6 +79,10 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
         arrow.setVelocity(dx, dy + dist, dz, speed, 14 - getEntityWorld().getDifficulty().getId() * 4);
         arrow.setDamage(damage);
+        // Play sound
+        getEntityWorld().playSound(null, getBlockPos(),
+                net.minecraft.sound.SoundEvents.ENTITY_ARROW_SHOOT,
+                net.minecraft.sound.SoundCategory.NEUTRAL, 1.0f, 1.0f);
         getEntityWorld().spawnEntity(arrow);
     }
 

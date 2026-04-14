@@ -1,9 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["PPP","BBB","PPP"],
-  "key": {
-    "P": {"id": "minecraft:oak_planks"},
-    "B": {"id": "minecraft:bookshelf"}
-  },
-  "result": {"id": "colonycraft:research_table","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "PPP",
+                    "BBB",
+                    "PPP"
+                ],
+    "key":  {
+                "P":  "minecraft:oak_planks",
+                "B":  "minecraft:bookshelf"
+            },
+    "result":  {
+                   "id":  "colonycraft:research_table",
+                   "count":  1
+               }
 }

@@ -1,8 +1,15 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["PPP","P P","PPP"],
-  "key": {
-    "P": {"id": "minecraft:oak_planks"}
-  },
-  "result": {"id": "colonycraft:stockpile","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "PPP",
+                    "P P",
+                    "PPP"
+                ],
+    "key":  {
+                "P":  "minecraft:oak_planks"
+            },
+    "result":  {
+                   "id":  "colonycraft:stockpile",
+                   "count":  1
+               }
 }

@@ -1,24 +1,37 @@
 package cz.wux.colonycraft.client;
 
+import cz.wux.colonycraft.client.render.AreaWandRenderer;
 import cz.wux.colonycraft.client.render.ColonistEntityRenderer;
+import cz.wux.colonycraft.client.render.ColonyBorderRenderer;
 import cz.wux.colonycraft.client.render.ColonyMonsterRenderer;
 import cz.wux.colonycraft.client.render.GuardEntityRenderer;
 import cz.wux.colonycraft.client.screen.ColonyBannerScreen;
+import cz.wux.colonycraft.client.screen.ColonyManagementScreen;
+import cz.wux.colonycraft.client.screen.GuidebookScreen;
 import cz.wux.colonycraft.client.screen.ResearchScreen;
 import cz.wux.colonycraft.client.screen.StockpileScreen;
+import cz.wux.colonycraft.item.GuidebookItem;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
 import cz.wux.colonycraft.registry.ModEntities;
 import cz.wux.colonycraft.registry.ModScreenHandlers;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Collection;
 
 public class ColonyCraftClient implements ClientModInitializer {
+
+    private static KeyBinding colonyManagementKey;
 
     @Override
     public void onInitializeClient() {
@@ -29,6 +42,30 @@ public class ColonyCraftClient implements ClientModInitializer {
         HandledScreens.register(ModScreenHandlers.STOCKPILE,     StockpileScreen::new);
         HandledScreens.register(ModScreenHandlers.COLONY_BANNER, ColonyBannerScreen::new);
         HandledScreens.register(ModScreenHandlers.RESEARCH,      ResearchScreen::new);
+
+        // Wire up guidebook to open GUI screen instead of chat
+        GuidebookItem.clientScreenOpener = () -> MinecraftClient.getInstance().setScreen(new GuidebookScreen());
+
+        // ';' key -> Colony Management Screen (like Colony Survival)
+        KeyBinding.Category ccCategory = new KeyBinding.Category(Identifier.of("colonycraft", "colonycraft"));
+        colonyManagementKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.colonycraft.management",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_SEMICOLON,
+                ccCategory
+        ));
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (colonyManagementKey.wasPressed()) {
+                if (client.currentScreen == null) {
+                    client.setScreen(new ColonyManagementScreen());
+                }
+            }
+            // Colony border particle rendering
+            ColonyBorderRenderer.tick(client);
+            // Area wand visualization
+            AreaWandRenderer.tick(client);
+        });
 
         // Colony HUD overlay
         HudRenderCallback.EVENT.register((drawContext, deltaTick) -> {

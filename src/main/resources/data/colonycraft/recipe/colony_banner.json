@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["WWW","WRW"," S "],
-  "key": {
-    "W": {"id": "minecraft:white_wool"},
-    "R": {"id": "minecraft:red_wool"},
-    "S": {"id": "minecraft:stick"}
-  },
-  "result": {"id": "colonycraft:colony_banner","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "WWW",
+                    "WRW",
+                    " S "
+                ],
+    "key":  {
+                "W":  "minecraft:white_wool",
+                "R":  "minecraft:red_wool",
+                "S":  "minecraft:stick"
+            },
+    "result":  {
+                   "id":  "colonycraft:colony_banner",
+                   "count":  1
+               }
 }

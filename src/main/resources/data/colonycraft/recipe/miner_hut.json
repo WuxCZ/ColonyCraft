@@ -1,9 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["SPS","SSS","   "],
-  "key": {
-    "S": {"id": "minecraft:cobblestone"},
-    "P": {"id": "minecraft:iron_pickaxe"}
-  },
-  "result": {"id": "colonycraft:miner_hut","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "SPS",
+                    "SSS",
+                    "   "
+                ],
+    "key":  {
+                "S":  "minecraft:cobblestone",
+                "P":  "minecraft:iron_pickaxe"
+            },
+    "result":  {
+                   "id":  "colonycraft:miner_hut",
+                   "count":  1
+               }
 }

@@ -1,9 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["PRP","PPP","   "],
-  "key": {
-    "P": {"id": "minecraft:oak_planks"},
-    "R": {"id": "minecraft:paper"}
-  },
-  "result": {"id": "colonycraft:research_desk","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "PRP",
+                    "PPP",
+                    "   "
+                ],
+    "key":  {
+                "P":  "minecraft:oak_planks",
+                "R":  "minecraft:paper"
+            },
+    "result":  {
+                   "id":  "colonycraft:research_desk",
+                   "count":  1
+               }
 }

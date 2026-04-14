@@ -1,11 +1,18 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["WSW","PXP","PPP"],
-  "key": {
-    "W": {"id": "minecraft:white_wool"},
-    "S": {"id": "minecraft:shears"},
-    "P": {"id": "minecraft:oak_planks"},
-    "X": {"id": "minecraft:string"}
-  },
-  "result": {"id": "colonycraft:tailor_shop","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "WSW",
+                    "PXP",
+                    "PPP"
+                ],
+    "key":  {
+                "W":  "minecraft:white_wool",
+                "S":  "minecraft:shears",
+                "P":  "minecraft:oak_planks",
+                "X":  "minecraft:string"
+            },
+    "result":  {
+                   "id":  "colonycraft:tailor_shop",
+                   "count":  1
+               }
 }

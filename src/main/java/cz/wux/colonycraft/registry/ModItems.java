@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.registry;
 
+import cz.wux.colonycraft.item.AreaWandItem;
 import cz.wux.colonycraft.item.GuidebookItem;
 import cz.wux.colonycraft.item.JobAssignmentBook;
 import net.minecraft.block.Block;
@@ -23,6 +24,10 @@ public class ModItems {
     // Job assignment tool
     public static final JobAssignmentBook JOB_ASSIGNMENT_BOOK = reg("job_assignment_book",
             key -> new JobAssignmentBook(new Item.Settings().maxCount(1).registryKey(key)));
+
+    // Colony Survey Wand — marks work areas for area-based job blocks (CS-style)
+    public static final AreaWandItem AREA_WAND = reg("area_wand",
+            key -> new AreaWandItem(new Item.Settings().maxCount(1).registryKey(key)));
 
     // Block items (auto-generated)
     public static final BlockItem COLONY_BANNER_ITEM      = regBlock("colony_banner",       ModBlocks.COLONY_BANNER);

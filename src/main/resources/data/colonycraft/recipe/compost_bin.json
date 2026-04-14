@@ -1,10 +1,17 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["PFP","PDP","PPP"],
-  "key": {
-    "P": {"id": "minecraft:oak_planks"},
-    "F": {"id": "minecraft:oak_fence"},
-    "D": {"id": "minecraft:dirt"}
-  },
-  "result": {"id": "colonycraft:compost_bin","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "PFP",
+                    "PDP",
+                    "PPP"
+                ],
+    "key":  {
+                "P":  "minecraft:oak_planks",
+                "F":  "minecraft:oak_fence",
+                "D":  "minecraft:dirt"
+            },
+    "result":  {
+                   "id":  "colonycraft:compost_bin",
+                   "count":  1
+               }
 }

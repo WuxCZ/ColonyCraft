@@ -27,11 +27,15 @@
   "block.colonycraft.glass_furnace": "Glass Furnace",
   "item.colonycraft.job_assignment_book": "Job Assignment Book",
   "item.colonycraft.guidebook": "ColonyCraft Guide",
+  "item.colonycraft.area_wand": "Colony Survey Wand",
   "container.colonycraft.stockpile": "Colony Stockpile",
   "container.colonycraft.colony_banner": "Colony Management",
   "message.colonycraft.colony_founded": "§aColony founded! Welcome, %s. Place job blocks nearby and colonists will join.",
   "entity.colonycraft.colonist": "Colonist",
   "entity.colonycraft.guard": "Colony Guard",
   "entity.colonycraft.colony_monster": "Colony Raider",
-  "itemgroup.colonycraft.main": "ColonyCraft"
+  "itemgroup.colonycraft.main": "ColonyCraft",
+  "key.colonycraft.management": "Colony Management",
+  "category.colonycraft": "ColonyCraft",
+  "key.category.colonycraft.colonycraft": "ColonyCraft"
 }

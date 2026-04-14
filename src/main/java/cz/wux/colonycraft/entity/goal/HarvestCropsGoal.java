@@ -1,5 +1,6 @@
 package cz.wux.colonycraft.entity.goal;
 
+import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.block.Block;
@@ -151,13 +152,12 @@ public class HarvestCropsGoal extends Goal {
     }
 
     private BlockPos findMatureWheat() {
-        BlockPos center = getCenter();
-        if (center == null) return null;
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
         World world = colonist.getEntityWorld();
         BlockPos best = null;
         double bestD  = Double.MAX_VALUE;
-        int r = SEARCH_RADIUS;
-        for (BlockPos p : BlockPos.iterate(center.add(-r, -2, -r), center.add(r, 4, r))) {
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             BlockState s = world.getBlockState(p);
             if (s.getBlock() instanceof CropBlock crop && crop.isMature(s)) {
                 double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
@@ -168,16 +168,14 @@ public class HarvestCropsGoal extends Goal {
     }
 
     private BlockPos findEmptyFarmland() {
-        BlockPos center = getCenter();
-        if (center == null) return null;
-        // Only plant if we have seeds
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
         boolean hasSeed = colonist.getStockpile().map(s -> s.hasItem(Items.WHEAT_SEEDS, 1)).orElse(false);
         if (!hasSeed) return null;
         World world = colonist.getEntityWorld();
         BlockPos best = null;
         double bestD  = Double.MAX_VALUE;
-        int r = SEARCH_RADIUS;
-        for (BlockPos p : BlockPos.iterate(center.add(-r, -2, -r), center.add(r, 4, r))) {
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
             if (!world.getBlockState(p.down()).isOf(Blocks.FARMLAND)) continue;
             if (!world.getBlockState(p).isAir()) continue;
             double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
@@ -186,9 +184,18 @@ public class HarvestCropsGoal extends Goal {
         return best;
     }
 
-    private BlockPos getCenter() {
-        BlockPos c = colonist.getJobBlockPos();
-        return c != null ? c : colonist.getHomePos();
+    /** Returns [min, max] search bounds — uses CS-style area from JobBlockEntity if defined,
+     *  otherwise falls back to a default radius around the job block. */
+    private BlockPos[] getSearchBounds() {
+        var jobBlock = colonist.getJobBlock();
+        if (jobBlock.isPresent() && jobBlock.get().hasArea()) {
+            return new BlockPos[]{ jobBlock.get().getAreaMin(), jobBlock.get().getAreaMax() };
+        }
+        BlockPos center = colonist.getJobBlockPos();
+        if (center == null) center = colonist.getHomePos();
+        if (center == null) return null;
+        int r = SEARCH_RADIUS;
+        return new BlockPos[]{ center.add(-r, -2, -r), center.add(r, 4, r) };
     }
 
     private void moveTo(BlockPos pos) {

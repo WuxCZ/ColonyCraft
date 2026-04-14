@@ -1,9 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["SBS","S S","SSS"],
-  "key": {
-    "S": {"id": "minecraft:cobblestone"},
-    "B": {"id": "minecraft:water_bucket"}
-  },
-  "result": {"id": "colonycraft:water_well","count": 1}
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    "SBS",
+                    "S S",
+                    "SSS"
+                ],
+    "key":  {
+                "S":  "minecraft:cobblestone",
+                "B":  "minecraft:water_bucket"
+            },
+    "result":  {
+                   "id":  "colonycraft:water_well",
+                   "count":  1
+               }
 }
