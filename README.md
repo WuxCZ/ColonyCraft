@@ -212,7 +212,7 @@ src/
 | Block Types | 26 |
 | Item Types | 29 |
 | Recipe Files | 28 |
-| Source Files | ~73 |
+| Source Files | ~77 |
 | Textures | 32 |
 
 *Auto-updated on 2026-04-14 by GitHub Actions.*
