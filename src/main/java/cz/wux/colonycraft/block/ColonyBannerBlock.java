@@ -15,14 +15,20 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * The Colony Banner is the player's colony anchor. Right-clicking it opens
- * the colony management GUI. Placing it founds a new colony.
- */
 public class ColonyBannerBlock extends BlockWithEntity {
+
+    // Pole (7-9, 0-16, 7-9) + cross bar (1-15, 15-16, 7-9) + banner cloth (1-15, 6-16, 7.5-8.5)
+    private static final VoxelShape POLE = Block.createCuboidShape(7, 0, 7, 9, 16, 9);
+    private static final VoxelShape CROSS_BAR = Block.createCuboidShape(1, 15, 7, 15, 16, 9);
+    private static final VoxelShape BANNER_LEFT = Block.createCuboidShape(1, 6, 7.5, 7, 16, 8.5);
+    private static final VoxelShape BANNER_RIGHT = Block.createCuboidShape(9, 6, 7.5, 15, 16, 8.5);
+    private static final VoxelShape SHAPE = VoxelShapes.union(POLE, CROSS_BAR, BANNER_LEFT, BANNER_RIGHT);
 
     public ColonyBannerBlock(Settings settings) {
         super(settings);
@@ -36,6 +42,16 @@ public class ColonyBannerBlock extends BlockWithEntity {
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -54,18 +70,12 @@ public class ColonyBannerBlock extends BlockWithEntity {
                 player.sendMessage(
                         net.minecraft.text.Text.translatable("message.colonycraft.colony_founded",
                                 player.getName().getString()), false);
-
-                // Give starting resources to player (starter kit)
                 giveStarterKit(player);
-
-                // Spawn first 2 colonists immediately so the colony feels alive
                 if (world instanceof ServerWorld sw) {
                     ColonyManager mgr = ColonyManager.get(sw);
                     mgr.getColonyAtBanner(pos).ifPresent(colony -> {
-                        // Give colony 60 starting food units
                         colony.addFood(60);
                         mgr.markDirty();
-                        // Spawn 2 colonists
                         ColonistEntity.spawnForColony(sw, colony, pos, mgr);
                         ColonistEntity.spawnForColony(sw, colony, pos, mgr);
                     });
@@ -82,8 +92,6 @@ public class ColonyBannerBlock extends BlockWithEntity {
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        // When the banner is broken, the colony data persists so colonists don't vanish
-        // (players must explicitly disband via the GUI)
         return super.onBreak(world, pos, state, player);
     }
 

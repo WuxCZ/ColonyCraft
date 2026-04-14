@@ -1,7 +1,5 @@
 package cz.wux.colonycraft.data;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Uuids;
 import net.minecraft.nbt.NbtList;
@@ -10,52 +8,37 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
-/**
- * Holds all data for a single colony. Persisted via {@link ColonyManager}.
- *
- * <p>A colony is founded by placing a Colony Banner block. The banner's world
- * position is the colony's anchor. All colonist UUIDs, the stockpile position,
- * the food counter, the science counter, and the set of unlocked jobs are
- * stored here.</p>
- */
 public class ColonyData {
 
-    // ── Identity ──────────────────────────────────────────────────────────────
     private UUID colonyId;
     private UUID ownerUuid;
     private String ownerName;
     private BlockPos bannerPos;
 
-    // ── Population ────────────────────────────────────────────────────────────
     private final List<UUID> colonistUuids = new ArrayList<>();
-    /** Hard cap on colonist count. Grows by 1 per in-game day survived (base 2). */
     private int populationCap = 2;
 
-    // ── Resources ─────────────────────────────────────────────────────────────
-    /** Food units currently in stockpile. Each "meal" = 1 unit. */
+    /** Food units - synced from stockpile inventory each tick. */
     private int foodUnits = 0;
-    /** Science points accumulated by researchers. */
     private int sciencePoints = 0;
 
-    // ── Tech tree ─────────────────────────────────────────────────────────────
     private final Set<String> unlockedJobs = new HashSet<>();
 
-    // ── Stockpile position ────────────────────────────────────────────────────
     private BlockPos stockpilePos;
 
-    // ── Waves ─────────────────────────────────────────────────────────────────
     private int daysSurvived = 0;
-    private long nextWaveDayTime = 13000; // first wave at dusk of day 1
+    private long nextWaveDayTime = 13000;
 
-    // ─────────────────────────────────────────────────────────────────────────
+    /** Players who are members of this colony (party system). */
+    private final Set<UUID> memberUuids = new HashSet<>();
 
     public ColonyData(UUID colonyId, UUID ownerUuid, String ownerName, BlockPos bannerPos) {
         this.colonyId   = colonyId;
         this.ownerUuid  = ownerUuid;
         this.ownerName  = ownerName;
         this.bannerPos  = bannerPos;
+        this.memberUuids.add(ownerUuid);
 
-        // Everyone starts with woodcutter and farmer unlocked
         unlockedJobs.add("WOODCUTTER");
         unlockedJobs.add("FARMER");
         unlockedJobs.add("FORESTER");
@@ -63,11 +46,11 @@ public class ColonyData {
         unlockedJobs.add("COOK");
         unlockedJobs.add("WATER_GATHERER");
         unlockedJobs.add("BERRY_FARMER");
-        unlockedJobs.add("GUARD_BOW");
+        unlockedJobs.add("GUARD");
         unlockedJobs.add("MINER");
     }
 
-    // ── Serialization ─────────────────────────────────────────────────────────
+    // -- Serialization --
 
     public NbtCompound toNbt() {
         NbtCompound nbt = new NbtCompound();
@@ -100,6 +83,14 @@ public class ColonyData {
         NbtList jobList = new NbtList();
         for (String j : unlockedJobs) jobList.add(NbtString.of(j));
         nbt.put("UnlockedJobs", jobList);
+
+        NbtList memberList = new NbtList();
+        for (UUID m : memberUuids) {
+            NbtCompound mc = new NbtCompound();
+            mc.putIntArray("UUID", Uuids.toIntArray(m));
+            memberList.add(mc);
+        }
+        nbt.put("Members", memberList);
 
         return nbt;
     }
@@ -135,47 +126,45 @@ public class ColonyData {
             d.unlockedJobs.add(jobList.getString(i, ""));
         }
 
+        NbtList memberList = nbt.getListOrEmpty("Members");
+        for (int i = 0; i < memberList.size(); i++) {
+            memberList.getCompound(i).ifPresent(mc ->
+                mc.getIntArray("UUID").map(Uuids::toUuid).ifPresent(d.memberUuids::add));
+        }
+
         return d;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Food --
 
-    public boolean canFeedColonist() {
-        return foodUnits > 0;
-    }
-
+    public boolean canFeedColonist() { return foodUnits > 0; }
     public boolean consumeFood() {
         if (foodUnits > 0) { foodUnits--; return true; }
         return false;
     }
-
-    public void addFood(int amount) {
-        foodUnits = Math.min(foodUnits + amount, 9999);
-    }
+    public void addFood(int amount) { foodUnits = Math.min(foodUnits + amount, 9999); }
+    public void setFoodUnits(int count) { this.foodUnits = Math.max(0, Math.min(count, 9999)); }
 
     private void recalcPopCap() {
-        // Pop cap grows with days survived: base 2 + 1 per day, max 50
         populationCap = Math.min(50, 2 + daysSurvived);
     }
 
-    public boolean isJobUnlocked(ColonistJob job) {
-        return unlockedJobs.contains(job.name());
-    }
-
-    public void unlockJob(ColonistJob job) {
-        unlockedJobs.add(job.name());
-    }
-
+    public boolean isJobUnlocked(ColonistJob job) { return unlockedJobs.contains(job.name()); }
+    public void unlockJob(ColonistJob job) { unlockedJobs.add(job.name()); }
     public boolean spendScience(int cost) {
         if (sciencePoints >= cost) { sciencePoints -= cost; return true; }
         return false;
     }
+    public void addScience(int amount) { sciencePoints += amount; }
 
-    public void addScience(int amount) {
-        sciencePoints += amount;
-    }
+    // -- Party/Members --
 
-    // ── Getters / setters ─────────────────────────────────────────────────────
+    public boolean isMember(UUID playerUuid) { return memberUuids.contains(playerUuid); }
+    public void addMember(UUID playerUuid) { memberUuids.add(playerUuid); }
+    public void removeMember(UUID playerUuid) { if (!playerUuid.equals(ownerUuid)) memberUuids.remove(playerUuid); }
+    public Set<UUID> getMembers() { return Collections.unmodifiableSet(memberUuids); }
+
+    // -- Getters/setters --
 
     public UUID getColonyId()      { return colonyId; }
     public UUID getOwnerUuid()     { return ownerUuid; }
@@ -202,7 +191,5 @@ public class ColonyData {
     public void addColonist(UUID uuid)    { if (!colonistUuids.contains(uuid)) colonistUuids.add(uuid); }
     public void removeColonist(UUID uuid) { colonistUuids.remove(uuid); }
 
-    public boolean canSpawnMoreColonists() {
-        return colonistUuids.size() < populationCap;
-    }
+    public boolean canSpawnMoreColonists() { return colonistUuids.size() < populationCap; }
 }

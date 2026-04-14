@@ -18,21 +18,12 @@ import net.minecraft.world.World;
 
 import java.util.UUID;
 
-/**
- * Guard colonist — a colonist who defends the colony from monsters.
- *
- * <p>Guards patrol a radius around the colony banner and attack any hostile mob
- * that comes within range. They are armed based on their job:
- * {@link ColonistJob#GUARD_BOW}, {@link ColonistJob#GUARD_CROSSBOW}, or
- * {@link ColonistJob#GUARD_MUSKET}.</p>
- */
 public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     private UUID colonyId;
     private BlockPos homePos;
-    private ColonistJob guardJob = ColonistJob.GUARD_BOW;
+    private ColonistJob guardJob = ColonistJob.GUARD;
 
-    /** Patrol radius around the banner in blocks. */
     public static final int PATROL_RADIUS = 24;
 
     public GuardEntity(EntityType<? extends GuardEntity> type, World world) {
@@ -52,11 +43,8 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
 
     @Override
     protected void initGoals() {
-        // NOTE: guardJob may not yet be loaded from NBT at this point.
-        // Use BOW defaults; the actual attack interval is recalculated in tick().
         goalSelector.add(1, new ProjectileAttackGoal(this, 1.0, 20, 15.0f));
         goalSelector.add(4, new LookAroundGoal(this));
-
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));
     }
 
@@ -71,29 +59,20 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
         double dz = target.getZ() - getZ();
         double dist = Math.sqrt(dx*dx + dz*dz) * 0.2;
 
-        // Weapon-specific damage and speed (read current guardJob, not the one from initGoals)
-        float speed  = 1.6f;
-        float damage = 2.0f;
-        if (guardJob == ColonistJob.GUARD_CROSSBOW) { speed = 2.2f; damage = 3.0f; }
-        if (guardJob == ColonistJob.GUARD_MUSKET)   { speed = 3.0f; damage = 7.0f; }
-
-        arrow.setVelocity(dx, dy + dist, dz, speed, 14 - getEntityWorld().getDifficulty().getId() * 4);
-        arrow.setDamage(damage);
-        // Play sound
+        arrow.setVelocity(dx, dy + dist, dz, 1.6f, 14 - getEntityWorld().getDifficulty().getId() * 4);
+        arrow.setDamage(3.0);
         getEntityWorld().playSound(null, getBlockPos(),
                 net.minecraft.sound.SoundEvents.ENTITY_ARROW_SHOOT,
                 net.minecraft.sound.SoundCategory.NEUTRAL, 1.0f, 1.0f);
         getEntityWorld().spawnEntity(arrow);
     }
 
-    // ── NBT ───────────────────────────────────────────────────────────────────
-
-    public UUID    getColonyId()                     { return colonyId; }
-    public void    setColonyId(UUID id)              { this.colonyId = id; }
-    public BlockPos getHomePos()                     { return homePos; }
-    public void    setHomePos(BlockPos p)            { this.homePos = p; }
-    public ColonistJob getGuardJob()                 { return guardJob; }
-    public void    setGuardJob(ColonistJob j)        { this.guardJob = j; }
+    public UUID    getColonyId()               { return colonyId; }
+    public void    setColonyId(UUID id)        { this.colonyId = id; }
+    public BlockPos getHomePos()               { return homePos; }
+    public void    setHomePos(BlockPos p)      { this.homePos = p; }
+    public ColonistJob getGuardJob()           { return guardJob; }
+    public void    setGuardJob(ColonistJob j)  { this.guardJob = j; }
 
     @Override
     public void writeCustomData(WriteView view) {
@@ -111,8 +90,8 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
-        try { guardJob = ColonistJob.valueOf(view.getString("GuardJob", "GUARD_BOW")); }
-        catch (Exception e) { guardJob = ColonistJob.GUARD_BOW; }
+        try { guardJob = ColonistJob.valueOf(view.getString("GuardJob", "GUARD")); }
+        catch (Exception e) { guardJob = ColonistJob.GUARD; }
         int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
         if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
     }

@@ -2,7 +2,7 @@ name: Build & Update README
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev, master, main]
 
 permissions:
   contents: write
@@ -30,6 +30,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Update README stats
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
         run: |
           JOBS=$(grep -c "^    [A-Z_]*(" src/main/java/cz/wux/colonycraft/data/ColonistJob.java 2>/dev/null || echo "27")
           BLOCKS=$(ls src/main/resources/assets/colonycraft/models/block/*.json 2>/dev/null | wc -l)
@@ -37,11 +38,10 @@ jobs:
           RECIPES=$(ls src/main/resources/data/colonycraft/recipe/*.json 2>/dev/null | wc -l)
           SOURCES=$(find src -name "*.java" | wc -l)
           TEXTURES=$(find src/main/resources/assets/colonycraft/textures -name "*.png" | wc -l)
-          
-          # Update the auto-generated stats section in README
+
           sed -i "/<!-- AUTO-GENERATED STATS/,/<!-- END AUTO-GENERATED STATS -->/c\\
           <!-- AUTO-GENERATED STATS - DO NOT EDIT BELOW -->\n\
-          ## 📊 Mod Statistics\n\
+          ## Stats\n\
           \n\
           | Metric | Count |\n\
           |---|---|\n\
@@ -56,9 +56,10 @@ jobs:
           <!-- END AUTO-GENERATED STATS -->" README.md
 
       - name: Commit README changes
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git diff --cached --quiet || git commit -m "📊 Auto-update README stats [skip ci]"
+          git diff --cached --quiet || git commit -m "Auto-update README stats [skip ci]"
           git push

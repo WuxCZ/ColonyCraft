@@ -8,6 +8,8 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
@@ -19,10 +21,9 @@ import net.minecraft.world.World;
 import java.util.UUID;
 
 /**
- * The nightly attackers. They spawn in waves near the colony banner and
- * path-find toward it.
- *
- * <p>Wave size and monster health scale with {@link ColonyData#getDaysSurvived()}.</p>
+ * Wave spawner utility and fallback entity.
+ * Waves now spawn vanilla Zombies and Skeletons that burn at sunrise.
+ * Wave size scales with colonist count (like Colony Survival).
  */
 public class ColonyMonsterEntity extends HostileEntity {
 
@@ -46,31 +47,23 @@ public class ColonyMonsterEntity extends HostileEntity {
         goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
         goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
         goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-
-        // Attack colonists & guards as secondary target
         targetSelector.add(1, new ActiveTargetGoal<>(this, ColonistEntity.class, false));
         targetSelector.add(2, new ActiveTargetGoal<>(this, GuardEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
 
-    // ── Wave spawning ─────────────────────────────────────────────────────────
-
     /**
-     * Spawns a wave of monsters around the colony. Wave size:
-     * 4 + daysSurvived * 2; health scales every 5 days.
-     */
-    /**
-     * Maximum wave size caps at 40 monsters (reached around day 18).
-     * HP scales with days but is also soft-capped via a log curve.
+     * Spawns a wave of vanilla zombies and skeletons.
+     * Wave size = colonist count * 1.5 (min 4, max 60).
+     * Zombies/skeletons burn at sunrise - no day guards needed!
      */
     public static void spawnWave(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
-        int days   = colony.getDaysSurvived();
-        // S-curve: grows fast early, slows after day 10, hard-caps at 40
-        int count  = Math.min(40, 4 + (int)(36.0 * (1.0 - Math.exp(-days * 0.12))));
-        double baseHp = 20.0 + Math.min(days * 4.0, 160.0);
-
+        int colonists = colony.getColonistCount();
+        int days = colony.getDaysSurvived();
+        // Scale with both colonists and days (like Colony Survival)
+        int count = Math.max(4, Math.min(60, (int)(colonists * 1.5) + days));
+        
         for (int i = 0; i < count; i++) {
-            // Spawn 40–64 blocks out from banner, random direction
             double angle  = world.random.nextDouble() * Math.PI * 2;
             double radius = 40 + world.random.nextInt(24);
             double spawnX = bannerPos.getX() + Math.cos(angle) * radius;
@@ -78,23 +71,29 @@ public class ColonyMonsterEntity extends HostileEntity {
             int    spawnY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE,
                     (int) spawnX, (int) spawnZ);
 
-            ColonyMonsterEntity monster = ModEntities.COLONY_MONSTER.create(world, SpawnReason.EVENT);
-            if (monster == null) continue;
-
-            monster.refreshPositionAndAngles(spawnX, spawnY, spawnZ, 0, 0);
-            monster.targetBanner = bannerPos;
-            monster.colonyId = colony.getColonyId();
-
-            // Scale HP
-            monster.getAttributeInstance(EntityAttributes.MAX_HEALTH)
-                   .setBaseValue(baseHp);
-            monster.setHealth((float) baseHp);
-
-            world.spawnEntity(monster);
+            // 60% zombies, 40% skeletons
+            if (world.random.nextFloat() < 0.6f) {
+                ZombieEntity zombie = EntityType.ZOMBIE.create(world, SpawnReason.EVENT);
+                if (zombie == null) continue;
+                zombie.refreshPositionAndAngles(spawnX, spawnY, spawnZ, 
+                    world.random.nextFloat() * 360f, 0);
+                // Scale HP with days
+                double hp = 20.0 + Math.min(days * 2.0, 80.0);
+                zombie.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
+                zombie.setHealth((float) hp);
+                world.spawnEntity(zombie);
+            } else {
+                SkeletonEntity skeleton = EntityType.SKELETON.create(world, SpawnReason.EVENT);
+                if (skeleton == null) continue;
+                skeleton.refreshPositionAndAngles(spawnX, spawnY, spawnZ,
+                    world.random.nextFloat() * 360f, 0);
+                double hp = 20.0 + Math.min(days * 1.5, 60.0);
+                skeleton.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
+                skeleton.setHealth((float) hp);
+                world.spawnEntity(skeleton);
+            }
         }
     }
-
-    // ── NBT ───────────────────────────────────────────────────────────────────
 
     public BlockPos getTargetBanner() { return targetBanner; }
 

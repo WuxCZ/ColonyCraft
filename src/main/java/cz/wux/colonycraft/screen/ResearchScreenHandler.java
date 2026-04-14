@@ -10,32 +10,25 @@ import net.minecraft.screen.ScreenHandler;
 
 import java.util.UUID;
 
-/**
- * Screen handler for the Research Tree GUI.
- * Syncs sciencePoints (idx 0) and daysSurvived (idx 1) to the client.
- */
 public class ResearchScreenHandler extends ScreenHandler {
 
-    /** All jobs that must be researched (not free from the start). */
     public static final ColonistJob[] UNLOCKABLE_JOBS = {
         ColonistJob.TANNER,         ColonistJob.TAILOR,        ColonistJob.FLETCHER,
         ColonistJob.STONEMASON,     ColonistJob.GRINDER,       ColonistJob.POTTER,
         ColonistJob.BLACKSMITH,     ColonistJob.SMELTER,       ColonistJob.ALCHEMIST,
         ColonistJob.GLASSBLOWER,    ColonistJob.RESEARCHER,    ColonistJob.BEEKEEPER,
-        ColonistJob.CHICKEN_FARMER, ColonistJob.GUARD_CROSSBOW, ColonistJob.GUARD_MUSKET
+        ColonistJob.CHICKEN_FARMER, ColonistJob.GUARD
     };
 
     private final PropertyDelegate props;
     private UUID colonyId;
 
-    /** Client-side constructor (no delegate; server will sync values). */
     public ResearchScreenHandler(int syncId, PlayerInventory playerInv) {
         super(ModScreenHandlers.RESEARCH, syncId);
         this.props = new ArrayPropertyDelegate(2);
         addProperties(this.props);
     }
 
-    /** Server-side constructor. */
     public ResearchScreenHandler(int syncId, PlayerInventory playerInv,
                                  UUID colonyId, PropertyDelegate delegate) {
         super(ModScreenHandlers.RESEARCH, syncId);
@@ -55,7 +48,6 @@ public class ResearchScreenHandler extends ScreenHandler {
         return net.minecraft.item.ItemStack.EMPTY;
     }
 
-    /** Cost in science points to unlock the given job. Returns 0 if already free. */
     public static int unlockCost(ColonistJob job) {
         return switch (job) {
             case TANNER, TAILOR, COMPOSTER     -> 20;
@@ -64,8 +56,7 @@ public class ResearchScreenHandler extends ScreenHandler {
             case ALCHEMIST, GLASSBLOWER        -> 60;
             case RESEARCHER                    -> 50;
             case BEEKEEPER, CHICKEN_FARMER     -> 25;
-            case GUARD_CROSSBOW                -> 80;
-            case GUARD_MUSKET                  -> 150;
+            case GUARD                         -> 80;
             case FLETCHER                      -> 35;
             default -> 0;
         };

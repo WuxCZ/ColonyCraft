@@ -24,36 +24,27 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.UUID;
 
-/**
- * A colonist NPC. They path-find to their assigned job block, perform work
- * (calling the appropriate production logic), return results to the stockpile,
- * and eat food if hungry.
- *
- * <p>Colonists are passive — they will not attack players or mobs unless
- * a Guard job is set (which spawns a {@link GuardEntity} instead).</p>
- */
 public class ColonistEntity extends PathAwareEntity {
 
-    // ── State saved to NBT ─────────────────────────────────────────────────────
     private UUID colonyId;
     private ColonistJob job = ColonistJob.UNEMPLOYED;
-    private BlockPos jobBlockPos;     // position of their assigned workstation
-    private BlockPos stockpilePos;    // position of their colony's stockpile
-    private BlockPos homePos;         // colony banner position (return-home target)
-    private int hungerTicks = 0;      // ticks since last meal
-    private int workCooldown = 0;     // ticks until next work action
+    private BlockPos jobBlockPos;
+    private BlockPos stockpilePos;
+    private BlockPos homePos;
+    private int hungerTicks = 0;
+    private int workCooldown = 0;
 
-    public static final int HUNGER_INTERVAL  = 6000; // ticks between meals (~5 min)
-    public static final int STARVATION_DEATH = 24000; // ticks without food before death
+    /** Current activity status for thought bubble rendering. */
+    private String currentStatus = "Idle";
+
+    public static final int HUNGER_INTERVAL  = 6000;
+    public static final int STARVATION_DEATH = 24000;
 
     public ColonistEntity(EntityType<? extends ColonistEntity> type, World world) {
         super(type, world);
         this.setPersistent();
     }
-
-    // ── Attributes ────────────────────────────────────────────────────────────
 
     public static DefaultAttributeContainer.Builder createColonistAttributes() {
         return PathAwareEntity.createMobAttributes()
@@ -63,103 +54,97 @@ public class ColonistEntity extends PathAwareEntity {
                 .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.0);
     }
 
-    // ── Goal registration ─────────────────────────────────────────────────────
-
     @Override
     protected void initGoals() {
-        // Priority 1 – return home when starving / night
         goalSelector.add(1, new ReturnToColonyGoal(this));
-        // Priority 2 – eat food if hungry
         goalSelector.add(2, new ColonistEatGoal(this));
-        // Priority 3a – physical jobs: these check job in canStart()
-        goalSelector.add(3, new ChopTreeGoal(this));       // WOODCUTTER
-        goalSelector.add(3, new HarvestCropsGoal(this));   // FARMER
-        goalSelector.add(3, new MineBlocksGoal(this));     // MINER
-        goalSelector.add(3, new PlantSaplingsGoal(this));  // FORESTER
-        // Priority 3b – recipe-based jobs (cook, smelter, etc.)
+        goalSelector.add(3, new ChopTreeGoal(this));
+        goalSelector.add(3, new HarvestCropsGoal(this));
+        goalSelector.add(3, new MineBlocksGoal(this));
+        goalSelector.add(3, new PlantSaplingsGoal(this));
         goalSelector.add(4, new WorkAtJobGoal(this));
-        // Priority 5 – wander near home
         goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-        // Priority 6 – look at nearby player
         goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        // Priority 7 – look around randomly
         goalSelector.add(7, new LookAroundGoal(this));
     }
-
-    // ── Tick ──────────────────────────────────────────────────────────────────
 
     @Override
     public void tick() {
         super.tick();
         if (getEntityWorld().isClient()) return;
 
-        // Hunger tracking
         hungerTicks++;
         if (hungerTicks >= STARVATION_DEATH) {
             if (getEntityWorld() instanceof ServerWorld sw) { this.kill(sw); }
             return;
         }
 
-        // Work cooldown
         if (workCooldown > 0) workCooldown--;
+
+        // Update status for thought bubble
+        if (hungerTicks > HUNGER_INTERVAL) {
+            currentStatus = "\u2620 Hungry!";
+        } else if (workCooldown > 0) {
+            currentStatus = "\u2692 Working";
+        } else if (job == ColonistJob.UNEMPLOYED) {
+            currentStatus = "\u2639 No job";
+        } else if (jobBlockPos != null) {
+            currentStatus = "\u27A1 Going to work";
+        } else {
+            currentStatus = "\u25CB Idle";
+        }
     }
 
-    // ── Colony linkage ────────────────────────────────────────────────────────
+    // -- Status --
+    public String getCurrentStatus() { return currentStatus; }
+    public void setCurrentStatus(String s) { this.currentStatus = s; }
 
-    public UUID getColonyId()                         { return colonyId; }
-    public void setColonyId(UUID id)                  { this.colonyId = id; }
+    // -- Colony linkage --
+    public UUID getColonyId() { return colonyId; }
+    public void setColonyId(UUID id) { this.colonyId = id; }
 
-    public ColonistJob getColonistJob()               { return job; }
-    public void setColonistJob(ColonistJob j)         {
+    public ColonistJob getColonistJob() { return job; }
+    public void setColonistJob(ColonistJob j) {
         this.job = j;
         String label = (j == ColonistJob.UNEMPLOYED) ? "Colonist" : j.displayName;
         this.setCustomName(net.minecraft.text.Text.literal(label));
         this.setCustomNameVisible(true);
     }
 
-    public BlockPos getJobBlockPos()                  { return jobBlockPos; }
-    public void setJobBlockPos(BlockPos p)            { this.jobBlockPos = p; }
+    public BlockPos getJobBlockPos() { return jobBlockPos; }
+    public void setJobBlockPos(BlockPos p) { this.jobBlockPos = p; }
 
-    public BlockPos getStockpilePos()                 { return stockpilePos; }
-    public void setStockpilePos(BlockPos p)           { this.stockpilePos = p; }
+    public BlockPos getStockpilePos() { return stockpilePos; }
+    public void setStockpilePos(BlockPos p) { this.stockpilePos = p; }
 
-    public BlockPos getHomePos()                      { return homePos; }
-    public void setHomePos(BlockPos p)                { this.homePos = p; }
+    public BlockPos getHomePos() { return homePos; }
+    public void setHomePos(BlockPos p) { this.homePos = p; }
 
-    public int  getHungerTicks()                      { return hungerTicks; }
-    public void resetHunger()                         { hungerTicks = 0; }
+    public int getHungerTicks() { return hungerTicks; }
+    public void resetHunger() { hungerTicks = 0; }
 
-    public boolean isWorkCoolingDown()                { return workCooldown > 0; }
-    public void    startWorkCooldown(int ticks)       { workCooldown = ticks; }
+    public boolean isWorkCoolingDown() { return workCooldown > 0; }
+    public void startWorkCooldown(int ticks) { workCooldown = ticks; }
 
     public boolean isHungry() { return hungerTicks > HUNGER_INTERVAL; }
 
-    /** Returns the StockpileBlockEntity for this colonist's colony, if loaded. */
     public Optional<StockpileBlockEntity> getStockpile() {
         if (stockpilePos == null) return Optional.empty();
         var be = getEntityWorld().getBlockEntity(stockpilePos);
         return (be instanceof StockpileBlockEntity s) ? Optional.of(s) : Optional.empty();
     }
 
-    /** Returns the JobBlockEntity for this colonist's workstation, if loaded. */
     public Optional<JobBlockEntity> getJobBlock() {
         if (jobBlockPos == null) return Optional.empty();
         var be = getEntityWorld().getBlockEntity(jobBlockPos);
         return (be instanceof JobBlockEntity j) ? Optional.of(j) : Optional.empty();
     }
 
-    // ── Spawning helper ───────────────────────────────────────────────────────
-
-    /**
-     * Spawns a new colonist for the given colony near the banner position.
-     * Tries to assign the first unoccupied job block it can find within 32 blocks.
-     */
+    // -- Spawning --
     public static void spawnForColony(ServerWorld world, ColonyData colony,
                                       BlockPos bannerPos, ColonyManager mgr) {
-        // First, find an unclaimed job block to decide if we need a guard or colonist
         JobBlockEntity targetJob = findUnclaimedJob(world, colony, bannerPos);
 
-        // If target is a guard job → spawn GuardEntity instead
         if (targetJob != null && targetJob.getJob().isGuard()) {
             GuardEntity guard = ModEntities.GUARD.create(world, SpawnReason.MOB_SUMMONED);
             if (guard == null) return;
@@ -183,20 +168,17 @@ public class ColonistEntity extends PathAwareEntity {
             return;
         }
 
-        // Normal colonist
         ColonistEntity colonist = ModEntities.COLONIST.create(world, SpawnReason.MOB_SUMMONED);
         if (colonist == null) return;
 
         BlockPos spawnPos = bannerPos.add(
                 world.random.nextInt(7) - 3, 1, world.random.nextInt(7) - 3);
-
         colonist.refreshPositionAndAngles(
                 spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, 0, 0);
         colonist.setColonyId(colony.getColonyId());
         colonist.setHomePos(bannerPos);
         if (colony.getStockpilePos() != null) colonist.setStockpilePos(colony.getStockpilePos());
 
-        // Auto-assign to the found job block (non-guard)
         if (targetJob != null) {
             targetJob.assignColonist(colonist.getUuid());
             colonist.setColonistJob(targetJob.getJob());
@@ -216,7 +198,6 @@ public class ColonistEntity extends PathAwareEntity {
         mgr.markDirty();
     }
 
-    /** Find first unclaimed, unlocked job block within 32 blocks of banner. */
     private static JobBlockEntity findUnclaimedJob(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
         for (BlockPos candidate : BlockPos.iterate(bannerPos.add(-16, -4, -16),
                                                     bannerPos.add(16, 4, 16))) {
@@ -230,12 +211,11 @@ public class ColonistEntity extends PathAwareEntity {
         return null;
     }
 
-    // ── NBT ───────────────────────────────────────────────────────────────────
-
+    // -- NBT --
     @Override
     public void writeCustomData(WriteView view) {
         super.writeCustomData(view);
-        if (colonyId != null)   view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
+        if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
         view.putString("Job", job.name());
         view.putInt("HungerTicks", hungerTicks);
         if (jobBlockPos != null) {

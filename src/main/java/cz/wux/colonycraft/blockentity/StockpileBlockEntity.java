@@ -26,18 +26,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * The colony's shared storage. Colonists deposit their produced goods here and
- * withdraw resources they need for their jobs.
- *
- * <p>Has 54 item slots (like a double chest) plus a dedicated food tracker.</p>
- */
 public class StockpileBlockEntity extends BlockEntity
         implements Inventory, NamedScreenHandlerFactory {
 
     public static final int SLOTS = 54;
 
-    /** The set of items counted as food for colony consumption. */
     private static final Set<Item> FOOD_ITEMS = Set.of(
             Items.BREAD, Items.COOKED_BEEF, Items.COOKED_PORKCHOP, Items.COOKED_CHICKEN,
             Items.COOKED_COD, Items.COOKED_SALMON, Items.COOKED_MUTTON, Items.COOKED_RABBIT,
@@ -53,16 +46,9 @@ public class StockpileBlockEntity extends BlockEntity
         super(ModBlockEntities.STOCKPILE, pos, state);
     }
 
-    // ── Colony linkage ────────────────────────────────────────────────────────
-
     public void setColonyId(UUID id) { this.colonyId = id; }
 
-    // ── Food scanning ─────────────────────────────────────────────────────────
-
-    /**
-     * Counts all food items present and updates the colony's food counter.
-     * Called periodically from the block's server tick.
-     */
+    /** Count food items and set colony food count to match exactly. */
     public void syncFoodToColony() {
         if (colonyId == null || !(world instanceof ServerWorld sw)) return;
         ColonyManager.get(sw).getColony(colonyId).ifPresent(colony -> {
@@ -72,17 +58,10 @@ public class StockpileBlockEntity extends BlockEntity
                     total += stack.getCount();
                 }
             }
-            // Just update the food counter directly from current inventory
-            // (so it reflects what's actually there)
-            int current = colony.getFoodUnits();
-            int diff = total - current;
-            if (diff > 0) colony.addFood(diff);
+            colony.setFoodUnits(total);
         });
     }
 
-    /**
-     * Tries to consume one food item from the stockpile. Returns true if found.
-     */
     public boolean consumeOneFoodItem() {
         for (int i = 0; i < items.size(); i++) {
             ItemStack stack = items.get(i);
@@ -96,9 +75,6 @@ public class StockpileBlockEntity extends BlockEntity
         return false;
     }
 
-    // ── Item helpers for colonists ─────────────────────────────────────────────
-
-    /** Try to insert an item into the stockpile. Returns remainder count. */
     public int insertItem(ItemStack stack) {
         int remaining = stack.getCount();
         for (int i = 0; i < items.size() && remaining > 0; i++) {
@@ -119,7 +95,6 @@ public class StockpileBlockEntity extends BlockEntity
         return remaining;
     }
 
-    /** Try to withdraw {@code amount} of {@code item}. Returns amount actually taken. */
     public int withdrawItem(Item item, int amount) {
         int taken = 0;
         for (int i = 0; i < items.size() && taken < amount; i++) {
@@ -143,53 +118,33 @@ public class StockpileBlockEntity extends BlockEntity
         return count >= amount;
     }
 
-    // ── Inventory ─────────────────────────────────────────────────────────────
-
-    @Override public int size()            { return SLOTS; }
-    @Override public boolean isEmpty()     { return items.stream().allMatch(ItemStack::isEmpty); }
+    @Override public int size() { return SLOTS; }
+    @Override public boolean isEmpty() { return items.stream().allMatch(ItemStack::isEmpty); }
     @Override public ItemStack getStack(int slot) { return items.get(slot); }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
+    @Override public ItemStack removeStack(int slot, int amount) {
         ItemStack result = Inventories.splitStack(items, slot, amount);
         if (!result.isEmpty()) markDirty();
         return result;
     }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        return Inventories.removeStack(items, slot);
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
+    @Override public ItemStack removeStack(int slot) { return Inventories.removeStack(items, slot); }
+    @Override public void setStack(int slot, ItemStack stack) {
         items.set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) stack.setCount(getMaxCountPerStack());
         markDirty();
     }
-
     @Override public boolean canPlayerUse(PlayerEntity player) { return true; }
     @Override public void clear() { items.clear(); }
 
-    // ── GUI ───────────────────────────────────────────────────────────────────
-
     @Override public Text getDisplayName() { return Text.translatable("container.colonycraft.stockpile"); }
-
-    @Override
-    public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    @Override public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new StockpileScreenHandler(syncId, inv, this);
     }
 
-    // ── NBT ───────────────────────────────────────────────────────────────────
-
-    @Override
-    protected void writeData(WriteView view) {
+    @Override protected void writeData(WriteView view) {
         Inventories.writeData(view, items);
         if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
     }
-
-    @Override
-    protected void readData(ReadView view) {
+    @Override protected void readData(ReadView view) {
         Inventories.readData(view, items);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }

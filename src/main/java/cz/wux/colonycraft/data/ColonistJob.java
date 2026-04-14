@@ -1,25 +1,24 @@
 package cz.wux.colonycraft.data;
 
 /**
- * All colonist job types, mapped 1:1 from Colony Survival's npctypes.json.
- * Each job has a display name, a corresponding job block key, and whether it
- * requires a physical workstation block.
+ * All colonist job types, inspired by Colony Survival.
+ * Some jobs (like Berry Farmer) work area-based without needing a workstation block.
  */
 public enum ColonistJob {
 
-    // ── Unemployed ───────────────────────────────────────────────────────────
+    // -- Unemployed --
     UNEMPLOYED("Unemployed", "none", false),
 
-    // ── Resource gathering ────────────────────────────────────────────────────
-    WOODCUTTER  ("Woodcutter",   "woodcutter_bench",   true),
-    FORESTER    ("Forester",     "forester_hut",       true),
-    MINER       ("Miner",        "miner_hut",          true),
-    FARMER      ("Farmer",       "farmer_hut",         true),
-    BERRY_FARMER("Berry Farmer", "berry_farm",         true),
-    FISHERMAN   ("Fisherman",    "fishing_hut",        true),
-    WATER_GATHERER("Water Gatherer", "water_well",     true),
+    // -- Resource gathering --
+    WOODCUTTER    ("Woodcutter",     "woodcutter_bench",   true),
+    FORESTER      ("Forester",       "forester_hut",       true),
+    MINER         ("Miner",          "miner_hut",          true),
+    FARMER        ("Farmer",         "farmer_hut",         true),
+    BERRY_FARMER  ("Berry Farmer",   "berry_farm",         false),
+    FISHERMAN     ("Fisherman",      "fishing_hut",        false),
+    WATER_GATHERER("Water Gatherer", "water_well",         true),
 
-    // ── Processing ────────────────────────────────────────────────────────────
+    // -- Processing --
     COOK        ("Cook",         "stove",              true),
     SMELTER     ("Smelter",      "bloomery",           true),
     BLACKSMITH  ("Blacksmith",   "blast_furnace",      true),
@@ -35,20 +34,14 @@ public enum ColonistJob {
     BEEKEEPER   ("Beekeeper",    "beehive_station",    true),
     CHICKEN_FARMER("Chicken Farmer","chicken_coop",    true),
 
-    // ── Knowledge ─────────────────────────────────────────────────────────────
+    // -- Knowledge --
     RESEARCHER  ("Researcher",   "research_desk",      true),
 
-    // ── Guards ────────────────────────────────────────────────────────────────
-    GUARD_BOW      ("Guard (Bow)",       "guard_tower",  true),
-    GUARD_CROSSBOW ("Guard (Crossbow)", "guard_tower",   true),
-    GUARD_MUSKET   ("Guard (Musket)",   "guard_tower",   true);
-
-    // ─────────────────────────────────────────────────────────────────────────
+    // -- Defense (single guard type - zombies/skeletons burn at dawn) --
+    GUARD       ("Guard",        "guard_tower",        true);
 
     public final String displayName;
-    /** Key matching the block registered in ModBlocks (may be "none"). */
     public final String jobBlockKey;
-    /** Whether the colonist must stand at a physical block to work. */
     public final boolean requiresBlock;
 
     ColonistJob(String displayName, String jobBlockKey, boolean requiresBlock) {
@@ -58,7 +51,7 @@ public enum ColonistJob {
     }
 
     public boolean isGuard() {
-        return this == GUARD_BOW || this == GUARD_CROSSBOW || this == GUARD_MUSKET;
+        return this == GUARD;
     }
 
     public boolean isFarmer() {

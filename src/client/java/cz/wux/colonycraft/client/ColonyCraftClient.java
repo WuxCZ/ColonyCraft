@@ -46,14 +46,14 @@ public class ColonyCraftClient implements ClientModInitializer {
         HandledScreens.register(ModScreenHandlers.COLONY_BANNER, ColonyBannerScreen::new);
         HandledScreens.register(ModScreenHandlers.RESEARCH,      ResearchScreen::new);
 
-        // Wire up guidebook to open GUI screen instead of chat
+        // Guidebook still works if right-clicked (but not in starter kit)
         GuidebookItem.clientScreenOpener = () -> MinecraftClient.getInstance().setScreen(new GuidebookScreen());
 
-        // Wire up area wand to open job selection screen after both corners set
+        // Area wand -> job selection screen
         AreaWandItem.clientAreaCompleteHandler = () -> MinecraftClient.getInstance().execute(() ->
             MinecraftClient.getInstance().setScreen(new JobSelectionScreen()));
 
-        // ';' key -> Colony Management Screen (like Colony Survival)
+        // Colony management key (;)
         KeyBinding.Category ccCategory = new KeyBinding.Category(Identifier.of("colonycraft", "colonycraft"));
         colonyManagementKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.colonycraft.management",
@@ -68,23 +68,20 @@ public class ColonyCraftClient implements ClientModInitializer {
                     client.setScreen(new ColonyManagementScreen());
                 }
             }
-            // Colony border particle rendering
             ColonyBorderRenderer.tick(client);
-            // Area wand visualization
             AreaWandRenderer.tick(client);
         });
 
-        // Colony HUD overlay — top-left corner with semi-transparent background
+        // HUD overlay
         HudRenderCallback.EVENT.register((drawContext, deltaTick) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.getServer() == null || mc.player == null) return;
-            if (mc.currentScreen != null) return; // hide when any screen is open
+            if (mc.currentScreen != null) return;
             Collection<ColonyData> colonies = ColonyManager.get(mc.getServer()).getAllColonies();
             if (colonies.isEmpty()) return;
             ColonyData colony = colonies.iterator().next();
             int x = 6, y = 6;
-            // Dark background panel behind HUD text
-            drawContext.fill(x - 3, y - 3, x + 120, y + 57, 0x88000000);
+            drawContext.fill(x - 3, y - 3, x + 130, y + 57, 0x88000000);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a76\u2654 Colony"),                                                        x, y,      0xFFFFD700, true);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7aFood: \u00a7f" + colony.getFoodUnits()),                                 x, y + 11, 0xFFFFFFFF, true);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7bPop:  \u00a7f" + colony.getColonistCount() + "/" + colony.getPopulationCap()), x, y + 22, 0xFFFFFFFF, true);
