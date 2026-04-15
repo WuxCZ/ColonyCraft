@@ -229,15 +229,14 @@ src/
 
 | Metric | Count |
 |---|---|
-| Job Types | 25 |
-| Block Types | 26 |
-| Item Types | 30 |
-| Quest Types | 16 |
-| Chisel Block Chains | 20+ |
-| Source Files | ~85 |
-| Textures | 57+ |
+| Job Types | 3 |
+| Block Types | 30 |
+| Item Types | 34 |
+| Recipe Files | 28 |
+| Source Files | ~88 |
+| Textures | 65 |
 
-*Last updated manually.*
+*Auto-updated on 2026-04-15 by GitHub Actions.*
 <!-- END AUTO-GENERATED STATS -->
 
 ---
