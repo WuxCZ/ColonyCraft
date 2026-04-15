@@ -43,12 +43,48 @@ public class StockpileBlockEntity extends BlockEntity
 
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(SLOTS, ItemStack.EMPTY);
     private UUID colonyId;
+    private boolean starterItemsGiven = false;
 
     public StockpileBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STOCKPILE, pos, state);
     }
 
-    public void setColonyId(UUID id) { this.colonyId = id; }
+    public void setColonyId(UUID id) {
+        this.colonyId = id;
+        // Give starter items when first linked to colony
+        if (id != null && !starterItemsGiven && isEmpty()) {
+            giveStarterItems();
+            starterItemsGiven = true;
+            markDirty();
+        }
+    }
+
+    /** Colony Survival-style starting supplies. */
+    private void giveStarterItems() {
+        // Tools (20 each)
+        insertItem(new ItemStack(Items.WOODEN_SWORD, 20));
+        insertItem(new ItemStack(Items.WOODEN_AXE, 20));
+        insertItem(new ItemStack(Items.WOODEN_PICKAXE, 20));
+        insertItem(new ItemStack(Items.WOODEN_HOE, 16));
+        insertItem(new ItemStack(Items.WOODEN_SHOVEL, 10));
+        // Basic supplies
+        insertItem(new ItemStack(Items.TORCH, 64));
+        insertItem(new ItemStack(Items.BREAD, 50));
+        insertItem(new ItemStack(Items.OAK_PLANKS, 64));
+        insertItem(new ItemStack(Items.COBBLESTONE, 64));
+        insertItem(new ItemStack(Items.WHEAT_SEEDS, 32));
+        insertItem(new ItemStack(Items.SWEET_BERRIES, 16));
+        // Equipment for guards
+        insertItem(new ItemStack(Items.STONE_SWORD, 8));
+        insertItem(new ItemStack(Items.BOW, 4));
+        insertItem(new ItemStack(Items.ARROW, 64));
+        insertItem(new ItemStack(Items.LEATHER_HELMET, 8));
+        insertItem(new ItemStack(Items.LEATHER_CHESTPLATE, 8));
+        insertItem(new ItemStack(Items.LEATHER_LEGGINGS, 8));
+        insertItem(new ItemStack(Items.LEATHER_BOOTS, 8));
+        // Beds
+        insertItem(new ItemStack(Items.WHITE_BED, 10));
+    }
 
     /** Count food items and set colony food count to match exactly. */
     public void syncFoodToColony() {
@@ -145,9 +181,11 @@ public class StockpileBlockEntity extends BlockEntity
     @Override protected void writeData(WriteView view) {
         Inventories.writeData(view, items);
         if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
+        view.putBoolean("StarterGiven", starterItemsGiven);
     }
     @Override protected void readData(ReadView view) {
         Inventories.readData(view, items);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
+        starterItemsGiven = view.getBoolean("StarterGiven", false);
     }
 }

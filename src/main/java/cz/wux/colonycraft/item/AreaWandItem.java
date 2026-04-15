@@ -14,6 +14,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -71,6 +74,21 @@ public class AreaWandItem extends Item {
     }
 
     @Override
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
+        if (world.isClient()) return ActionResult.PASS;
+        UUID playerId = player.getUuid();
+        ColonistJob selectedJob = SELECTED_JOB.get(playerId);
+        // Right-click air with a job selected → cancel
+        if (selectedJob != null) {
+            clearSelection(playerId);
+            player.sendMessage(Text.literal(
+                    "\u00a7e[Wand] \u00a7fSelection cancelled."), false);
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
+    }
+
+    @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (context.getWorld().isClient()) return ActionResult.SUCCESS;
 
@@ -81,8 +99,16 @@ public class AreaWandItem extends Item {
         BlockPos clicked = context.getBlockPos();
         ColonistJob selectedJob = SELECTED_JOB.get(playerId);
 
-        // ── Sneak + right-click → remove work area ──────────────────────
+        // ── Sneak + right-click → cancel selection or remove work area ─
         if (player.isSneaking()) {
+            // If we have an active selection/job, cancel it first
+            if (selectedJob != null) {
+                clearSelection(playerId);
+                player.sendMessage(Text.literal(
+                        "\u00a7e[Wand] \u00a7fSelection cancelled."), false);
+                return ActionResult.SUCCESS;
+            }
+            // Otherwise try to remove existing work area
             if (context.getWorld() instanceof ServerWorld) {
                 for (BlockPos bp : BlockPos.iterate(
                         clicked.add(-48, -8, -48), clicked.add(48, 8, 48))) {
@@ -162,18 +188,50 @@ public class AreaWandItem extends Item {
                 // Instant farmland conversion for FARMER jobs
                 if (selectedJob == ColonistJob.FARMER) {
                     int converted = 0;
-                    for (BlockPos bp : BlockPos.iterate(min, max)) {
-                        net.minecraft.block.BlockState state = context.getWorld().getBlockState(bp);
-                        if ((state.isOf(net.minecraft.block.Blocks.GRASS_BLOCK) || state.isOf(net.minecraft.block.Blocks.DIRT))
-                                && context.getWorld().getBlockState(bp.up()).isAir()) {
-                            context.getWorld().setBlockState(bp, net.minecraft.block.Blocks.FARMLAND.getDefaultState());
-                            converted++;
+                    // First, place water channels every 4 blocks for hydration
+                    for (int x = min.getX(); x <= max.getX(); x++) {
+                        for (int z = min.getZ(); z <= max.getZ(); z++) {
+                            // Water every 4th block in both directions (covers 4-block hydration radius)
+                            boolean isWaterRow = ((x - min.getX()) % 9 == 4);
+                            boolean isWaterCol = ((z - min.getZ()) % 9 == 4);
+                            if (isWaterRow || isWaterCol) {
+                                // Skip corners where rows and columns meet - those get water too
+                            }
+                            if (isWaterRow && !isWaterCol) continue; // handled below
+                            if (isWaterCol && !isWaterRow) continue; // handled below
+                        }
+                    }
+                    // Place water channels (every 4th row)
+                    for (int x = min.getX(); x <= max.getX(); x++) {
+                        for (int z = min.getZ(); z <= max.getZ(); z++) {
+                            BlockPos bp = new BlockPos(x, min.getY(), z);
+                            if (((x - min.getX()) % 9 == 4) || ((z - min.getZ()) % 9 == 4)) {
+                                // Water channel position - dig down and fill with water
+                                net.minecraft.block.BlockState state = context.getWorld().getBlockState(bp);
+                                if (state.isOf(net.minecraft.block.Blocks.GRASS_BLOCK) 
+                                        || state.isOf(net.minecraft.block.Blocks.DIRT)
+                                        || state.isOf(net.minecraft.block.Blocks.FARMLAND)) {
+                                    context.getWorld().setBlockState(bp, net.minecraft.block.Blocks.WATER.getDefaultState());
+                                    // Clear block above water
+                                    if (!context.getWorld().getBlockState(bp.up()).isAir()) {
+                                        context.getWorld().setBlockState(bp.up(), net.minecraft.block.Blocks.AIR.getDefaultState());
+                                    }
+                                }
+                            } else {
+                                // Regular farmland position
+                                net.minecraft.block.BlockState state = context.getWorld().getBlockState(bp);
+                                if ((state.isOf(net.minecraft.block.Blocks.GRASS_BLOCK) || state.isOf(net.minecraft.block.Blocks.DIRT))
+                                        && context.getWorld().getBlockState(bp.up()).isAir()) {
+                                    context.getWorld().setBlockState(bp, net.minecraft.block.Blocks.FARMLAND.getDefaultState());
+                                    converted++;
+                                }
+                            }
                         }
                     }
                     if (converted > 0) {
                         player.sendMessage(Text.literal(
                             "\u00a7a[Farmer] \u00a77Converted \u00a7e" + converted +
-                            " \u00a77blocks to farmland!"), false);
+                            " \u00a77blocks to farmland with water channels!"), false);
                     }
                 }
 
@@ -249,7 +307,7 @@ public class AreaWandItem extends Item {
                 player.sendMessage(Text.literal(
                     "\u00a7c[" + selectedJob.displayName + "] No matching job block found nearby! " +
                     "Place a \u00a7e" + selectedJob.jobBlockKey.replace('_', ' ') + "\u00a7c first."), false);
-                sel[1] = null;
+                clearSelection(playerId);
                 return ActionResult.SUCCESS;
             }
 

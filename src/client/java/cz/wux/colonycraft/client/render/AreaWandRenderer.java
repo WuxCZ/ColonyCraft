@@ -19,7 +19,7 @@ public class AreaWandRenderer {
     private static int tickCounter = 0;
 
     public static void tick(MinecraftClient mc) {
-        if (mc.world == null || mc.player == null || mc.getServer() == null) return;
+        if (mc.world == null || mc.player == null) return;
         boolean holdingWand = mc.player.getMainHandStack().isOf(ModItems.AREA_WAND)
                            || mc.player.getOffHandStack().isOf(ModItems.AREA_WAND);
         tickCounter++;
@@ -27,16 +27,18 @@ public class AreaWandRenderer {
         tickCounter = 0;
 
         UUID playerId = mc.player.getUuid();
-        ServerWorld serverWorld = mc.getServer().getOverworld();
 
-        // Always show assigned job area borders (even without wand)
-        BlockPos playerPos = mc.player.getBlockPos();
-        for (BlockPos bp : BlockPos.iterate(
-                playerPos.add(-32, -8, -32),
-                playerPos.add(32, 8, 32))) {
-            var be = serverWorld.getBlockEntity(bp);
-            if (be instanceof JobBlockEntity jb && jb.hasArea()) {
-                spawnFilledBox(mc, jb.getAreaMin(), jb.getAreaMax(), false);
+        // Always show assigned job area borders (even without wand) — uses integrated server
+        if (mc.getServer() != null) {
+            var serverWorld = mc.getServer().getOverworld();
+            BlockPos playerPos = mc.player.getBlockPos();
+            for (BlockPos bp : BlockPos.iterate(
+                    playerPos.add(-48, -8, -48),
+                    playerPos.add(48, 8, 48))) {
+                var be = serverWorld.getBlockEntity(bp);
+                if (be instanceof JobBlockEntity jb && jb.hasArea()) {
+                    spawnBorderOnly(mc, jb.getAreaMin(), jb.getAreaMax(), false);
+                }
             }
         }
 
@@ -81,6 +83,48 @@ public class AreaWandRenderer {
         double z = pos.getZ() + 0.5;
         mc.world.addParticleClient(ParticleTypes.END_ROD, x, y, z, 0.0, 0.05, 0.0);
         mc.world.addParticleClient(ParticleTypes.END_ROD, x, y + 0.3, z, 0.0, 0.05, 0.0);
+    }
+
+    /** Render a border outline of a cuboid using particles on all 12 edges. */
+    private static void spawnBorderOnly(MinecraftClient mc, BlockPos min, BlockPos max, boolean isSelection) {
+        double x1 = min.getX(), y1 = min.getY(), z1 = min.getZ();
+        double x2 = max.getX() + 1.0, y2 = max.getY() + 1.0, z2 = max.getZ() + 1.0;
+
+        double px = mc.player.getX(), pz = mc.player.getZ();
+        double cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
+        if (Math.abs(px - cx) > 80 || Math.abs(pz - cz) > 80) return;
+
+        var particle = isSelection
+                ? new DustParticleEffect(0x55FF55, 1.0f)
+                : new DustParticleEffect(0x55AAFF, 1.0f);
+
+        double step = 0.5;
+
+        // 4 bottom edges
+        for (double x = x1; x <= x2; x += step) {
+            mc.world.addParticleClient(particle, x, y1, z1, 0, 0, 0);
+            mc.world.addParticleClient(particle, x, y1, z2, 0, 0, 0);
+        }
+        for (double z = z1; z <= z2; z += step) {
+            mc.world.addParticleClient(particle, x1, y1, z, 0, 0, 0);
+            mc.world.addParticleClient(particle, x2, y1, z, 0, 0, 0);
+        }
+        // 4 top edges
+        for (double x = x1; x <= x2; x += step) {
+            mc.world.addParticleClient(particle, x, y2, z1, 0, 0, 0);
+            mc.world.addParticleClient(particle, x, y2, z2, 0, 0, 0);
+        }
+        for (double z = z1; z <= z2; z += step) {
+            mc.world.addParticleClient(particle, x1, y2, z, 0, 0, 0);
+            mc.world.addParticleClient(particle, x2, y2, z, 0, 0, 0);
+        }
+        // 4 vertical edges
+        for (double y = y1; y <= y2; y += step) {
+            mc.world.addParticleClient(particle, x1, y, z1, 0, 0, 0);
+            mc.world.addParticleClient(particle, x2, y, z1, 0, 0, 0);
+            mc.world.addParticleClient(particle, x1, y, z2, 0, 0, 0);
+            mc.world.addParticleClient(particle, x2, y, z2, 0, 0, 0);
+        }
     }
 
     /** Render a filled cuboid using particles on all 6 faces. */

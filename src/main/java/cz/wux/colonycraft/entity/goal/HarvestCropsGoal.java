@@ -156,6 +156,16 @@ public class HarvestCropsGoal extends Goal {
                 case SEEK_TILL, TILLING -> {
                     BlockState tillState = world.getBlockState(targetPos);
                     if (tillState.isOf(Blocks.GRASS_BLOCK) || tillState.isOf(Blocks.DIRT)) {
+                        // Check if there's water nearby (within 4 blocks) — if not, place water
+                        boolean hasWater = false;
+                        for (int dx = -4; dx <= 4 && !hasWater; dx++) {
+                            for (int dz = -4; dz <= 4 && !hasWater; dz++) {
+                                if (world.getBlockState(targetPos.add(dx, 0, dz)).isOf(Blocks.WATER)
+                                        || world.getBlockState(targetPos.add(dx, -1, dz)).isOf(Blocks.WATER)) {
+                                    hasWater = true;
+                                }
+                            }
+                        }
                         world.setBlockState(targetPos, Blocks.FARMLAND.getDefaultState());
                         world.playSound(null, targetPos,
                                 net.minecraft.sound.SoundEvents.ITEM_HOE_TILL,

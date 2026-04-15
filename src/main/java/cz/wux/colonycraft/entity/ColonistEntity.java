@@ -18,9 +18,18 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Uuids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -64,6 +73,9 @@ public class ColonistEntity extends PathAwareEntity {
 
     /** Whether a goal has set the status this tick. */
     private boolean statusSetByGoal = false;
+
+    /** Colonist personal inventory (9 slots — 1 row). */
+    private final SimpleInventory colonistInventory = new SimpleInventory(9);
 
     /** Speech bubble system — colonists talk, alert problems, chatter. */
     private String speechBubble = null;
@@ -116,6 +128,7 @@ public class ColonistEntity extends PathAwareEntity {
         goalSelector.add(1, new ReturnToColonyGoal(this));
         goalSelector.add(1, new ColonistSleepGoal(this));
         goalSelector.add(2, new ColonistEatGoal(this));
+        goalSelector.add(2, new EquipToolGoal(this));
         goalSelector.add(3, new ChopTreeGoal(this));
         goalSelector.add(3, new HarvestCropsGoal(this));
         goalSelector.add(3, new HarvestBerriesGoal(this));
@@ -331,6 +344,23 @@ public class ColonistEntity extends PathAwareEntity {
         return (be instanceof JobBlockEntity j) ? Optional.of(j) : Optional.empty();
     }
 
+    /** Get the colonist's personal inventory. */
+    public SimpleInventory getColonistInventory() { return colonistInventory; }
+
+    /** Open colonist inventory when player right-clicks. */
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (!getEntityWorld().isClient() && hand == Hand.MAIN_HAND) {
+            String label = (colonistName != null ? colonistName : "Colonist") + "'s Inventory";
+            player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+                    (syncId, inv, p) -> new GenericContainerScreenHandler(
+                            net.minecraft.screen.ScreenHandlerType.GENERIC_9X1, syncId, inv, colonistInventory, 1),
+                    net.minecraft.text.Text.literal(label)));
+            return ActionResult.SUCCESS;
+        }
+        return super.interactMob(player, hand);
+    }
+
     // -- Spawning --
     public static void spawnForColony(ServerWorld world, ColonyData colony,
                                       BlockPos bannerPos, ColonyManager mgr) {
@@ -449,6 +479,10 @@ public class ColonistEntity extends PathAwareEntity {
             view.putInt("HomeY", homePos.getY());
             view.putInt("HomeZ", homePos.getZ());
         }
+        // Save colonist inventory
+        var invList = net.minecraft.util.collection.DefaultedList.ofSize(9, net.minecraft.item.ItemStack.EMPTY);
+        for (int i = 0; i < 9; i++) invList.set(i, colonistInventory.getStack(i));
+        Inventories.writeData(view, invList);
     }
 
     @Override
@@ -465,6 +499,11 @@ public class ColonistEntity extends PathAwareEntity {
         if (stockX != Integer.MIN_VALUE) stockpilePos = new BlockPos(stockX, view.getInt("StockY", 0), view.getInt("StockZ", 0));
         int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
         if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
+
+        // Load colonist inventory
+        var invList = net.minecraft.util.collection.DefaultedList.ofSize(9, net.minecraft.item.ItemStack.EMPTY);
+        Inventories.readData(view, invList);
+        for (int i = 0; i < 9; i++) colonistInventory.setStack(i, invList.get(i));
 
         // Immediately update status so it doesn't show "Idle" before first tick
         if (job != ColonistJob.UNEMPLOYED) {

@@ -1,6 +1,7 @@
 package cz.wux.colonycraft.entity;
 
 import cz.wux.colonycraft.data.ColonistJob;
+import cz.wux.colonycraft.entity.goal.GuardLootGoal;
 import cz.wux.colonycraft.entity.goal.GuardPatrolGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -60,6 +61,7 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
     @Override
     protected void initGoals() {
         // Universal goals only — combat/patrol goals added by configureGoals()
+        goalSelector.add(2, new GuardLootGoal(this));
         goalSelector.add(4, new LookAroundGoal(this));
         goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));

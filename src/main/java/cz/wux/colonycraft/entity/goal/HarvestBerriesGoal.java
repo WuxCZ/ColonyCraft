@@ -111,11 +111,11 @@ public class HarvestBerriesGoal extends Goal {
             World world = colonist.getEntityWorld();
             switch (phase) {
                 case SEEK_PLANT, PLANTING -> {
-                    BlockState below = world.getBlockState(targetPos);
-                    BlockState at = world.getBlockState(targetPos.up());
+                    BlockState at = world.getBlockState(targetPos);
+                    BlockState below = world.getBlockState(targetPos.down());
                     if ((below.isOf(Blocks.GRASS_BLOCK) || below.isOf(Blocks.DIRT))
                             && at.isAir()) {
-                        world.setBlockState(targetPos.up(),
+                        world.setBlockState(targetPos,
                                 Blocks.SWEET_BERRY_BUSH.getDefaultState());
                     }
                 }
@@ -159,11 +159,13 @@ public class HarvestBerriesGoal extends Goal {
         World world = colonist.getEntityWorld();
         BlockPos best = null;
         double bestD = Double.MAX_VALUE;
+        // Iterate within bounds — the bush itself is placed AT this position,
+        // so check the block below for grass/dirt and this position for air
         for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
-            BlockState below = world.getBlockState(p);
+            BlockState at = world.getBlockState(p);
+            if (!at.isAir()) continue;
+            BlockState below = world.getBlockState(p.down());
             if (!(below.isOf(Blocks.GRASS_BLOCK) || below.isOf(Blocks.DIRT))) continue;
-            if (!world.getBlockState(p.up()).isAir()) continue;
-            // Check there's no bush already at this position
             double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
             if (d < bestD) { bestD = d; best = p.toImmutable(); }
         }

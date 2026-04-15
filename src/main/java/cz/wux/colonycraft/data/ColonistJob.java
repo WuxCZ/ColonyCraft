@@ -13,7 +13,7 @@ public enum ColonistJob {
     WOODCUTTER    ("Woodcutter",     "woodcutter_bench",   true,  16),
     FORESTER      ("Forester",       "forester_hut",       true,  16),
     MINER         ("Miner",          "miner_hut",          true,  12),
-    FARMER        ("Farmer",         "farmer_hut",         true,  10),
+    FARMER        ("Farmer",         "farmer_hut",         false, 10),
     BERRY_FARMER  ("Berry Farmer",   "berry_farm",         false, 10),
     FISHERMAN     ("Fisherman",      "fishing_hut",        false, 10),
     WATER_GATHERER("Water Gatherer", "water_well",         true,  0),

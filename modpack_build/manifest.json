@@ -1,1 +1,49 @@
-﻿{"minecraft":{"version":"1.21.11","modLoaders":[{"id":"fabric-0.19.1","primary":true}]},"manifestType":"minecraftModpack","manifestVersion":1,"name":"ColonyCraft Modpack","version":"1.0.0","author":"Wux","files":[{"projectID":1514636,"fileID":7929429,"required":true}],"overrides":"overrides"}
+﻿{
+    "manifestType":  "minecraftModpack",
+    "version":  "1.0.0",
+    "files":  [
+                  {
+                      "fileID":  7863351,
+                      "required":  true,
+                      "projectID":  306612
+                  },
+                  {
+                      "fileID":  6382649,
+                      "required":  true,
+                      "projectID":  394468
+                  },
+                  {
+                      "fileID":  7740401,
+                      "required":  true,
+                      "projectID":  360438
+                  },
+                  {
+                      "fileID":  6213635,
+                      "required":  true,
+                      "projectID":  455508
+                  },
+                  {
+                      "fileID":  7808443,
+                      "required":  true,
+                      "projectID":  308702
+                  },
+                  {
+                      "fileID":  7929634,
+                      "required":  true,
+                      "projectID":  1514636
+                  }
+              ],
+    "manifestVersion":  1,
+    "name":  "ColonyCraft Modpack",
+    "overrides":  "overrides",
+    "author":  "Wux",
+    "minecraft":  {
+                      "version":  "1.21.1",
+                      "modLoaders":  [
+                                         {
+                                             "id":  "fabric-0.19.1",
+                                             "primary":  true
+                                         }
+                                     ]
+                  }
+}

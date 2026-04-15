@@ -43,11 +43,11 @@ $manifestFiles = @()
 $modlistEntries = @()
 
 foreach ($mod in $modsToFind) {
-    $pid = $mod.projectId
+    $modPid = $mod.projectId
     $name = $mod.name
     
     try {
-        $filesUrl = "$apiBase/projects/$pid/files?gameVersion=1.21.11&modLoaderType=4&pageSize=5"
+        $filesUrl = "$apiBase/projects/$modPid/files?gameVersion=1.21.11&modLoaderType=4&pageSize=5"
         $filesResp = Invoke-RestMethod -Uri $filesUrl -Headers $headers -Method Get
 
         $latestFile = $null
@@ -61,7 +61,7 @@ foreach ($mod in $modsToFind) {
 
         if (-not $latestFile) {
             # Try without version filter
-            $filesUrl2 = "$apiBase/projects/$pid/files?pageSize=5"
+            $filesUrl2 = "$apiBase/projects/$modPid/files?pageSize=5"
             $filesResp2 = Invoke-RestMethod -Uri $filesUrl2 -Headers $headers -Method Get
             if ($filesResp2 -is [array] -and $filesResp2.Count -gt 0) {
                 $latestFile = $filesResp2[0]
@@ -75,7 +75,7 @@ foreach ($mod in $modsToFind) {
             $fileName = if ($latestFile.fileName) { $latestFile.fileName } elseif ($latestFile.displayName) { $latestFile.displayName } else { "unknown" }
             
             $manifestFiles += @{
-                projectID = $pid
+                projectID = $modPid
                 fileID    = [int]$fileId
                 required  = $true
             }
@@ -84,7 +84,7 @@ foreach ($mod in $modsToFind) {
         } else {
             Write-Host "  WARN $name -> No file found for 1.21.11, adding project ID only" -ForegroundColor Yellow
             $manifestFiles += @{
-                projectID = $pid
+                projectID = $modPid
                 fileID    = 0
                 required  = $true
             }
@@ -94,7 +94,7 @@ foreach ($mod in $modsToFind) {
         Write-Host "  ERR  $name -> $($_.Exception.Message)" -ForegroundColor Red
         # Still add with project ID
         $manifestFiles += @{
-            projectID = $pid
+            projectID = $modPid
             fileID    = 0
             required  = $true
         }
@@ -107,12 +107,21 @@ $validFiles = $manifestFiles | Where-Object { $_.fileID -ne 0 }
 if ($validFiles.Count -eq 0) {
     Write-Host ""
     Write-Host "Could not resolve file IDs via old API. Using known file IDs..." -ForegroundColor Yellow
-    # Use known/uploaded file IDs
+    # Use known/uploaded file IDs (verified from CurseForge website)
     $validFiles = @(
-        @{ projectID = 1514636; fileID = 7929429; required = $true }   # ColonyCraft (just uploaded)
+        @{ projectID = 306612;  fileID = 7863351; required = $true },  # Fabric API 0.116.10+1.21.1
+        @{ projectID = 394468;  fileID = 6382649; required = $true },  # Sodium 0.6.13
+        @{ projectID = 360438;  fileID = 7740401; required = $true },  # Lithium 0.15.3
+        @{ projectID = 455508;  fileID = 6213635; required = $true },  # Iris Shaders 1.8.8
+        @{ projectID = 308702;  fileID = 7808443; required = $true },  # Mod Menu v11.0.4
+        @{ projectID = 1514636; fileID = 7929634; required = $true }   # ColonyCraft v1.0.1
     )
-    Write-Host "  ColonyCraft -> File 7929429 (just uploaded)" -ForegroundColor Green
-    Write-Host "  Other mods will be listed as dependencies" -ForegroundColor Yellow
+    Write-Host "  Fabric API  -> File 7863351 (0.116.10+1.21.1)" -ForegroundColor Green
+    Write-Host "  Sodium      -> File 6382649 (0.6.13)" -ForegroundColor Green
+    Write-Host "  Lithium     -> File 7740401 (0.15.3)" -ForegroundColor Green
+    Write-Host "  Iris        -> File 6213635 (1.8.8)" -ForegroundColor Green
+    Write-Host "  Mod Menu    -> File 7808443 (v11.0.4)" -ForegroundColor Green
+    Write-Host "  ColonyCraft -> File 7929634 (v1.0.1)" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -122,7 +131,7 @@ Write-Host "Creating manifest.json..." -ForegroundColor Yellow
 
 $manifest = @{
     minecraft = @{
-        version = "1.21.11"
+        version = "1.21.1"
         modLoaders = @(
             @{
                 id      = "fabric-0.19.1"
