@@ -15,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -81,6 +82,8 @@ public class ColonyBannerBlock extends BlockWithEntity {
                         ColonistEntity.spawnForColony(sw, colony, pos, mgr);
                         ColonistEntity.spawnForColony(sw, colony, pos, mgr);
                     });
+                    // Force-load 3x3 chunk area around the colony banner
+                    forceLoadChunks(sw, pos, true);
                 }
             }
         }
@@ -107,6 +110,8 @@ public class ColonyBannerBlock extends BlockWithEntity {
                         net.minecraft.text.Text.literal("\u00a7c\u00a7l\u26A0 Colony destroyed! All colonists dismissed."),
                         false);
             });
+            // Unload forced chunks
+            forceLoadChunks(sw, pos, false);
         }
         return super.onBreak(world, pos, state, player);
     }
@@ -121,5 +126,15 @@ public class ColonyBannerBlock extends BlockWithEntity {
             }
         }
         return ActionResult.SUCCESS;
+    }
+
+    /** Force-load or unload a 3x3 chunk area centered on the colony banner. */
+    private static void forceLoadChunks(ServerWorld world, BlockPos bannerPos, boolean load) {
+        ChunkPos cp = new ChunkPos(bannerPos);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                world.setChunkForced(cp.x + dx, cp.z + dz, load);
+            }
+        }
     }
 }

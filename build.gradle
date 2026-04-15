@@ -1,6 +1,7 @@
 plugins {
     id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
     id 'maven-publish'
+    id 'net.darkhax.curseforgegradle' version '1.1.24'
 }
 
 version = project.mod_version
@@ -72,4 +73,29 @@ publishing {
             from components.java
         }
     }
+}
+
+// ──────────────────────────────────────────────
+//  CurseForge Publishing
+//  Usage:  gradlew publishToCurseForge
+//  Requires: CURSEFORGE_TOKEN env var or -Pcurseforge_token=...
+//            CURSEFORGE_PROJECT_ID env var or -Pcurseforge_project_id=...
+// ──────────────────────────────────────────────
+task publishToCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    disableVersionDetection()
+
+    apiToken = findProperty('curseforge_token') ?: System.getenv('CURSEFORGE_TOKEN') ?: ''
+
+    def projectId = findProperty('curseforge_project_id') ?: System.getenv('CURSEFORGE_PROJECT_ID') ?: '0'
+    def mainFile = upload(projectId, remapJar)
+    mainFile.displayName = "ColonyCraft v${project.version}"
+    mainFile.releaseType = 'release'
+    mainFile.changelog = file('CHANGELOG.md').text
+    mainFile.changelogType = 'markdown'
+    mainFile.addModLoader('Fabric')
+    mainFile.addGameVersion('1.21.11')
+    mainFile.addJavaVersion('Java 21')
+
+    // Required dependency: Fabric API
+    mainFile.addRequirement('fabric-api')
 }

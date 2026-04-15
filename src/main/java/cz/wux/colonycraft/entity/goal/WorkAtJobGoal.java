@@ -162,6 +162,7 @@ public class WorkAtJobGoal extends Goal {
 
     @Override
     public void start() {
+        colonist.setCurrentStatus("⚒ " + colonist.getColonistJob().displayName);
         BlockPos target = colonist.getJobBlockPos();
         if (target == null) target = colonist.getHomePos();
         if (target != null) {
@@ -181,6 +182,7 @@ public class WorkAtJobGoal extends Goal {
 
         if (distSq <= 6.0) {
             // At workstation — perform one production cycle
+            colonist.setCurrentStatus("⚒ Crafting");
             performWork();
             // Play ambient work sound
             colonist.getEntityWorld().playSound(null, colonist.getBlockPos(),

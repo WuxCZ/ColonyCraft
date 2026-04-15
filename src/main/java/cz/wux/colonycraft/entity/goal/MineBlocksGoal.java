@@ -74,6 +74,7 @@ public class MineBlocksGoal extends Goal {
             return;
         }
 
+        colonist.setCurrentStatus("⛏ Mining ore");
         mineTick++;
         if (mineTick % 5 == 0) {
             colonist.swingHand(Hand.MAIN_HAND);

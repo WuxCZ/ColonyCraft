@@ -23,9 +23,9 @@ import net.minecraft.util.Identifier;
 public class GuardEntityRenderer extends MobEntityRenderer<GuardEntity, GuardRenderState, IllagerEntityModel<GuardRenderState>> {
 
     private static final Identifier SWORD_TEXTURE =
-            Identifier.ofVanilla("textures/entity/illager/vindicator.png");
+            Identifier.of("colonycraft", "textures/entity/guard_sword.png");
     private static final Identifier BOW_TEXTURE =
-            Identifier.ofVanilla("textures/entity/illager/pillager.png");
+            Identifier.of("colonycraft", "textures/entity/guard_bow.png");
 
     public GuardEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new IllagerEntityModel<>(ctx.getPart(EntityModelLayers.PILLAGER)), 0.5f);
@@ -46,7 +46,9 @@ public class GuardEntityRenderer extends MobEntityRenderer<GuardEntity, GuardRen
         state.hasVehicle = entity.hasVehicle();
         state.handSwingProgress = entity.getHandSwingProgress(tickDelta);
         if (entity.getTarget() != null) {
-            state.illagerState = IllagerEntity.State.ATTACKING;
+            state.illagerState = state.isBowGuard
+                    ? IllagerEntity.State.BOW_AND_ARROW
+                    : IllagerEntity.State.ATTACKING;
         } else {
             state.illagerState = IllagerEntity.State.NEUTRAL;
         }

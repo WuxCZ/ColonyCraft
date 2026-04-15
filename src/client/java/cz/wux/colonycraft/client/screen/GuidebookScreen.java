@@ -33,7 +33,11 @@ public class GuidebookScreen extends Screen {
         new Page("\u00a79\u00a7l\u2756 Research and Science",
             new String[]{"\u00a7fPlace a \u00a79Research Desk\u00a7f and assign","\u00a7fa colonist to earn science points.",""," \u00a7b\u25b8\u00a7f Open Research Table to spend points"," \u00a7b\u25b8\u00a7f Unlock new job types and upgrades","","\u00a7eKnowledge is power!","\u00a78Research unlocks better equipment."}),
         new Page("\u00a76\u00a7l\u2756 Controls Summary",
-            new String[]{"","\u00a7e ;\u00a7f \u2192 Colony Management Screen"," \u00a7eR-click\u00a7f Job Book \u2192 cycle job type"," \u00a7eR-click\u00a7f colonist w/ book \u2192 assign"," \u00a7eR-click\u00a7f w/ Wand \u2192 set work areas"," \u00a7eR-click\u00a7f this guide \u2192 open this screen","","\u00a7a\u00a7lGood luck, Commander! \u00a76\u2605","\u00a78Build. Grow. Defend. Survive."})
+            new String[]{"","\u00a7e ;\u00a7f \u2192 Colony Management Screen"," \u00a7eR-click\u00a7f Job Book \u2192 cycle job type"," \u00a7eR-click\u00a7f colonist w/ book \u2192 assign"," \u00a7eR-click\u00a7f w/ Wand \u2192 set work areas"," \u00a7eR-click\u00a7f w/ Chisel \u2192 cycle block style"," \u00a7eR-click\u00a7f this guide \u2192 open this screen","","\u00a7a\u00a7lGood luck, Commander! \u00a76\u2605","\u00a78Build. Grow. Defend. Survive."}),
+        new Page("\u00a76\u00a7l\u2756 Quests",
+            new String[]{"\u00a7fComplete quests to earn bonus sci points!","","\u00a7e Press \u00a7b;\u00a7e \u2192 \u00a76Quests\u00a7f to see them all","","\u00a7aTutorial: \u00a7fBanner \u2192 Stockpile \u2192 Beds","\u00a7aSurvival: \u00a7fFirst Night \u2192 Iron Will","\u00a7aGrowth: \u00a7f10 \u2192 25 \u2192 50 Colonists","\u00a7aKnowledge: \u00a7f10 \u2192 50 \u2192 200 Science","","\u00a78Completed quests shown in green!"}),
+        new Page("\u00a78\u00a7l\u2756 Chisel",
+            new String[]{"\u00a7fThe \u00a78Chisel\u00a7f cycles decorative block styles.","","\u00a7e Right-click \u00a7fany block to transform it:","","\u00a7dStone \u00a77\u2192\u00a7f Stone Bricks \u00a77\u2192\u00a7f Mossy...","\u00a7dDeepslate \u00a77\u2192\u00a7f Polished \u00a77\u2192\u00a7f Tiles...","\u00a7dBlackstone \u00a77\u2192\u00a7f Polished \u00a77\u2192\u00a7f Gilded...","\u00a7dCopper \u00a77\u2192\u00a7f Cut \u00a77\u2192\u00a7f Chiseled...","","\u00a7820+ block families supported!"})
     );
 
     public GuidebookScreen() {

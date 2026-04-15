@@ -65,6 +65,11 @@ public class ColonyManagementScreen extends Screen {
             }
         }).dimensions(cx + 78, cy + PANEL_HEIGHT - 28, 60, 20).build());
 
+        // Quests button
+        addDrawableChild(ButtonWidget.builder(Text.literal("\u00a76\u2756 Quests"), btn -> {
+            MinecraftClient.getInstance().setScreen(new QuestScreen());
+        }).dimensions(cx + 143, cy + PANEL_HEIGHT - 28, 65, 20).build());
+
         // Scroll buttons
         addDrawableChild(ButtonWidget.builder(Text.literal("\u25B2"), btn -> {
             scrollOffset = Math.max(0, scrollOffset - 3);

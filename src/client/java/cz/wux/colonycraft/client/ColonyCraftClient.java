@@ -85,6 +85,26 @@ public class ColonyCraftClient implements ClientModInitializer {
             Collection<ColonyData> colonies = ColonyManager.get(mc.getServer()).getAllColonies();
             if (colonies.isEmpty()) return;
             ColonyData colony = colonies.iterator().next();
+
+            // -- Wave night vignette (red, semi-transparent border during active wave time) --
+            if (mc.world != null) {
+                long dayTimeVignette = mc.world.getTimeOfDay() % 24000;
+                boolean isWaveNight = dayTimeVignette >= 13000 || dayTimeVignette < 500;
+                if (isWaveNight && colony.getColonistCount() > 0) {
+                    int sw = drawContext.getScaledWindowWidth();
+                    int sh = drawContext.getScaledWindowHeight();
+                    int vm = 40; // vignette margin/thickness
+                    long blink = System.currentTimeMillis() / 800;
+                    int alpha = (blink % 2 == 0) ? 0x55 : 0x33;
+                    int col = (alpha << 24) | 0x440000;
+                    // Top, bottom, left, right bars
+                    drawContext.fill(0, 0, sw, vm, col);
+                    drawContext.fill(0, sh - vm, sw, sh, col);
+                    drawContext.fill(0, vm, vm, sh - vm, col);
+                    drawContext.fill(sw - vm, vm, sw, sh - vm, col);
+                }
+            }
+
             int x = 6, y = 6;
             drawContext.fill(x - 3, y - 3, x + 130, y + 57, 0x88000000);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a76\u2654 Colony"),                                                        x, y,      0xFFFFD700, true);
@@ -103,6 +123,28 @@ public class ColonyCraftClient implements ClientModInitializer {
             // Pop cap warning
             if (!colony.canSpawnMoreColonists() && colony.getColonistCount() > 0) {
                 drawContext.drawText(mc.textRenderer, Text.literal("\u00a7e\u26A0 Beds!"), x + 80, y + 22, 0xFFFFFF00, true);
+            }
+
+            // Wave countdown timer (shows from dusk until wave spawn)
+            if (mc.world != null) {
+                long dayTimeHud = mc.world.getTimeOfDay() % 24000;
+                if (dayTimeHud >= 11000 && dayTimeHud < 13000) {
+                    int ticksUntilWave = (int)(13000 - dayTimeHud);
+                    int secondsUntilWave = ticksUntilWave / 20;
+                    int minutes = secondsUntilWave / 60;
+                    int seconds = secondsUntilWave % 60;
+                    String countdownText = String.format("\u00a7c\u2694 Wave in %d:%02d", minutes, seconds);
+                    int cY = y + 66;
+                    drawContext.fill(x - 3, cY - 2, x + 100, cY + 11, 0xAA330000);
+                    if (ticksUntilWave < 1000) {
+                        long blink = System.currentTimeMillis() / 250;
+                        if (blink % 2 == 0) {
+                            drawContext.drawText(mc.textRenderer, Text.literal(countdownText), x, cY, 0xFFFF4444, true);
+                        }
+                    } else {
+                        drawContext.drawText(mc.textRenderer, Text.literal(countdownText), x, cY, 0xFFFFAAAA, true);
+                    }
+                }
             }
 
             // -- Area size display above hotbar during wand selection --

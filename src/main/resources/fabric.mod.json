@@ -3,12 +3,14 @@
   "id": "colonycraft",
   "version": "${version}",
   "name": "ColonyCraft",
-  "description": "Colony Survival mechanics recreated in Minecraft! Place a Colony Banner, assign Colonists to Jobs, collect resources automatically and defend your colony from nightly monster hordes.",
+  "description": "Colony Survival mechanics in Minecraft! Place a Colony Banner, recruit Colonists, assign them jobs, collect resources automatically and defend your colony from nightly monster waves. Features 25+ jobs, quest system, decorative Chisel tool, wave warnings, and much more.",
   "authors": [
     "Wux"
   ],
   "contact": {
-    "sources": "https://github.com/WuxCZ/colonycraft"
+    "homepage": "https://github.com/WuxCZ/colonycraft",
+    "sources": "https://github.com/WuxCZ/colonycraft",
+    "issues": "https://github.com/WuxCZ/colonycraft/issues"
   },
   "license": "MIT",
   "icon": "assets/colonycraft/icon.png",
@@ -28,8 +30,7 @@
     "fabricloader": ">=0.14.0",
     "fabric-api": "*",
     "minecraft": "~1.21.11",
-    "java": ">=21",
-    "geckolib": "*"
+    "java": ">=21"
   },
   "suggests": {
     "entity_model_features": "*",

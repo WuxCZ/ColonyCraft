@@ -65,6 +65,7 @@ public class PlantSaplingsGoal extends Goal {
             return;
         }
 
+        colonist.setCurrentStatus("🌱 Planting saplings");
         workTick++;
         if (workTick % 4 == 0) {
             colonist.swingHand(Hand.MAIN_HAND);

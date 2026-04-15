@@ -35,6 +35,7 @@ public class ModItemGroups {
                         entries.add(ModItems.RESEARCH_TABLE_ITEM);
                         entries.add(ModItems.JOB_ASSIGNMENT_BOOK);
                         entries.add(ModItems.AREA_WAND);
+                        entries.add(ModItems.CHISEL);
 
                         // Resource gathering jobs
                         entries.add(ModItems.WOODCUTTER_BENCH_ITEM);
@@ -62,10 +63,14 @@ public class ModItemGroups {
                         // Knowledge & defense
                         entries.add(ModItems.RESEARCH_DESK_ITEM);
                         entries.add(ModItems.GUARD_TOWER_ITEM);
+                        entries.add(ModItems.BUILDER_HUT_ITEM);
+                        entries.add(ModItems.DIGGER_HUT_ITEM);
 
                         // Animals
                         entries.add(ModItems.CHICKEN_COOP_ITEM);
                         entries.add(ModItems.BEEHIVE_STATION_ITEM);
+                        entries.add(ModItems.SHEPHERD_HUT_ITEM);
+                        entries.add(ModItems.COW_BARN_ITEM);
                     })
                     .build());
 

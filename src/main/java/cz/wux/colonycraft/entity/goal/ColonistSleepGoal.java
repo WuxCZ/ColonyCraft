@@ -84,6 +84,7 @@ public class ColonistSleepGoal extends Goal {
                     bedPos.getX() + 0.5, bedPos.getY() + 0.5625, bedPos.getZ() + 0.5,
                     colonist.getYaw(), 0);
             colonist.setPose(EntityPose.SLEEPING);
+            colonist.setCurrentStatus("\u263E Sleeping");
         }
     }
 
@@ -106,7 +107,6 @@ public class ColonistSleepGoal extends Goal {
                 }
             }
             sleeping = false;
-            colonist.setCurrentStatus("\u25CB Idle");
         }
         bedPos = null;
     }

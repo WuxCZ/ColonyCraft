@@ -29,7 +29,9 @@ import java.util.*;
 public class StockpileBlockEntity extends BlockEntity
         implements Inventory, NamedScreenHandlerFactory {
 
-    public static final int SLOTS = 54;
+    public static final int SLOTS = 540;
+    public static final int SLOTS_PER_PAGE = 54;
+    public static final int TOTAL_PAGES = SLOTS / SLOTS_PER_PAGE;
 
     private static final Set<Item> FOOD_ITEMS = Set.of(
             Items.BREAD, Items.COOKED_BEEF, Items.COOKED_PORKCHOP, Items.COOKED_CHICKEN,

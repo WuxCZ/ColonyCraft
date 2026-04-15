@@ -13,8 +13,12 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Uuids;
@@ -26,6 +30,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class ColonistEntity extends PathAwareEntity {
+
+    // ── Data tracker keys (auto-synced to client) ──
+    private static final TrackedData<Integer> TRACKED_JOB =
+            DataTracker.registerData(ColonistEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> TRACKED_STATUS =
+            DataTracker.registerData(ColonistEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<String> TRACKED_SPEECH =
+            DataTracker.registerData(ColonistEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<String> TRACKED_NAME =
+            DataTracker.registerData(ColonistEntity.class, TrackedDataHandlerRegistry.STRING);
 
     /** Random colonist name pool — Colony Survival style. */
     private static final String[] COLONIST_NAMES = {
@@ -48,8 +62,29 @@ public class ColonistEntity extends PathAwareEntity {
     private int workCooldown = 0;
     private String colonistName;
 
-    /** Current activity status for thought bubble rendering. */
-    private String currentStatus = "Idle";
+    /** Whether a goal has set the status this tick. */
+    private boolean statusSetByGoal = false;
+
+    /** Speech bubble system — colonists talk, alert problems, chatter. */
+    private String speechBubble = null;
+    private int speechBubbleTicks = 0;
+    private static final int SPEECH_DURATION = 80; // 4 seconds
+
+    private static final String[] IDLE_CHAT = {
+        "Nice day!", "\u266B Hmm hmm...", "I love this colony!", "*yawns*",
+        "Need anything?", "What a view!", "\u2600 Beautiful day!", "...",
+        "Could use a break.", "Is it lunch yet?", "\u263A Life is good!",
+    };
+    private static final String[] WORK_CHAT = {
+        "Almost done!", "*working*", "One more!", "Here we go!",
+        "Hard work pays off!", "\uD83D\uDCAA Push through!", "Getting there!",
+    };
+    private static final String[] HUNGRY_ALERTS = {
+        "\u26A0 I'm starving!", "\u26A0 Need food!!", "\u26A0 So hungry...",
+    };
+    private static final String[] NIGHT_CHAT = {
+        "*yawns*", "Time for bed...", "\u263E Good night!", "Sleepy...",
+    };
 
     public static final int HUNGER_INTERVAL  = 6000;
     public static final int STARVATION_DEATH = 24000;
@@ -57,6 +92,15 @@ public class ColonistEntity extends PathAwareEntity {
     public ColonistEntity(EntityType<? extends ColonistEntity> type, World world) {
         super(type, world);
         this.setPersistent();
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(TRACKED_JOB, ColonistJob.UNEMPLOYED.ordinal());
+        builder.add(TRACKED_STATUS, "\u2639 No job");
+        builder.add(TRACKED_SPEECH, "");
+        builder.add(TRACKED_NAME, "");
     }
 
     public static DefaultAttributeContainer.Builder createColonistAttributes() {
@@ -74,8 +118,10 @@ public class ColonistEntity extends PathAwareEntity {
         goalSelector.add(2, new ColonistEatGoal(this));
         goalSelector.add(3, new ChopTreeGoal(this));
         goalSelector.add(3, new HarvestCropsGoal(this));
+        goalSelector.add(3, new HarvestBerriesGoal(this));
         goalSelector.add(3, new MineBlocksGoal(this));
         goalSelector.add(3, new PlantSaplingsGoal(this));
+        goalSelector.add(3, new TendAnimalsGoal(this));
         goalSelector.add(4, new WorkAtJobGoal(this));
         goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
         goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
@@ -84,6 +130,7 @@ public class ColonistEntity extends PathAwareEntity {
 
     @Override
     public void tick() {
+        statusSetByGoal = false;
         super.tick();
         if (getEntityWorld().isClient()) return;
 
@@ -95,6 +142,11 @@ public class ColonistEntity extends PathAwareEntity {
 
         if (workCooldown > 0) workCooldown--;
 
+        // Work particles (every 20 ticks while working)
+        if (workCooldown > 0 && age % 20 == 0 && getEntityWorld() instanceof ServerWorld sw) {
+            spawnWorkParticles(sw);
+        }
+
         // Dynamically update stockpilePos from colony data if not set
         if (stockpilePos == null && colonyId != null && getEntityWorld() instanceof ServerWorld sw) {
             ColonyManager.get(sw.getServer()).getColony(colonyId).ifPresent(colony -> {
@@ -104,34 +156,85 @@ public class ColonistEntity extends PathAwareEntity {
             });
         }
 
-        // Update status for thought bubble
-        if (getPose() == net.minecraft.entity.EntityPose.SLEEPING) {
-            currentStatus = "\u263E Sleeping";
-        } else if (hungerTicks > HUNGER_INTERVAL) {
-            currentStatus = "\u2620 Hungry!";
-        } else if (workCooldown > 0) {
-            currentStatus = "\u2692 Working";
-        } else if (job == ColonistJob.UNEMPLOYED) {
-            currentStatus = "\u2639 No job";
-        } else if (isNight()) {
-            currentStatus = "\u263E Going to bed";
-        } else {
-            currentStatus = "\u2692 " + job.displayName;
+        // Fallback status (only if no goal has set it this tick)
+        if (!statusSetByGoal) {
+            if (getPose() == net.minecraft.entity.EntityPose.SLEEPING) {
+                dataTracker.set(TRACKED_STATUS, "\u263E Sleeping");
+            } else if (hungerTicks > HUNGER_INTERVAL) {
+                dataTracker.set(TRACKED_STATUS, "\u2620 Hungry!");
+            } else if (job == ColonistJob.UNEMPLOYED) {
+                dataTracker.set(TRACKED_STATUS, "\u2639 No job");
+            } else if (isNight()) {
+                dataTracker.set(TRACKED_STATUS, "\u263E Going to bed");
+            } else {
+                dataTracker.set(TRACKED_STATUS, "\u2692 " + job.displayName);
+            }
+        }
+
+        // ── Speech bubble logic ─────────────────────────────────
+        if (speechBubbleTicks > 0) {
+            speechBubbleTicks--;
+            if (speechBubbleTicks <= 0) {
+                speechBubble = null;
+                dataTracker.set(TRACKED_SPEECH, "");
+            }
+        }
+
+        // Problem alerts (highest priority, override existing speech)
+        if (hungerTicks > HUNGER_INTERVAL * 2 && (speechBubble == null || speechBubbleTicks < 20)) {
+            setSpeech(HUNGRY_ALERTS[getRandom().nextInt(HUNGRY_ALERTS.length)]);
+        } else if (stockpilePos == null && colonyId != null && speechBubble == null) {
+            setSpeech("\u26A0 No stockpile!");
+        } else if (jobBlockPos == null && job != ColonistJob.UNEMPLOYED && job.requiresBlock && speechBubble == null) {
+            setSpeech("\u26A0 Can't find workplace!");
+        }
+
+        // Random chatter (~every 5 seconds, 15% chance)
+        if (speechBubble == null && age % 100 == 0 && getRandom().nextFloat() < 0.12f) {
+            if (isHungry()) {
+                setSpeech(HUNGRY_ALERTS[getRandom().nextInt(HUNGRY_ALERTS.length)]);
+            } else if (workCooldown > 0) {
+                setSpeech(WORK_CHAT[getRandom().nextInt(WORK_CHAT.length)]);
+            } else if (isNight()) {
+                setSpeech(NIGHT_CHAT[getRandom().nextInt(NIGHT_CHAT.length)]);
+            } else {
+                setSpeech(IDLE_CHAT[getRandom().nextInt(IDLE_CHAT.length)]);
+            }
         }
     }
 
-    // -- Status --
-    public String getCurrentStatus() { return currentStatus; }
-    public void setCurrentStatus(String s) { this.currentStatus = s; }
+    private void setSpeech(String text) {
+        speechBubble = text;
+        speechBubbleTicks = SPEECH_DURATION;
+        dataTracker.set(TRACKED_SPEECH, text != null ? text : "");
+    }
 
-    // -- Colonist name --
-    public String getColonistName() { return colonistName; }
-    public void setColonistName(String name) { this.colonistName = name; }
+    // -- Status (synced via data tracker) --
+    public String getCurrentStatus() { return dataTracker.get(TRACKED_STATUS); }
+    public void setCurrentStatus(String s) {
+        dataTracker.set(TRACKED_STATUS, s);
+        this.statusSetByGoal = true;
+    }
+    public String getSpeechBubble() {
+        String speech = dataTracker.get(TRACKED_SPEECH);
+        return speech.isEmpty() ? null : speech;
+    }
+
+    // -- Colonist name (synced via data tracker) --
+    public String getColonistName() {
+        String name = dataTracker.get(TRACKED_NAME);
+        return name.isEmpty() ? null : name;
+    }
+    public void setColonistName(String name) {
+        this.colonistName = name;
+        dataTracker.set(TRACKED_NAME, name != null ? name : "");
+    }
 
     /** Assign a random name if none set yet. */
     public void assignRandomName() {
         if (colonistName == null || colonistName.isEmpty()) {
             colonistName = COLONIST_NAMES[getEntityWorld().random.nextInt(COLONIST_NAMES.length)];
+            dataTracker.set(TRACKED_NAME, colonistName);
         }
     }
 
@@ -139,14 +242,19 @@ public class ColonistEntity extends PathAwareEntity {
     public UUID getColonyId() { return colonyId; }
     public void setColonyId(UUID id) { this.colonyId = id; }
 
-    public ColonistJob getColonistJob() { return job; }
+    public ColonistJob getColonistJob() {
+        int ordinal = dataTracker.get(TRACKED_JOB);
+        ColonistJob[] values = ColonistJob.values();
+        return (ordinal >= 0 && ordinal < values.length) ? values[ordinal] : ColonistJob.UNEMPLOYED;
+    }
     public void setColonistJob(ColonistJob j) {
         this.job = j;
+        dataTracker.set(TRACKED_JOB, j.ordinal());
         updateDisplayName();
     }
 
     /** Rebuilds the visible custom name from colonist name + job. */
-    private void updateDisplayName() {
+    public void updateDisplayName() {
         String label = (job == ColonistJob.UNEMPLOYED) ? "Colonist" : job.displayName;
         if (colonistName != null && !colonistName.isEmpty()) {
             label = colonistName + " - " + label;
@@ -175,6 +283,40 @@ public class ColonistEntity extends PathAwareEntity {
     public boolean isNight() {
         long time = getEntityWorld().getTimeOfDay() % 24000L;
         return time >= 12786;
+    }
+
+    /** Spawns job-specific particles while working. */
+    private void spawnWorkParticles(ServerWorld world) {
+        double x = getX(), y = getY() + 1.0, z = getZ();
+        switch (job) {
+            case FARMER, BERRY_FARMER, CHICKEN_FARMER, FORESTER, BEEKEEPER, COMPOSTER ->
+                world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, x, y, z, 3, 0.3, 0.5, 0.3, 0.01);
+            case WOODCUTTER ->
+                world.spawnParticles(ParticleTypes.SMOKE, x, y, z, 2, 0.2, 0.3, 0.2, 0.01);
+            case MINER, STONEMASON ->
+                world.spawnParticles(ParticleTypes.CRIT, x, y, z, 4, 0.3, 0.4, 0.3, 0.1);
+            case FISHERMAN, WATER_GATHERER ->
+                world.spawnParticles(ParticleTypes.SPLASH, x, y - 0.5, z, 5, 0.3, 0.1, 0.3, 0.1);
+            case COOK, GRINDER, POTTER ->
+                world.spawnParticles(ParticleTypes.SMOKE, x, y + 0.5, z, 3, 0.1, 0.3, 0.1, 0.02);
+            case SMELTER, GLASSBLOWER ->
+                world.spawnParticles(ParticleTypes.FLAME, x, y, z, 3, 0.2, 0.3, 0.2, 0.02);
+            case BLACKSMITH, FLETCHER ->
+                world.spawnParticles(ParticleTypes.CRIT, x, y, z, 5, 0.3, 0.5, 0.3, 0.15);
+            case RESEARCHER ->
+                world.spawnParticles(ParticleTypes.ENCHANT, x, y + 0.5, z, 5, 0.3, 0.5, 0.3, 0.5);
+            case ALCHEMIST ->
+                world.spawnParticles(ParticleTypes.WITCH, x, y, z, 3, 0.2, 0.4, 0.2, 0.05);
+            case TANNER, TAILOR ->
+                world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, x, y, z, 2, 0.2, 0.3, 0.2, 0.01);
+            case BUILDER ->
+                world.spawnParticles(ParticleTypes.CLOUD, x, y, z, 3, 0.3, 0.4, 0.3, 0.02);
+            case DIGGER ->
+                world.spawnParticles(ParticleTypes.CRIT, x, y - 0.3, z, 4, 0.3, 0.2, 0.3, 0.1);
+            case SHEPHERD, COW_HERDER ->
+                world.spawnParticles(ParticleTypes.HEART, x, y + 0.5, z, 1, 0.3, 0.3, 0.3, 0.01);
+            default -> {}
+        }
     }
 
     public Optional<StockpileBlockEntity> getStockpile() {
@@ -313,6 +455,7 @@ public class ColonistEntity extends PathAwareEntity {
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         colonistName = view.getString("ColonistName", null);
+        if (colonistName != null) dataTracker.set(TRACKED_NAME, colonistName);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
         setColonistJob(ColonistJob.fromString(view.getString("Job", "UNEMPLOYED")));
         hungerTicks = view.getInt("HungerTicks", 0);
@@ -322,5 +465,12 @@ public class ColonistEntity extends PathAwareEntity {
         if (stockX != Integer.MIN_VALUE) stockpilePos = new BlockPos(stockX, view.getInt("StockY", 0), view.getInt("StockZ", 0));
         int homeX = view.getInt("HomeX", Integer.MIN_VALUE);
         if (homeX != Integer.MIN_VALUE) homePos = new BlockPos(homeX, view.getInt("HomeY", 0), view.getInt("HomeZ", 0));
+
+        // Immediately update status so it doesn't show "Idle" before first tick
+        if (job != ColonistJob.UNEMPLOYED) {
+            dataTracker.set(TRACKED_STATUS, "\u2692 " + job.displayName);
+        } else {
+            dataTracker.set(TRACKED_STATUS, "\u2639 No job");
+        }
     }
 }

@@ -34,6 +34,14 @@ public enum ColonistJob {
     BEEKEEPER   ("Beekeeper",    "beehive_station",    true,  10),
     CHICKEN_FARMER("Chicken Farmer","chicken_coop",    true,  10),
 
+    // -- Construction --
+    BUILDER     ("Builder",      "builder_hut",        true,  16),
+    DIGGER      ("Digger",       "digger_hut",         true,  16),
+
+    // -- Animal husbandry --
+    SHEPHERD    ("Shepherd",     "shepherd_hut",       true,  16),
+    COW_HERDER  ("Cow Herder",   "cow_barn",           true,  16),
+
     // -- Knowledge --
     RESEARCHER  ("Researcher",   "research_desk",      true,  0),
 
@@ -72,6 +80,7 @@ public enum ColonistJob {
 
     public boolean isFarmer() {
         return this == FARMER || this == BERRY_FARMER || this == FORESTER
-                || this == CHICKEN_FARMER || this == BEEKEEPER;
+                || this == CHICKEN_FARMER || this == BEEKEEPER
+                || this == SHEPHERD || this == COW_HERDER;
     }
 }

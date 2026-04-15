@@ -79,6 +79,7 @@ public class ChopTreeGoal extends Goal {
         }
 
         // Close enough — perform chopping
+        colonist.setCurrentStatus("🪓 Chopping wood");
         chopTick++;
         // Swing animation every 5 ticks
         if (chopTick % 5 == 0) {

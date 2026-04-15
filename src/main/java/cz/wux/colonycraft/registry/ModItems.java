@@ -1,6 +1,7 @@
 package cz.wux.colonycraft.registry;
 
 import cz.wux.colonycraft.item.AreaWandItem;
+import cz.wux.colonycraft.item.ChiselItem;
 import cz.wux.colonycraft.item.GuidebookItem;
 import cz.wux.colonycraft.item.JobAssignmentBook;
 import net.minecraft.block.Block;
@@ -29,6 +30,10 @@ public class ModItems {
     public static final AreaWandItem AREA_WAND = reg("area_wand",
             key -> new AreaWandItem(new Item.Settings().maxCount(1).registryKey(key)));
 
+    // Chisel — cycles decorative block variants (Chisel mod style)
+    public static final ChiselItem CHISEL = reg("chisel",
+            key -> new ChiselItem(new Item.Settings().maxCount(1).registryKey(key)));
+
     // Block items (auto-generated)
     public static final BlockItem COLONY_BANNER_ITEM      = regBlock("colony_banner",       ModBlocks.COLONY_BANNER);
     public static final BlockItem STOCKPILE_ITEM          = regBlock("stockpile",           ModBlocks.STOCKPILE);
@@ -56,6 +61,10 @@ public class ModItems {
     public static final BlockItem TANNERS_BENCH_ITEM      = regBlock("tanners_bench",       ModBlocks.TANNERS_BENCH);
     public static final BlockItem POTTERY_STATION_ITEM    = regBlock("pottery_station",     ModBlocks.POTTERY_STATION);
     public static final BlockItem GLASS_FURNACE_ITEM      = regBlock("glass_furnace",       ModBlocks.GLASS_FURNACE);
+    public static final BlockItem BUILDER_HUT_ITEM        = regBlock("builder_hut",         ModBlocks.BUILDER_HUT);
+    public static final BlockItem DIGGER_HUT_ITEM         = regBlock("digger_hut",          ModBlocks.DIGGER_HUT);
+    public static final BlockItem SHEPHERD_HUT_ITEM       = regBlock("shepherd_hut",        ModBlocks.SHEPHERD_HUT);
+    public static final BlockItem COW_BARN_ITEM           = regBlock("cow_barn",            ModBlocks.COW_BARN);
 
     // Helpers
 

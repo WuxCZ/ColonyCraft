@@ -4,6 +4,7 @@ import cz.wux.colonycraft.blockentity.JobBlockEntity;
 import cz.wux.colonycraft.blockentity.StockpileBlockEntity;
 import cz.wux.colonycraft.data.ColonyData;
 import cz.wux.colonycraft.data.ColonyManager;
+import cz.wux.colonycraft.data.Quest;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import cz.wux.colonycraft.entity.ColonyMonsterEntity;
 import cz.wux.colonycraft.entity.GuardEntity;
@@ -139,6 +140,22 @@ public class ColonyCraftMod implements ModInitializer {
                     return entity != null && !entity.isAlive();
                 });
 
+                // -- Injured colonist warnings --
+                {
+                    for (java.util.UUID uuid : colony.getColonistUuids()) {
+                        var entity = overworld.getEntity(uuid);
+                        if (entity instanceof ColonistEntity ce && ce.getHealth() < ce.getMaxHealth() * 0.3f) {
+                            String name = ce.getCustomName() != null ? ce.getCustomName().getString() : "Colonist";
+                            for (ServerPlayerEntity player : overworld.getPlayers()) {
+                                if (colony.isMember(player.getUuid())
+                                        && player.squaredDistanceTo(ce.getX(), ce.getY(), ce.getZ()) < 6400) {
+                                    player.sendMessage(Text.literal("\u00a7c\u2620 " + name + " is critically injured!"), true);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // -- Food consumption (colonists eat from stockpile) --
                 if (doConsumeFood && sp != null) {
                     var be = overworld.getBlockEntity(sp);
@@ -191,6 +208,60 @@ public class ColonyCraftMod implements ModInitializer {
                                             SoundCategory.NEUTRAL, 1.0f, 0.9f);
                                     colony.addColonist(guard.getUuid());
                                     mgr.markDirty();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // -- Quest progress checking --
+                {
+                    boolean questCompleted = false;
+                    for (Quest quest : Quest.values()) {
+                        if (colony.isQuestCompleted(quest.name())) continue;
+                        if (!quest.isUnlocked(colony)) continue;
+                        if (quest.isComplete(colony, overworld)) {
+                            colony.completeQuest(quest.name());
+                            if (quest.scienceReward > 0) colony.addScience(quest.scienceReward);
+                            questCompleted = true;
+                            for (ServerPlayerEntity player : overworld.getPlayers()) {
+                                if (colony.isMember(player.getUuid())) {
+                                    player.sendMessage(Text.literal(
+                                            "\u00a7a\u00a7l\u2714 Quest Complete: \u00a7r\u00a7e" + quest.displayName
+                                            + (quest.scienceReward > 0 ? " \u00a77(+" + quest.scienceReward + " science)" : "")), false);
+                                }
+                            }
+                        }
+                    }
+                    if (questCompleted) mgr.markDirty();
+                }
+
+                // -- Wave early warning (dusk) --
+                if (dayTime >= 11800 && dayTime <= 11900) {
+                    BlockPos wavePos = colony.getBannerPos();
+                    if (wavePos != null) {
+                        ServerWorld world = server.getWorld(World.OVERWORLD);
+                        if (world != null) {
+                            for (ServerPlayerEntity player : world.getPlayers()) {
+                                if (player.squaredDistanceTo(wavePos.getX(), wavePos.getY(), wavePos.getZ()) < 10000) {
+                                    player.sendMessage(Text.literal("\u00a76\u00a7l\u2694 Dusk approaches... Prepare your defenses!"), true);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // -- Wave imminent warning --
+                if (dayTime >= 12700 && dayTime <= 12800) {
+                    BlockPos wavePos = colony.getBannerPos();
+                    if (wavePos != null) {
+                        ServerWorld world = server.getWorld(World.OVERWORLD);
+                        if (world != null) {
+                            world.playSound(null, wavePos, ModSounds.WAVE_HORN,
+                                    SoundCategory.HOSTILE, 1.5f, 1.2f);
+                            for (ServerPlayerEntity player : world.getPlayers()) {
+                                if (player.squaredDistanceTo(wavePos.getX(), wavePos.getY(), wavePos.getZ()) < 10000) {
+                                    player.sendMessage(Text.literal("\u00a74\u00a7l\u26A0 WAVE INCOMING! \u00a7cEnemies are gathering!"), true);
                                 }
                             }
                         }

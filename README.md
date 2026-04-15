@@ -66,9 +66,29 @@
 
 **⚔️ Nightly Waves**
 - Waves spawn at dusk every in-game day
-- Wave size = `4 + days × 2`, HP scales with time
-- **Guard colonists** patrol and shoot hostile mobs
+- **Dusk warning** + **imminent warning** + wave countdown HUD timer
+- **Banner Raiders** — special enemies that pathfind to destroy your Colony Banner
+- Wave size scales with colonist count and days survived
 - Survive long enough and your colony grows unstoppable
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**📜 Quest System**
+- 16 progression quests guiding you from first banner to 50 colonists
+- Tutorial → Survival → Growth → Knowledge quest chains
+- Science point rewards for completing quests
+- Quest UI accessible from Colony Management → Quests button
+
+</td>
+<td width="50%">
+
+**🔨 Chisel Tool**
+- Right-click supported blocks to cycle through decorative variants
+- Supports 20+ block families: Stone, Deepslate, Sandstone, Quartz, Blackstone, Copper, Tuff, Prismarine, and more
+- Great for decorating your colony buildings
 
 </td>
 </tr>
@@ -141,6 +161,7 @@
 | **;** | Open Colony Management screen |
 | **Right-click** Guide Book | Open 10-page in-game guide |
 | **Right-click** with Wand | Set work area corners → auto job selection |
+| **Right-click** with Chisel | Cycle block variant (20+ block families) |
 | **Right-click** Job Block | View job info / assign area |
 
 When you have an active colony, a status panel appears top-left:
@@ -208,14 +229,15 @@ src/
 
 | Metric | Count |
 |---|---|
-| Job Types | 3 |
+| Job Types | 25 |
 | Block Types | 26 |
-| Item Types | 29 |
-| Recipe Files | 28 |
-| Source Files | ~77 |
-| Textures | 32 |
+| Item Types | 30 |
+| Quest Types | 16 |
+| Chisel Block Chains | 20+ |
+| Source Files | ~85 |
+| Textures | 57+ |
 
-*Auto-updated on 2026-04-15 by GitHub Actions.*
+*Last updated manually.*
 <!-- END AUTO-GENERATED STATS -->
 
 ---

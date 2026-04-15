@@ -11,4 +11,5 @@ public class ColonistRenderState extends IllagerEntityRenderState {
     public String statusText = "";
     public String jobName = "Colonist";
     public String colonistName = "";
+    public String speechBubble = null;
 }

@@ -108,6 +108,13 @@ public class HarvestCropsGoal extends Goal {
             return;
         }
 
+        // Set descriptive status based on phase
+        switch (phase) {
+            case SEEK_HARVEST, HARVESTING -> colonist.setCurrentStatus("🌾 Harvesting wheat");
+            case SEEK_PLANT, PLANTING -> colonist.setCurrentStatus("🌱 Planting seeds");
+            case SEEK_TILL, TILLING -> colonist.setCurrentStatus("⛏ Tilling soil");
+        }
+
         // Close enough — perform action
         workTick++;
         if (workTick % 4 == 0) {

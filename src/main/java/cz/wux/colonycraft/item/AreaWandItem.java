@@ -158,6 +158,25 @@ public class AreaWandItem extends Item {
             JobBlockEntity target = findMatchingJobBlock(context.getWorld(), player.getBlockPos(), selectedJob);
             if (target != null) {
                 target.setArea(min, max);
+
+                // Instant farmland conversion for FARMER jobs
+                if (selectedJob == ColonistJob.FARMER) {
+                    int converted = 0;
+                    for (BlockPos bp : BlockPos.iterate(min, max)) {
+                        net.minecraft.block.BlockState state = context.getWorld().getBlockState(bp);
+                        if ((state.isOf(net.minecraft.block.Blocks.GRASS_BLOCK) || state.isOf(net.minecraft.block.Blocks.DIRT))
+                                && context.getWorld().getBlockState(bp.up()).isAir()) {
+                            context.getWorld().setBlockState(bp, net.minecraft.block.Blocks.FARMLAND.getDefaultState());
+                            converted++;
+                        }
+                    }
+                    if (converted > 0) {
+                        player.sendMessage(Text.literal(
+                            "\u00a7a[Farmer] \u00a77Converted \u00a7e" + converted +
+                            " \u00a77blocks to farmland!"), false);
+                    }
+                }
+
                 player.sendMessage(Text.literal(
                     "\u00a7a[" + selectedJob.displayName + "] \u00a7fWork area set: \u00a7e" + w + "\u00d7" + d +
                     " \u00a7fblocks \u00a77(assigned to job block at " +

@@ -1,6 +1,7 @@
 package cz.wux.colonycraft.entity;
 
 import cz.wux.colonycraft.data.ColonyData;
+import cz.wux.colonycraft.entity.goal.DestroyBannerGoal;
 import cz.wux.colonycraft.registry.ModEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -46,11 +47,19 @@ public class ColonyMonsterEntity extends HostileEntity {
     @Override
     protected void initGoals() {
         goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
-        goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
-        goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        goalSelector.add(3, new WanderAroundFarGoal(this, 1.0));
+        goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         targetSelector.add(1, new ActiveTargetGoal<>(this, ColonistEntity.class, false));
         targetSelector.add(2, new ActiveTargetGoal<>(this, GuardEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
+    }
+
+    /** Add banner destruction goal once target banner is set. */
+    public void setTargetBanner(BlockPos pos) {
+        this.targetBanner = pos;
+        if (pos != null) {
+            goalSelector.add(2, new DestroyBannerGoal(this, pos));
+        }
     }
 
     /**
@@ -83,8 +92,19 @@ public class ColonyMonsterEntity extends HostileEntity {
                 spider.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
                 spider.setHealth((float) hp);
                 world.spawnEntity(spider);
-            } else if (roll < 0.55f) {
-                // ~40% zombies
+            } else if (roll < 0.35f) {
+                // ~20% banner raiders (ColonyMonsterEntity) — directly target the banner
+                ColonyMonsterEntity raider = ModEntities.COLONY_MONSTER.create(world, SpawnReason.EVENT);
+                if (raider == null) continue;
+                raider.refreshPositionAndAngles(spawnX, spawnY, spawnZ,
+                    world.random.nextFloat() * 360f, 0);
+                double hp = 25.0 + Math.min(days * 2.0, 80.0);
+                raider.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(hp);
+                raider.setHealth((float) hp);
+                raider.setTargetBanner(bannerPos);
+                world.spawnEntity(raider);
+            } else if (roll < 0.65f) {
+                // ~30% zombies
                 ZombieEntity zombie = EntityType.ZOMBIE.create(world, SpawnReason.EVENT);
                 if (zombie == null) continue;
                 zombie.refreshPositionAndAngles(spawnX, spawnY, spawnZ, 
@@ -94,7 +114,7 @@ public class ColonyMonsterEntity extends HostileEntity {
                 zombie.setHealth((float) hp);
                 world.spawnEntity(zombie);
             } else {
-                // ~45% skeletons
+                // ~35% skeletons
                 SkeletonEntity skeleton = EntityType.SKELETON.create(world, SpawnReason.EVENT);
                 if (skeleton == null) continue;
                 skeleton.refreshPositionAndAngles(spawnX, spawnY, spawnZ,
@@ -124,8 +144,9 @@ public class ColonyMonsterEntity extends HostileEntity {
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         int tgtX = view.getInt("TgtX", Integer.MIN_VALUE);
-        if (tgtX != Integer.MIN_VALUE)
-            targetBanner = new BlockPos(tgtX, view.getInt("TgtY", 0), view.getInt("TgtZ", 0));
+        if (tgtX != Integer.MIN_VALUE) {
+            setTargetBanner(new BlockPos(tgtX, view.getInt("TgtY", 0), view.getInt("TgtZ", 0)));
+        }
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
     }
 }

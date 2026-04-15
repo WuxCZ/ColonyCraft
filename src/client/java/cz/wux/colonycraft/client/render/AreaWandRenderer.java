@@ -23,7 +23,7 @@ public class AreaWandRenderer {
         boolean holdingWand = mc.player.getMainHandStack().isOf(ModItems.AREA_WAND)
                            || mc.player.getOffHandStack().isOf(ModItems.AREA_WAND);
         tickCounter++;
-        if (tickCounter < 4) return;
+        if (tickCounter < 2) return;  // every 2 ticks for smoother borders
         tickCounter = 0;
 
         UUID playerId = mc.player.getUuid();
@@ -93,7 +93,7 @@ public class AreaWandRenderer {
         if (Math.abs(px - cx) > 48 || Math.abs(pz - cz) > 48) return;
 
         var selParticle = new DustParticleEffect(0x55FF55, 0.7f);
-        var assignParticle = new DustParticleEffect(0x55AAFF, 0.5f);
+        var assignParticle = new DustParticleEffect(0x55AAFF, 1.0f);
 
         double step = 1.0;
 

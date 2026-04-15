@@ -32,6 +32,9 @@ public class ColonyData {
     /** Players who are members of this colony (party system). */
     private final Set<UUID> memberUuids = new HashSet<>();
 
+    /** Completed quest IDs. */
+    private final Set<String> completedQuests = new HashSet<>();
+
     public ColonyData(UUID colonyId, UUID ownerUuid, String ownerName, BlockPos bannerPos) {
         this.colonyId   = colonyId;
         this.ownerUuid  = ownerUuid;
@@ -49,6 +52,8 @@ public class ColonyData {
         unlockedJobs.add("GUARD_SWORD");
         unlockedJobs.add("GUARD_BOW");
         unlockedJobs.add("MINER");
+        unlockedJobs.add("BUILDER");
+        unlockedJobs.add("DIGGER");
     }
 
     // -- Serialization --
@@ -93,6 +98,10 @@ public class ColonyData {
         }
         nbt.put("Members", memberList);
 
+        NbtList questList = new NbtList();
+        for (String q : completedQuests) questList.add(NbtString.of(q));
+        nbt.put("CompletedQuests", questList);
+
         return nbt;
     }
 
@@ -131,11 +140,19 @@ public class ColonyData {
             d.unlockedJobs.add("GUARD_SWORD");
             d.unlockedJobs.add("GUARD_BOW");
         }
+        // Migration: ensure Builder and Digger are always unlocked
+        d.unlockedJobs.add("BUILDER");
+        d.unlockedJobs.add("DIGGER");
 
         NbtList memberList = nbt.getListOrEmpty("Members");
         for (int i = 0; i < memberList.size(); i++) {
             memberList.getCompound(i).ifPresent(mc ->
                 mc.getIntArray("UUID").map(Uuids::toUuid).ifPresent(d.memberUuids::add));
+        }
+
+        NbtList questList = nbt.getListOrEmpty("CompletedQuests");
+        for (int i = 0; i < questList.size(); i++) {
+            d.completedQuests.add(questList.getString(i, ""));
         }
 
         return d;
@@ -201,4 +218,9 @@ public class ColonyData {
     public void removeColonist(UUID uuid) { colonistUuids.remove(uuid); }
 
     public boolean canSpawnMoreColonists() { return colonistUuids.size() < populationCap; }
+
+    // -- Quests --
+    public boolean isQuestCompleted(String questName) { return completedQuests.contains(questName); }
+    public void completeQuest(String questName) { completedQuests.add(questName); }
+    public Set<String> getCompletedQuests() { return Collections.unmodifiableSet(completedQuests); }
 }

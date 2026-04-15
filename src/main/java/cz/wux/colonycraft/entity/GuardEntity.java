@@ -8,7 +8,9 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -61,6 +63,7 @@ public class GuardEntity extends PathAwareEntity implements RangedAttackMob {
         goalSelector.add(4, new LookAroundGoal(this));
         goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         targetSelector.add(1, new ActiveTargetGoal<>(this, HostileEntity.class, true));
+        targetSelector.add(2, new ActiveTargetGoal<>(this, SlimeEntity.class, true));
     }
 
     /** Configures combat goals and equipment based on guard type. */

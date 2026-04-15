@@ -40,6 +40,7 @@ public class ColonistEatGoal extends Goal {
 
     @Override
     public void start() {
+        colonist.setCurrentStatus("🍖 Going to eat");
         BlockPos sp = colonist.getStockpilePos();
         if (sp != null) {
             colonist.getNavigation().startMovingTo(
@@ -57,6 +58,7 @@ public class ColonistEatGoal extends Goal {
             // Close enough to eat
             StockpileBlockEntity stockpile = (StockpileBlockEntity) colonist.getEntityWorld().getBlockEntity(sp);
             if (stockpile != null && stockpile.consumeOneFoodItem()) {
+                colonist.setCurrentStatus("🍖 Eating");
                 colonist.resetHunger();
                 colonist.heal(4.0f); // eating restores health too
                 eatCooldown = 200;   // don't re-trigger eat goal for 10s

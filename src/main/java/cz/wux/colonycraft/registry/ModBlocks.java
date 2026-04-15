@@ -53,6 +53,10 @@ public class ModBlocks {
     public static final TannersBlock      TANNERS_BENCH      = regJob("tanners_bench",      TannersBlock::new);
     public static final PotteryBlock      POTTERY_STATION    = regJob("pottery_station",    PotteryBlock::new);
     public static final GlassblowerBlock  GLASS_FURNACE      = regJob("glass_furnace",      GlassblowerBlock::new);
+    public static final BuilderBlock      BUILDER_HUT        = regJob("builder_hut",        BuilderBlock::new);
+    public static final DiggerBlock       DIGGER_HUT         = regJob("digger_hut",         DiggerBlock::new);
+    public static final ShepherdBlock     SHEPHERD_HUT       = regJob("shepherd_hut",       ShepherdBlock::new);
+    public static final CowHerderBlock    COW_BARN           = regJob("cow_barn",           CowHerderBlock::new);
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
