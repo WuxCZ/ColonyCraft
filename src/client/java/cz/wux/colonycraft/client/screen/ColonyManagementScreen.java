@@ -23,7 +23,7 @@ public class ColonyManagementScreen extends Screen {
     private int scrollOffset = 0;
     private static final int LINE_HEIGHT = 14;
     private static final int PANEL_WIDTH = 360;
-    private static final int PANEL_HEIGHT = 260;
+    private static final int PANEL_HEIGHT = 280;
 
     public ColonyManagementScreen() {
         super(Text.literal("Colony Management"));
@@ -143,7 +143,7 @@ public class ColonyManagementScreen extends Screen {
                 Entity e = world.getEntity(uuid);
                 if (e instanceof ColonistEntity ce && ce.getColonistJob() == ColonistJob.UNEMPLOYED) {
                     // Find nearest unclaimed job block
-                    for (BlockPos bp : BlockPos.iterate(banner.add(-16, -4, -16), banner.add(16, 4, 16))) {
+                    for (BlockPos bp : BlockPos.iterate(banner.add(-48, -8, -48), banner.add(48, 8, 48))) {
                         var be = world.getBlockEntity(bp);
                         if (be instanceof JobBlockEntity jb && !jb.hasAssignedColonist()
                                 && colony.isJobUnlocked(jb.getJob()) && !jb.getJob().isGuard()) {
@@ -180,7 +180,7 @@ public class ColonyManagementScreen extends Screen {
 
             // Find next unassigned job block
             BlockPos banner = colony.getBannerPos();
-            for (BlockPos bp : BlockPos.iterate(banner.add(-16, -4, -16), banner.add(16, 4, 16))) {
+            for (BlockPos bp : BlockPos.iterate(banner.add(-48, -8, -48), banner.add(48, 8, 48))) {
                 var be = world.getBlockEntity(bp);
                 if (be instanceof JobBlockEntity jb && !jb.hasAssignedColonist()
                         && colony.isJobUnlocked(jb.getJob()) && !jb.getJob().isGuard()) {
@@ -234,6 +234,26 @@ public class ColonyManagementScreen extends Screen {
         boolean canRecruit = colony.canSpawnMoreColonists() && colony.getFoodUnits() >= 5;
         ctx.drawText(textRenderer, Text.literal(canRecruit ? "\u00a7a(5 food to recruit)" : "\u00a7c(Can't recruit)"), cx + 8, sy, 0xFF888888, false);
 
+        // Job summary counts
+        sy += 12;
+        List<ColonistInfo> colonists = gatherColonistInfo();
+        Map<String, Integer> jobCounts = new LinkedHashMap<>();
+        int guardCount = 0, unemployedCount = 0;
+        for (ColonistInfo ci : colonists) {
+            if (ci.isGuard) guardCount++;
+            else if (ci.job.equals("Unemployed")) unemployedCount++;
+            else jobCounts.merge(ci.job, 1, Integer::sum);
+        }
+        StringBuilder summary = new StringBuilder("\u00a77");
+        if (guardCount > 0) summary.append("\u00a7c").append(guardCount).append(" Guard").append(guardCount > 1 ? "s" : "").append(" ");
+        for (var entry : jobCounts.entrySet()) {
+            summary.append("\u00a7a").append(entry.getValue()).append(" ").append(entry.getKey()).append(" ");
+        }
+        if (unemployedCount > 0) summary.append("\u00a78").append(unemployedCount).append(" Idle");
+        if (summary.length() > 2) {
+            ctx.drawText(textRenderer, Text.literal(summary.toString().trim()), cx + 8, sy, 0xFFBBBBBB, false);
+        }
+
         // Divider
         ctx.fill(cx + 4, sy + 12, cx + PANEL_WIDTH - 4, sy + 13, 0x44FFFFFF);
 
@@ -245,15 +265,15 @@ public class ColonyManagementScreen extends Screen {
         ctx.drawText(textRenderer, Text.literal("\u00a77\u21BB"), cx + PANEL_WIDTH - 36, listY, 0xFF888888, false);
         listY += LINE_HEIGHT + 2;
 
-        // Colonist entries
-        List<ColonistInfo> colonists = gatherColonistInfo();
+        // Colonist entries (reuse from job summary above)
         int maxVisible = (cy + PANEL_HEIGHT - 50 - listY) / LINE_HEIGHT;
         int end = Math.min(colonists.size(), scrollOffset + maxVisible);
         for (int i = scrollOffset; i < end; i++) {
             ColonistInfo ci = colonists.get(i);
             String idx = String.format("\u00a78%2d  ", i + 1);
             String jobColor = ci.isGuard ? "\u00a7c" : (ci.job.equals("Unemployed") ? "\u00a78" : "\u00a7a");
-            ctx.drawText(textRenderer, Text.literal(idx + jobColor + ci.job), cx + 8, listY, 0xFFFFFFFF, false);
+            String nameStr = (ci.name != null && !ci.name.isEmpty()) ? "\u00a7f" + ci.name + " " : "";
+            ctx.drawText(textRenderer, Text.literal(idx + nameStr + jobColor + ci.job), cx + 8, listY, 0xFFFFFFFF, false);
 
             String status = ci.statusText;
             ctx.drawText(textRenderer, Text.literal(status), cx + 160, listY, 0xFFFFFFFF, false);
@@ -293,19 +313,23 @@ public class ColonyManagementScreen extends Screen {
                 ColonistInfo ci = new ColonistInfo();
                 ci.entityUuid = ce.getUuid();
                 ci.job = ce.getColonistJob().displayName;
+                ci.name = ce.getColonistName();
                 ci.isGuard = false;
                 ci.health = ce.getHealth();
                 ci.maxHealth = ce.getMaxHealth();
                 ci.statusText = ce.getCurrentStatus();
+                ci.sortOrder = ce.getColonistJob() == ColonistJob.UNEMPLOYED ? 2 : 1;
                 list.add(ci);
             } else if (e instanceof GuardEntity ge) {
                 ColonistInfo ci = new ColonistInfo();
                 ci.entityUuid = ge.getUuid();
                 ci.job = ge.getGuardJob().displayName;
+                ci.name = ge.getGuardName();
                 ci.isGuard = true;
                 ci.health = ge.getHealth();
                 ci.maxHealth = ge.getMaxHealth();
-                ci.statusText = "\u00a7c\u2694 Guarding";
+                ci.statusText = ge.getCurrentStatus();
+                ci.sortOrder = 0; // Guards first
                 list.add(ci);
             } else {
                 ColonistInfo ci = new ColonistInfo();
@@ -315,18 +339,23 @@ public class ColonyManagementScreen extends Screen {
                 ci.health = 0;
                 ci.maxHealth = 20;
                 ci.statusText = "\u00a78? Unloaded";
+                ci.sortOrder = 3;
                 list.add(ci);
             }
         }
+        // Sort: guards first, then employed, then unemployed, then unloaded
+        list.sort(Comparator.comparingInt((ColonistInfo ci) -> ci.sortOrder).thenComparing(ci -> ci.job));
         return list;
     }
 
     private static class ColonistInfo {
         UUID entityUuid;
         String job;
+        String name;
         boolean isGuard;
         float health;
         float maxHealth;
         String statusText;
+        int sortOrder = 1;
     }
 }

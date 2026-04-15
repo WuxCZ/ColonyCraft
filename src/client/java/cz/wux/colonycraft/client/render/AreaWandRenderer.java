@@ -22,13 +22,25 @@ public class AreaWandRenderer {
         if (mc.world == null || mc.player == null || mc.getServer() == null) return;
         boolean holdingWand = mc.player.getMainHandStack().isOf(ModItems.AREA_WAND)
                            || mc.player.getOffHandStack().isOf(ModItems.AREA_WAND);
-        if (!holdingWand) return;
         tickCounter++;
         if (tickCounter < 4) return;
         tickCounter = 0;
 
         UUID playerId = mc.player.getUuid();
         ServerWorld serverWorld = mc.getServer().getOverworld();
+
+        // Always show assigned job area borders (even without wand)
+        BlockPos playerPos = mc.player.getBlockPos();
+        for (BlockPos bp : BlockPos.iterate(
+                playerPos.add(-32, -8, -32),
+                playerPos.add(32, 8, 32))) {
+            var be = serverWorld.getBlockEntity(bp);
+            if (be instanceof JobBlockEntity jb && jb.hasArea()) {
+                spawnFilledBox(mc, jb.getAreaMin(), jb.getAreaMax(), false);
+            }
+        }
+
+        if (!holdingWand) return;
 
         BlockPos[] sel = AreaWandItem.getSelection(playerId);
         if (sel != null) {
@@ -60,16 +72,7 @@ public class AreaWandRenderer {
             }
         }
 
-        // Show assigned job areas
-        BlockPos playerPos = mc.player.getBlockPos();
-        for (BlockPos bp : BlockPos.iterate(
-                playerPos.add(-32, -8, -32),
-                playerPos.add(32, 8, 32))) {
-            var be = serverWorld.getBlockEntity(bp);
-            if (be instanceof JobBlockEntity jb && jb.hasArea()) {
-                spawnFilledBox(mc, jb.getAreaMin(), jb.getAreaMax(), false);
-            }
-        }
+        // Wand selection preview handled above, job areas handled before wand check
     }
 
     private static void spawnMarker(MinecraftClient mc, BlockPos pos) {

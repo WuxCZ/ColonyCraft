@@ -21,6 +21,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 public class ColonyBannerBlock extends BlockWithEntity {
 
     // Pole (7-9, 0-16, 7-9) + cross bar (1-15, 15-16, 7-9) + banner cloth (1-15, 6-16, 7.5-8.5)
@@ -92,6 +94,20 @@ public class ColonyBannerBlock extends BlockWithEntity {
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!world.isClient() && world instanceof ServerWorld sw) {
+            ColonyManager mgr = ColonyManager.get(sw);
+            mgr.getColonyAtBanner(pos).ifPresent(colony -> {
+                // Remove all colonists belonging to this colony
+                for (UUID uuid : new java.util.ArrayList<>(colony.getColonistUuids())) {
+                    net.minecraft.entity.Entity entity = sw.getEntity(uuid);
+                    if (entity != null) entity.discard();
+                }
+                mgr.removeColony(colony.getColonyId());
+                player.sendMessage(
+                        net.minecraft.text.Text.literal("\u00a7c\u00a7l\u26A0 Colony destroyed! All colonists dismissed."),
+                        false);
+            });
+        }
         return super.onBreak(world, pos, state, player);
     }
 

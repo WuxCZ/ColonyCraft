@@ -3,20 +3,24 @@ package cz.wux.colonycraft.client.render;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.GuardEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.IllagerEntityModel;
+import net.minecraft.client.render.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 /**
- * Guard colonist renderer — picks texture based on guard type (sword/bow),
- * shows health bar + status.
+ * Guard colonist renderer - illager model with weapons visible.
+ * Uses NEUTRAL state so arms are visible and can hold weapons.
  */
-public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardRenderState, BipedEntityModel<GuardRenderState>> {
+public class GuardEntityRenderer extends MobEntityRenderer<GuardEntity, GuardRenderState, IllagerEntityModel<GuardRenderState>> {
 
     private static final Identifier SWORD_TEXTURE =
             Identifier.ofVanilla("textures/entity/illager/vindicator.png");
@@ -24,7 +28,8 @@ public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardR
             Identifier.ofVanilla("textures/entity/illager/pillager.png");
 
     public GuardEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER)), 0.5f);
+        super(ctx, new IllagerEntityModel<>(ctx.getPart(EntityModelLayers.PILLAGER)), 0.5f);
+        this.addFeature(new HeldItemFeatureRenderer<>(this));
     }
 
     @Override
@@ -35,10 +40,22 @@ public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardR
     @Override
     public void updateRenderState(GuardEntity entity, GuardRenderState state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
+        ArmedEntityRenderState.updateRenderState(entity, state, this.itemModelResolver, tickDelta);
+        // Illager fields - NEUTRAL so arms are visible (holding weapons)
+        state.illagerMainArm = Arm.RIGHT;
+        state.hasVehicle = entity.hasVehicle();
+        state.handSwingProgress = entity.getHandSwingProgress(tickDelta);
+        if (entity.getTarget() != null) {
+            state.illagerState = IllagerEntity.State.ATTACKING;
+        } else {
+            state.illagerState = IllagerEntity.State.NEUTRAL;
+        }
+        // Custom fields
         state.maxHealth = entity.getMaxHealth();
         state.currentHealth = entity.getHealth();
         state.healthPercent = state.currentHealth / state.maxHealth;
         state.jobName = entity.getGuardJob().displayName;
+        state.guardName = entity.getGuardName() != null ? entity.getGuardName() : "";
         state.isBowGuard = entity.getGuardJob() == ColonistJob.GUARD_BOW;
         if (entity.getTarget() != null) {
             state.statusText = "\u2694 Fighting!";
@@ -78,7 +95,11 @@ public class GuardEntityRenderer extends BipedEntityRenderer<GuardEntity, GuardR
         }
 
         if (state.jobName != null && !state.jobName.isEmpty()) {
-            state.displayName = Text.literal(state.jobName);
+            String label = state.jobName;
+            if (state.guardName != null && !state.guardName.isEmpty()) {
+                label = state.guardName + " - " + label;
+            }
+            state.displayName = Text.literal(label);
         }
         super.renderLabelIfPresent(state, matrices, queue, cameraState);
 

@@ -31,13 +31,41 @@ public class GuardPatrolGoal extends Goal {
 
     @Override
     public void start() {
-        pickNewTarget();
+        if (guard.isNight()) {
+            // Return home at night
+            BlockPos home = guard.getHomePos();
+            if (home != null) {
+                patrolTarget = home;
+                guard.getNavigation().startMovingTo(
+                        home.getX() + 0.5, home.getY(), home.getZ() + 0.5, 1.0);
+            }
+        } else {
+            pickNewTarget();
+        }
     }
 
     @Override
     public void tick() {
         if (waitTicks > 0) { waitTicks--; return; }
-        if (patrolTarget == null) { pickNewTarget(); return; }
+        if (patrolTarget == null) {
+            if (guard.isNight()) {
+                // Stay near home at night
+                BlockPos home = guard.getHomePos();
+                if (home != null) {
+                    double distHome = guard.squaredDistanceTo(home.getX() + 0.5, home.getY() + 0.5, home.getZ() + 0.5);
+                    if (distHome > 25.0) {
+                        patrolTarget = home;
+                        guard.getNavigation().startMovingTo(
+                                home.getX() + 0.5, home.getY(), home.getZ() + 0.5, 1.0);
+                    } else {
+                        waitTicks = 100; // Stay still near home
+                    }
+                }
+            } else {
+                pickNewTarget();
+            }
+            return;
+        }
         double distSq = guard.squaredDistanceTo(
                 patrolTarget.getX() + 0.5, patrolTarget.getY() + 0.5, patrolTarget.getZ() + 0.5);
         if (distSq <= 4.0) {

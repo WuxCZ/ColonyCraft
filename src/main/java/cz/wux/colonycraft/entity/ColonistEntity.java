@@ -27,6 +27,18 @@ import java.util.UUID;
 
 public class ColonistEntity extends PathAwareEntity {
 
+    /** Random colonist name pool — Colony Survival style. */
+    private static final String[] COLONIST_NAMES = {
+        "Aiden", "Bjorn", "Cora", "Darius", "Elara", "Finn", "Greta", "Hugo",
+        "Iris", "Jasper", "Kira", "Liam", "Mira", "Nolan", "Opal", "Pavel",
+        "Quinn", "Rosa", "Sven", "Thea", "Ulf", "Vera", "Wren", "Xander",
+        "Yara", "Zane", "Ada", "Boris", "Clara", "Dante", "Eva", "Felix",
+        "Hana", "Ivan", "Jana", "Karl", "Lea", "Milo", "Nina", "Otto",
+        "Petra", "Rolf", "Sara", "Tomas", "Ursa", "Viktor", "Wanda", "Yuri",
+        "Zelda", "Axel", "Bela", "Cyrus", "Diana", "Emil", "Freya", "Georg",
+        "Helga", "Igor", "Julia", "Klaus", "Lena", "Marco", "Nora", "Oskar"
+    };
+
     private UUID colonyId;
     private ColonistJob job = ColonistJob.UNEMPLOYED;
     private BlockPos jobBlockPos;
@@ -34,6 +46,7 @@ public class ColonistEntity extends PathAwareEntity {
     private BlockPos homePos;
     private int hungerTicks = 0;
     private int workCooldown = 0;
+    private String colonistName;
 
     /** Current activity status for thought bubble rendering. */
     private String currentStatus = "Idle";
@@ -111,6 +124,17 @@ public class ColonistEntity extends PathAwareEntity {
     public String getCurrentStatus() { return currentStatus; }
     public void setCurrentStatus(String s) { this.currentStatus = s; }
 
+    // -- Colonist name --
+    public String getColonistName() { return colonistName; }
+    public void setColonistName(String name) { this.colonistName = name; }
+
+    /** Assign a random name if none set yet. */
+    public void assignRandomName() {
+        if (colonistName == null || colonistName.isEmpty()) {
+            colonistName = COLONIST_NAMES[getEntityWorld().random.nextInt(COLONIST_NAMES.length)];
+        }
+    }
+
     // -- Colony linkage --
     public UUID getColonyId() { return colonyId; }
     public void setColonyId(UUID id) { this.colonyId = id; }
@@ -118,7 +142,15 @@ public class ColonistEntity extends PathAwareEntity {
     public ColonistJob getColonistJob() { return job; }
     public void setColonistJob(ColonistJob j) {
         this.job = j;
-        String label = (j == ColonistJob.UNEMPLOYED) ? "Colonist" : j.displayName;
+        updateDisplayName();
+    }
+
+    /** Rebuilds the visible custom name from colonist name + job. */
+    private void updateDisplayName() {
+        String label = (job == ColonistJob.UNEMPLOYED) ? "Colonist" : job.displayName;
+        if (colonistName != null && !colonistName.isEmpty()) {
+            label = colonistName + " - " + label;
+        }
         this.setCustomName(net.minecraft.text.Text.literal(label));
         this.setCustomNameVisible(true);
     }
@@ -174,8 +206,8 @@ public class ColonistEntity extends PathAwareEntity {
             guard.setHomePos(bannerPos);
             guard.setGuardJob(targetJob.getJob());
             targetJob.assignColonist(guard.getUuid());
-            guard.setCustomName(net.minecraft.text.Text.literal(targetJob.getJob().displayName));
-            guard.setCustomNameVisible(true);
+            guard.assignRandomName();
+            guard.updateDisplayName();
 
             world.spawnEntity(guard);
             world.playSound(null, bannerPos, cz.wux.colonycraft.registry.ModSounds.COLONIST_SPAWN,
@@ -195,18 +227,16 @@ public class ColonistEntity extends PathAwareEntity {
         colonist.setColonyId(colony.getColonyId());
         colonist.setHomePos(bannerPos);
         if (colony.getStockpilePos() != null) colonist.setStockpilePos(colony.getStockpilePos());
+        colonist.assignRandomName();
 
         if (targetJob != null) {
             targetJob.assignColonist(colonist.getUuid());
             colonist.setColonistJob(targetJob.getJob());
             colonist.setJobBlockPos(BlockPos.ofFloored(
                     targetJob.getPos().getX(), targetJob.getPos().getY(), targetJob.getPos().getZ()));
+        } else {
+            colonist.updateDisplayName();
         }
-
-        String jobLabel = colonist.job == ColonistJob.UNEMPLOYED
-                ? "Colonist" : colonist.job.displayName;
-        colonist.setCustomName(net.minecraft.text.Text.literal(jobLabel));
-        colonist.setCustomNameVisible(true);
 
         world.spawnEntity(colonist);
         world.playSound(null, bannerPos, cz.wux.colonycraft.registry.ModSounds.COLONIST_SPAWN,
@@ -216,8 +246,8 @@ public class ColonistEntity extends PathAwareEntity {
     }
 
     private static JobBlockEntity findUnclaimedJob(ServerWorld world, ColonyData colony, BlockPos bannerPos) {
-        for (BlockPos candidate : BlockPos.iterate(bannerPos.add(-16, -4, -16),
-                                                    bannerPos.add(16, 4, 16))) {
+        for (BlockPos candidate : BlockPos.iterate(bannerPos.add(-48, -8, -48),
+                                                    bannerPos.add(48, 8, 48))) {
             var be = world.getBlockEntity(candidate);
             if (be instanceof JobBlockEntity jb
                     && !jb.hasAssignedColonist()
@@ -229,12 +259,39 @@ public class ColonistEntity extends PathAwareEntity {
     }
 
     // -- NBT --
+
+    @Override
+    public void onDeath(net.minecraft.entity.damage.DamageSource source) {
+        super.onDeath(source);
+        if (getEntityWorld() instanceof ServerWorld sw && colonyId != null) {
+            ColonyManager mgr = ColonyManager.get(sw.getServer());
+            mgr.getColony(colonyId).ifPresent(colony -> {
+                colony.removeColonist(getUuid());
+                mgr.markDirty();
+            });
+            if (jobBlockPos != null) {
+                var be = sw.getBlockEntity(jobBlockPos);
+                if (be instanceof JobBlockEntity jb && getUuid().equals(jb.getAssignedColonistId())) {
+                    jb.unassignColonist();
+                }
+            }
+            String name = getCustomName() != null ? getCustomName().getString() : "Colonist";
+            for (var player : sw.getPlayers()) {
+                if (player.squaredDistanceTo(getX(), getY(), getZ()) < 10000) {
+                    player.sendMessage(net.minecraft.text.Text.literal(
+                            "\u00a7c\u2620 " + name + " has died!"), false);
+                }
+            }
+        }
+    }
+
     @Override
     public void writeCustomData(WriteView view) {
         super.writeCustomData(view);
         if (colonyId != null) view.putIntArray("ColonyId", Uuids.toIntArray(colonyId));
         view.putString("Job", job.name());
         view.putInt("HungerTicks", hungerTicks);
+        if (colonistName != null) view.putString("ColonistName", colonistName);
         if (jobBlockPos != null) {
             view.putInt("JobX", jobBlockPos.getX());
             view.putInt("JobY", jobBlockPos.getY());
@@ -255,6 +312,7 @@ public class ColonistEntity extends PathAwareEntity {
     @Override
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
+        colonistName = view.getString("ColonistName", null);
         colonyId = view.getOptionalIntArray("ColonyId").map(Uuids::toUuid).orElse(null);
         setColonistJob(ColonistJob.fromString(view.getString("Job", "UNEMPLOYED")));
         hungerTicks = view.getInt("HungerTicks", 0);

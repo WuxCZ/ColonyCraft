@@ -22,7 +22,7 @@ import java.util.List;
 public class JobSelectionScreen extends Screen {
 
     private static final int PANEL_W = 260;
-    private static final int PANEL_H = 240;
+    private static final int PANEL_H = 320;
     private final List<ColonistJob> areaJobs = new ArrayList<>();
     private int scrollOffset = 0;
 
@@ -60,7 +60,7 @@ public class JobSelectionScreen extends Screen {
         addDrawableChild(ButtonWidget.builder(Text.literal("\u00a7cCancel"), btn -> close())
             .dimensions(cx + PANEL_W - 66, cy + PANEL_H - 26, 56, 20).build());
 
-        if (areaJobs.size() > 8) {
+        if (areaJobs.size() > 12) {
             addDrawableChild(ButtonWidget.builder(Text.literal("\u25B2"), btn -> {
                 scrollOffset = Math.max(0, scrollOffset - 3);
                 rebuildButtons();
@@ -72,7 +72,7 @@ public class JobSelectionScreen extends Screen {
         }
 
         int listY = cy + 40;
-        int maxVisible = Math.min(8, (cy + PANEL_H - 52 - listY) / 22);
+        int maxVisible = Math.min(12, (cy + PANEL_H - 52 - listY) / 22);
         int end = Math.min(areaJobs.size(), scrollOffset + maxVisible);
         for (int i = scrollOffset; i < end; i++) {
             final ColonistJob job = areaJobs.get(i);

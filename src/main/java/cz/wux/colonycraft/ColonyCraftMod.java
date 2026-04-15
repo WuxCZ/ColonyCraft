@@ -133,6 +133,12 @@ public class ColonyCraftMod implements ModInitializer {
                     colony.setPopulationCap(bedCount);
                 }
 
+                // -- Cleanup stale colonists (dead/despawned) --
+                colony.getColonistUuids().removeIf(uuid -> {
+                    var entity = overworld.getEntity(uuid);
+                    return entity != null && !entity.isAlive();
+                });
+
                 // -- Food consumption (colonists eat from stockpile) --
                 if (doConsumeFood && sp != null) {
                     var be = overworld.getBlockEntity(sp);
@@ -146,8 +152,9 @@ public class ColonyCraftMod implements ModInitializer {
                     mgr.markDirty();
                 }
 
-                // -- Population growth --
-                if (colony.canSpawnMoreColonists() && colony.getFoodUnits() > 20) {
+                // -- Population growth (gradual, 1 per ~5 minutes) --
+                if (colony.canSpawnMoreColonists() && colony.getFoodUnits() > 20
+                        && overworld.random.nextInt(100) == 0) {
                     BlockPos bannerPos = colony.getBannerPos();
                     if (bannerPos != null) {
                         ServerWorld world = server.getWorld(World.OVERWORLD);
@@ -177,8 +184,8 @@ public class ColonyCraftMod implements ModInitializer {
                                     guard.setHomePos(scan);
                                     guard.setGuardJob(jb.getJob());
                                     jb.assignColonist(guard.getUuid());
-                                    guard.setCustomName(net.minecraft.text.Text.literal(jb.getJob().displayName));
-                                    guard.setCustomNameVisible(true);
+                                    guard.assignRandomName();
+                                    guard.updateDisplayName();
                                     world.spawnEntity(guard);
                                     world.playSound(null, scan, ModSounds.COLONIST_SPAWN,
                                             SoundCategory.NEUTRAL, 1.0f, 0.9f);

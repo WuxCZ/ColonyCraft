@@ -76,10 +76,14 @@ public class ColonistSleepGoal extends Goal {
             colonist.setCurrentStatus("\u263E Sleeping");
         }
 
-        if (sleeping) {
-            // Stay still
+        if (sleeping && bedPos != null) {
+            // Pin colonist to bed position every tick to prevent falling through
             colonist.getNavigation().stop();
-            colonist.setVelocity(0, colonist.getVelocity().y, 0);
+            colonist.setVelocity(0, 0, 0);
+            colonist.refreshPositionAndAngles(
+                    bedPos.getX() + 0.5, bedPos.getY() + 0.5625, bedPos.getZ() + 0.5,
+                    colonist.getYaw(), 0);
+            colonist.setPose(EntityPose.SLEEPING);
         }
     }
 

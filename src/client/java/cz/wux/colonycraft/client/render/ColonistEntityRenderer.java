@@ -3,51 +3,59 @@ package cz.wux.colonycraft.client.render;
 import cz.wux.colonycraft.data.ColonistJob;
 import cz.wux.colonycraft.entity.ColonistEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.IllagerEntityModel;
+import net.minecraft.client.render.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 public class ColonistEntityRenderer
-        extends BipedEntityRenderer<ColonistEntity, ColonistRenderState, BipedEntityModel<ColonistRenderState>> {
+        extends MobEntityRenderer<ColonistEntity, ColonistRenderState, IllagerEntityModel<ColonistRenderState>> {
 
     public static final Identifier DEFAULT_TEXTURE =
-            Identifier.ofVanilla("textures/entity/player/wide/steve.png");
+            Identifier.ofVanilla("textures/entity/illager/pillager.png");
 
     private static final Map<ColonistJob, Identifier> JOB_TEXTURES = new EnumMap<>(ColonistJob.class);
 
     static {
-        put(ColonistJob.WOODCUTTER,     "textures/entity/player/wide/kai.png");
-        put(ColonistJob.FORESTER,       "textures/entity/player/wide/makena.png");
-        put(ColonistJob.MINER,          "textures/entity/player/wide/noor.png");
-        put(ColonistJob.FARMER,         "textures/entity/player/slim/alex.png");
-        put(ColonistJob.BERRY_FARMER,   "textures/entity/player/slim/sunny.png");
-        put(ColonistJob.FISHERMAN,      "textures/entity/player/wide/zuri.png");
-        put(ColonistJob.WATER_GATHERER, "textures/entity/player/slim/efe.png");
-        put(ColonistJob.COOK,           "textures/entity/player/wide/ari.png");
-        put(ColonistJob.SMELTER,        "textures/entity/player/wide/noor.png");
-        put(ColonistJob.BLACKSMITH,     "textures/entity/player/wide/kai.png");
-        put(ColonistJob.TANNER,         "textures/entity/player/wide/zuri.png");
-        put(ColonistJob.TAILOR,         "textures/entity/player/slim/sunny.png");
-        put(ColonistJob.FLETCHER,       "textures/entity/player/slim/efe.png");
-        put(ColonistJob.STONEMASON,     "textures/entity/player/wide/makena.png");
-        put(ColonistJob.COMPOSTER,      "textures/entity/player/wide/ari.png");
-        put(ColonistJob.GRINDER,        "textures/entity/player/wide/steve.png");
-        put(ColonistJob.POTTER,         "textures/entity/player/wide/ari.png");
-        put(ColonistJob.ALCHEMIST,      "textures/entity/player/slim/efe.png");
-        put(ColonistJob.GLASSBLOWER,    "textures/entity/player/slim/sunny.png");
-        put(ColonistJob.BEEKEEPER,      "textures/entity/player/slim/alex.png");
-        put(ColonistJob.CHICKEN_FARMER, "textures/entity/player/wide/makena.png");
-        put(ColonistJob.RESEARCHER,     "textures/entity/player/wide/noor.png");
-        put(ColonistJob.GUARD_SWORD,    "textures/entity/illager/vindicator.png");
-        put(ColonistJob.GUARD_BOW,      "textures/entity/illager/pillager.png");
+        // Outdoor / resource gathering - pillager (gray-brown outdoor outfit)
+        put(ColonistJob.UNEMPLOYED,      "textures/entity/illager/pillager.png");
+        put(ColonistJob.WOODCUTTER,      "textures/entity/illager/vindicator.png");
+        put(ColonistJob.FORESTER,        "textures/entity/illager/pillager.png");
+        put(ColonistJob.MINER,           "textures/entity/illager/vindicator.png");
+        put(ColonistJob.FARMER,          "textures/entity/illager/pillager.png");
+        put(ColonistJob.BERRY_FARMER,    "textures/entity/illager/evoker.png");
+        put(ColonistJob.FISHERMAN,       "textures/entity/illager/illusioner.png");
+        put(ColonistJob.WATER_GATHERER,  "textures/entity/illager/pillager.png");
+        // Processing / crafting - vindicator/evoker (indoor craft look)
+        put(ColonistJob.COOK,            "textures/entity/illager/evoker.png");
+        put(ColonistJob.SMELTER,         "textures/entity/illager/vindicator.png");
+        put(ColonistJob.BLACKSMITH,      "textures/entity/illager/vindicator.png");
+        put(ColonistJob.TANNER,          "textures/entity/illager/evoker.png");
+        put(ColonistJob.TAILOR,          "textures/entity/illager/illusioner.png");
+        put(ColonistJob.FLETCHER,        "textures/entity/illager/vindicator.png");
+        put(ColonistJob.STONEMASON,      "textures/entity/illager/vindicator.png");
+        put(ColonistJob.COMPOSTER,       "textures/entity/illager/pillager.png");
+        put(ColonistJob.GRINDER,         "textures/entity/illager/evoker.png");
+        put(ColonistJob.POTTER,          "textures/entity/illager/illusioner.png");
+        put(ColonistJob.ALCHEMIST,       "textures/entity/illager/evoker.png");
+        put(ColonistJob.GLASSBLOWER,     "textures/entity/illager/illusioner.png");
+        put(ColonistJob.BEEKEEPER,       "textures/entity/illager/pillager.png");
+        put(ColonistJob.CHICKEN_FARMER,  "textures/entity/illager/evoker.png");
+        // Knowledge - illusioner (blue scholarly robe)
+        put(ColonistJob.RESEARCHER,      "textures/entity/illager/illusioner.png");
+        // Guards - keep vindicator/pillager
+        put(ColonistJob.GUARD_SWORD,     "textures/entity/illager/vindicator.png");
+        put(ColonistJob.GUARD_BOW,       "textures/entity/illager/pillager.png");
     }
 
     private static void put(ColonistJob job, String vanillaPath) {
@@ -55,7 +63,7 @@ public class ColonistEntityRenderer
     }
 
     public ColonistEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER)), 0.5f);
+        super(ctx, new IllagerEntityModel<>(ctx.getPart(EntityModelLayers.PILLAGER)), 0.5f);
     }
 
     @Override
@@ -66,12 +74,20 @@ public class ColonistEntityRenderer
     @Override
     public void updateRenderState(ColonistEntity entity, ColonistRenderState state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
+        ArmedEntityRenderState.updateRenderState(entity, state, this.itemModelResolver, tickDelta);
+        // Illager-specific fields
+        state.illagerState = IllagerEntity.State.CROSSED; // arms folded - villager-like pose
+        state.illagerMainArm = Arm.RIGHT;
+        state.hasVehicle = entity.hasVehicle();
+        state.handSwingProgress = entity.getHandSwingProgress(tickDelta);
+        // Custom fields
         state.jobTexture = JOB_TEXTURES.getOrDefault(entity.getColonistJob(), DEFAULT_TEXTURE);
         state.maxHealth = entity.getMaxHealth();
         state.currentHealth = entity.getHealth();
         state.healthPercent = state.currentHealth / state.maxHealth;
         state.statusText = entity.getCurrentStatus();
         state.jobName = entity.getColonistJob().displayName;
+        state.colonistName = entity.getColonistName() != null ? entity.getColonistName() : "";
     }
 
     @Override
@@ -104,9 +120,13 @@ public class ColonistEntityRenderer
             healthColor = 0xFFFF5555; // red
         }
 
-        // Render job name on top line
+        // Render colonist name + job name on top line
         if (state.jobName != null && !state.jobName.isEmpty()) {
-            state.displayName = Text.literal(state.jobName);
+            String label = state.jobName;
+            if (state.colonistName != null && !state.colonistName.isEmpty()) {
+                label = state.colonistName + " - " + label;
+            }
+            state.displayName = Text.literal(label);
         }
         super.renderLabelIfPresent(state, matrices, queue, cameraState);
 

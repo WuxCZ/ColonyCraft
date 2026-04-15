@@ -81,6 +81,33 @@ public class AreaWandItem extends Item {
         BlockPos clicked = context.getBlockPos();
         ColonistJob selectedJob = SELECTED_JOB.get(playerId);
 
+        // ── Sneak + right-click → remove work area ──────────────────────
+        if (player.isSneaking()) {
+            if (context.getWorld() instanceof ServerWorld) {
+                for (BlockPos bp : BlockPos.iterate(
+                        clicked.add(-48, -8, -48), clicked.add(48, 8, 48))) {
+                    var be = context.getWorld().getBlockEntity(bp);
+                    if (be instanceof JobBlockEntity jb && jb.hasArea()) {
+                        BlockPos min = jb.getAreaMin();
+                        BlockPos max = jb.getAreaMax();
+                        if (clicked.getX() >= min.getX() && clicked.getX() <= max.getX()
+                                && clicked.getY() >= min.getY() && clicked.getY() <= max.getY()
+                                && clicked.getZ() >= min.getZ() && clicked.getZ() <= max.getZ()) {
+                            jb.setArea(null, null);
+                            player.sendMessage(Text.literal(
+                                    "\u00a7a[Wand] \u00a7fWork area removed for \u00a7e" +
+                                            jb.getJob().displayName), false);
+                            clearSelection(playerId);
+                            return ActionResult.SUCCESS;
+                        }
+                    }
+                }
+                player.sendMessage(Text.literal(
+                        "\u00a77[Wand] No work area found at this position."), false);
+            }
+            return ActionResult.SUCCESS;
+        }
+
         // ── No job selected yet → open job selection screen ──────────────
         if (selectedJob == null) {
             // Collect nearby job blocks for context

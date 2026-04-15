@@ -93,6 +93,18 @@ public class ColonyCraftClient implements ClientModInitializer {
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7eSci:  \u00a7f" + colony.getSciencePoints()),                             x, y + 33, 0xFFFFFFFF, true);
             drawContext.drawText(mc.textRenderer, Text.literal("\u00a7cDay:  \u00a7f" + colony.getDaysSurvived()),                              x, y + 44, 0xFFFFFFFF, true);
 
+            // Low food warning
+            if (colony.getFoodUnits() <= 10 && colony.getColonistCount() > 0) {
+                long blink = System.currentTimeMillis() / 500;
+                if (blink % 2 == 0) {
+                    drawContext.drawText(mc.textRenderer, Text.literal("\u00a7c\u00a7l\u26A0 LOW FOOD!"), x, y + 55, 0xFFFF0000, true);
+                }
+            }
+            // Pop cap warning
+            if (!colony.canSpawnMoreColonists() && colony.getColonistCount() > 0) {
+                drawContext.drawText(mc.textRenderer, Text.literal("\u00a7e\u26A0 Beds!"), x + 80, y + 22, 0xFFFFFF00, true);
+            }
+
             // -- Area size display above hotbar during wand selection --
             boolean holdingWand = mc.player.getMainHandStack().isOf(ModItems.AREA_WAND)
                                || mc.player.getOffHandStack().isOf(ModItems.AREA_WAND);

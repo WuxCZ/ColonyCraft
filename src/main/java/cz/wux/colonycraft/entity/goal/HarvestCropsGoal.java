@@ -30,7 +30,7 @@ public class HarvestCropsGoal extends Goal {
     private static final int WORK_TICKS    = 30; // time per harvest/plant action
     private static final int COOLDOWN      = 40;
 
-    private enum Phase { SEEK_HARVEST, HARVESTING, SEEK_PLANT, PLANTING }
+    private enum Phase { SEEK_HARVEST, HARVESTING, SEEK_PLANT, PLANTING, SEEK_TILL, TILLING }
 
     private final ColonistEntity colonist;
     private BlockPos targetPos;
@@ -63,6 +63,12 @@ public class HarvestCropsGoal extends Goal {
             if (targetPos != null) {
                 phase = Phase.SEEK_PLANT;
                 moveTo(targetPos);
+            } else {
+                targetPos = findTillableBlock();
+                if (targetPos != null) {
+                    phase = Phase.SEEK_TILL;
+                    moveTo(targetPos);
+                }
             }
         }
     }
@@ -82,6 +88,13 @@ public class HarvestCropsGoal extends Goal {
                     phase    = Phase.SEEK_PLANT;
                     workTick = 0;
                     moveTo(targetPos);
+                } else {
+                    targetPos = findTillableBlock();
+                    if (targetPos != null) {
+                        phase    = Phase.SEEK_TILL;
+                        workTick = 0;
+                        moveTo(targetPos);
+                    }
                 }
             }
             return;
@@ -131,6 +144,15 @@ public class HarvestCropsGoal extends Goal {
                     if (farmState.isOf(Blocks.FARMLAND) && above.isAir() && hasSeed) {
                         colonist.getStockpile().ifPresent(s -> s.withdrawItem(Items.WHEAT_SEEDS, 1));
                         world.setBlockState(targetPos, Blocks.WHEAT.getDefaultState());
+                    }
+                }
+                case SEEK_TILL, TILLING -> {
+                    BlockState tillState = world.getBlockState(targetPos);
+                    if (tillState.isOf(Blocks.GRASS_BLOCK) || tillState.isOf(Blocks.DIRT)) {
+                        world.setBlockState(targetPos, Blocks.FARMLAND.getDefaultState());
+                        world.playSound(null, targetPos,
+                                net.minecraft.sound.SoundEvents.ITEM_HOE_TILL,
+                                net.minecraft.sound.SoundCategory.BLOCKS, 1.0f, 1.0f);
                     }
                 }
             }
@@ -201,5 +223,23 @@ public class HarvestCropsGoal extends Goal {
 
     private void moveTo(BlockPos pos) {
         colonist.getNavigation().startMovingTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.9);
+    }
+
+    /** Find grass/dirt blocks in the work area that can be tilled into farmland. */
+    private BlockPos findTillableBlock() {
+        BlockPos[] bounds = getSearchBounds();
+        if (bounds == null) return null;
+        World world = colonist.getEntityWorld();
+        BlockPos best = null;
+        double bestD = Double.MAX_VALUE;
+        for (BlockPos p : BlockPos.iterate(bounds[0], bounds[1])) {
+            BlockState s = world.getBlockState(p);
+            if ((s.isOf(Blocks.GRASS_BLOCK) || s.isOf(Blocks.DIRT))
+                    && world.getBlockState(p.up()).isAir()) {
+                double d = colonist.squaredDistanceTo(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5);
+                if (d < bestD) { bestD = d; best = p.toImmutable(); }
+            }
+        }
+        return best;
     }
 }
